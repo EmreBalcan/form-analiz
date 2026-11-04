@@ -1,0 +1,11 @@
+{
+  "name": "form-analiz",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Spor salonu hareket formu analizi (tarayıcı, MediaPipe Pose)",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node tests/run.mjs"
+  }
+}

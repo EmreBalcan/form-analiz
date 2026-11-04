@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Form Analiz</title>
+  <meta name="theme-color" content="#0f1512">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">Form Analiz</div>
+    <button id="pickBtn" class="pick" type="button">
+      <img id="pickImg" alt="">
+      <span><b id="pickName">Hareket seç</b><small id="pickGroup"></small></span>
+      <span class="chev">▾</span>
+    </button>
+  </header>
+
+  <main class="layout">
+    <section class="stage-wrap">
+      <div id="stage" class="stage">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="hud-top">
+          <div id="viewBadge" class="badge">Kamera kapalı</div>
+          <div id="stateBadge" class="badge"></div>
+        </div>
+        <div class="counter">
+          <div class="cnt ok"><span id="okCount">0</span><small id="okLabel">Geçerli</small></div>
+          <div class="cnt bad"><span id="badCount">0</span><small>Sayılmadı</small></div>
+        </div>
+        <div id="cue" class="cue hidden"></div>
+        <div class="progress"><div id="progressBar"></div><div class="mark target"></div><div class="mark start"></div></div>
+        <div id="message" class="message"></div>
+        <div id="empty" class="empty">
+          <p id="setupTip">Bir hareket seç, kamerayı başlat.</p>
+          <button id="startBtn" class="primary" type="button">Kamerayı başlat</button>
+          <label class="file-btn">Video dosyasıyla test et<input id="fileInput" type="file" accept="video/*" hidden></label>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="stopBtn" type="button" disabled>Durdur</button>
+        <button id="resetBtn" type="button">Seti sıfırla</button>
+        <label class="toggle"><input id="soundToggle" type="checkbox" checked> Ses</label>
+        <label class="toggle"><input id="mirrorToggle" type="checkbox" checked> Ayna</label>
+        <select id="cameraSelect" aria-label="Kamera"></select>
+        <select id="modelSelect" aria-label="Model">
+          <option value="full" selected>Model: Standart</option>
+          <option value="heavy">Model: Hassas (yavaş)</option>
+          <option value="lite">Model: Hızlı</option>
+        </select>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <section class="card">
+        <h2>Kurulum</h2>
+        <p id="setupText" class="muted"></p>
+        <p id="viewHint" class="muted small"></p>
+      </section>
+
+      <section class="card">
+        <h2>Sayılmayan tekrarlar</h2>
+        <ol id="rejectList" class="reps"></ol>
+        <p id="rejectEmpty" class="muted small">Henüz yok.</p>
+      </section>
+
+      <section class="card">
+        <h2>Kontrol edilen kurallar</h2>
+        <ul id="ruleList" class="rules"></ul>
+        <p class="muted small"><span class="dot critical"></span> kritik: ihlal edilirse tekrar sayılmaz · <span class="dot warning"></span> uyarı: tekrar sayılır, uyarılırsın</p>
+      </section>
+
+      <section class="card">
+        <h2>Tüm tekrarlar</h2>
+        <ol id="repList" class="reps compact"></ol>
+      </section>
+
+      <section class="card">
+        <details>
+          <summary>Ölçüm ayrıntıları (hata ayıklama)</summary>
+          <pre id="debug" class="debug"></pre>
+          <button id="exportBtn" type="button">Kayıt verisini indir (JSON)</button>
+          <p class="muted small">Son 60 sn'nin nokta verisini indirir. Yanlış analiz olursa bu dosya eşiklerin ayarlanmasını sağlar.</p>
+        </details>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="picker" class="picker">
+    <form method="dialog" class="picker-head">
+      <input id="search" type="search" placeholder="Hareket veya bölge ara…" autocomplete="off">
+      <button type="submit" aria-label="Kapat">✕</button>
+    </form>
+    <div id="pickerList" class="picker-list"></div>
+  </dialog>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
