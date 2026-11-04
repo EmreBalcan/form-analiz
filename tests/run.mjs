@@ -70,7 +70,7 @@ const curl = (o = {}) => (u) => ({
 const lat = (o = {}) => (u) => ({
   torsoPitch: o.sway ? Math.sin(u * Math.PI) * o.sway : 0,
   shrug: o.shrug ? lerp(0, o.shrug, u) : 0,
-  arms: { both: { abd: lerp(12, o.top ?? 88, u), flex: 15, elbow: o.bent ? lerp(165, 100, u) : 165, bend: 'fwd' } },
+  arms: { both: { abd: lerp(12, o.top ?? 88, u), flex: 15, elbow: o.bent ? lerp(165, 100, u) : o.bendTo ? lerp(165, o.bendTo, u) : o.bendFixed ?? 165, bend: 'fwd' } },
 });
 {
   results.push('Yana dambıl açış');
@@ -83,7 +83,13 @@ const lat = (o = {}) => (u) => ({
   r = run('lateral-raise', sequence({ specAt: lat({ shrug: 0.02 }), reps: 3, view: 'front' }));
   check('küçük doğal omuz yükselmesi ret sebebi değil', r.ok === 3, desc(r));
   r = run('lateral-raise', sequence({ specAt: lat({ bent: true }), reps: 3, view: 'front' }));
-  check('dirsek fazla bükülüyor → ret', r.bad === 3 && has(r, 'büküldü'), desc(r));
+  check('dirsek çok bükülüyor (100°) → ret', r.bad === 3 && has(r, 'dirsek'), desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat({ bendTo: 128 }), reps: 3, view: 'front' }));
+  check('hafif fazla bükük dirsek (128°) artık kabul (tolerans)', r.ok === 3, desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat({ bendFixed: 110 }), reps: 3, view: 'front' }));
+  check('sabit 110° bükük dirsek yana açışta kabul (uyarıyla)', r.ok === 3 && hasW(r, 'büküldü'), desc(r));
+  r = run('cable-lateral-raise', sequence({ specAt: lat({ bendFixed: 110 }), reps: 3, view: 'front' }));
+  check('kablo yan açışta aynı bükülme hâlâ ret (değişmedi)', r.bad === 3 && has(r, 'büküldü'), desc(r));
   r = run('lateral-raise', sequence({ specAt: lat({ top: 125 }), reps: 3, view: 'front' }));
   check('omuz üstüne çıkıyor → uyarı', hasW(r, 'üstüne'), desc(r));
   r = run('lateral-raise', sequence({ specAt: lat(), reps: 3, view: 'front', hide: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 7, 8] }));
@@ -176,6 +182,8 @@ const press = (o = {}) => (u) => ({
   results.push('Omuz press');
   let r = run('shoulder-press', sequence({ specAt: press(), reps: 3, view: 'front' }));
   check('doğru form: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('shoulder-press', sequence({ specAt: (u) => { const s = press()(u); s.arms.L.elbow = s.arms.R.elbow = lerp(85, 157, u); return s; }, reps: 3, view: 'front' }));
+  check('yukarıda 157° açılma artık kabul (tolerans)', r.ok === 3, desc(r));
   r = run('shoulder-press', sequence({ specAt: press({ lag: 0.45 }), reps: 3, view: 'front' }));
   check('bir kol geride kalıyor → ret', r.bad === 3 && (has(r, 'eşit') || has(r, 'açılmadı')), desc(r));
 }
@@ -230,3 +238,4 @@ const press = (o = {}) => (u) => ({
 console.log(results.join('\n'));
 console.log(`\n${passed} geçti, ${failed} başarısız`);
 process.exit(failed ? 1 : 0);
+

@@ -198,14 +198,14 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 - **Kamera:** önden — Kamerayı tam karşına koy; kollar yukarıdayken eller kadrajda kalmalı.
 - **Başlangıç:** dambıllar omuz hizasında, dirsekler bükülü
-- **Tekrar:** Dirsek açısı: 90 → 160 · hedefe ulaşmazsa: "Kollar yukarıda tam açılmadı" · dönmezse: "Ağırlık omuz hizasına kadar indirilmedi"
+- **Tekrar:** Dirsek açısı: 90 → 155 · hedefe ulaşmazsa: "Kollar yukarıda tam açılmadı" · dönmezse: "Ağırlık omuz hizasına kadar indirilmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Kollar eşit hareket etmiyor — bir taraf geride kaldı | **Kritik** | uyarı > 0.35 (vücut ölçeği) · ret > 0.6 (vücut ölçeği) | tüm tekrar | önden |
 | Bilekler dirseklerin üstünde değil — ön kollar dik olmalı | **Kritik** | uyarı > 20° · ret > 35° | tüm tekrar | önden |
-| Dirsekler fazla öne geldi | **Kritik** | uyarı > 45° · ret > 65° | tüm tekrar | ret: yandan |
+| Dirsekler fazla öne geldi | **Kritik** | uyarı > 38° · ret > 56° | tüm tekrar | ret: yandan |
 | Belini büküp geriye yaslandın | **Kritik** | tekrar başına göre değişim uyarı < -7° · ret < -13° | tüm tekrar | ret: yandan |
 | Dizler bükülerek yaylanıldı — bacaktan momentum alındı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 22° | tüm tekrar | tümü |
 | Gövde yana doğru kaydı/eğildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | önden |
@@ -221,8 +221,8 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Kollar omuz seviyesinin üstüne çıktı | Uyarı | uyarı > 100° | tepe/dip noktası | tümü |
-| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 140° · ret < 115° | tüm tekrar | tümü |
-| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 20° · ret > 35° | tüm tekrar | tümü |
+| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 125° · ret < 100° | tüm tekrar | tümü |
+| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 30° · ret > 50° | tüm tekrar | tümü |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
 | Gövde sallanarak kaldırıldı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 12° | tüm tekrar | ret: yandan |
 | Gövde yana doğru kaydı/eğildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | önden |
@@ -242,10 +242,10 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Kollar omuz seviyesinin üstüne çıktı | Uyarı | uyarı > 100° | tepe/dip noktası | tümü |
-| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 140° · ret < 115° | tüm tekrar | tümü |
-| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 20° · ret > 35° | tüm tekrar | tümü |
+| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 132° · ret < 108° | tüm tekrar | tümü |
+| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 25° · ret > 40° | tüm tekrar | tümü |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
-| Gövde sallanarak kaldırıldı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 12° | tüm tekrar | ret: yandan |
+| Gövde sallanarak kaldırıldı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
 | Gövde yana doğru kaydı/eğildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | önden |
 | Dizler bükülerek yaylanıldı — bacaktan momentum alındı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 22° | tüm tekrar | tümü |
 | Vücut aşağı-yukarı yaylandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 0.12 (vücut ölçeği) · ret > 0.22 (vücut ölçeği) | tüm tekrar | tümü |

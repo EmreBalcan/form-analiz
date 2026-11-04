@@ -126,9 +126,25 @@ export class Pose {
       }
     }
   }
-  ref(side, a, b) {
+  rawRef(side, a, b) {
     const k1 = `${side}.${a}-${b}`;
     return this.tr.refs.has(k1) ? this.tr.refLen(k1, NaN, this.t) : this.tr.refLen(`${side}.${b}-${a}`, NaN, this.t);
+  }
+  /**
+   * Segmentin gerçek boyu. Gözlenen kayan maksimum + vücut oranı alt sınırları: segment hiç kamera
+   * düzlemine gelmese bile (ör. dirsek sürekli bükük, ön kol kameraya dönük) boy doğru tahmin edilir.
+   */
+  ref(side, a, b) {
+    const key = [a, b].sort().join('-');
+    return this.memo(`ref|${side}|${key}`, () => {
+      const own = this.rawRef(side, a, b);
+      const other = this.rawRef(side === 'L' ? 'R' : 'L', a, b);
+      const bounds = [own, 0.9 * other]; // sağ-sol simetri
+      const P = { 'elbow-wrist': [['shoulder', 'elbow', 0.8]], 'elbow-shoulder': [['elbow', 'wrist', 0.95]], 'ankle-knee': [['hip', 'knee', 0.85]], 'hip-knee': [['knee', 'ankle', 0.85]] }[key] || [];
+      for (const [x, y, k] of P) bounds.push(k * Math.max(this.rawRef(side, x, y) || 0, 0.9 * (this.rawRef(side === 'L' ? 'R' : 'L', x, y) || 0)));
+      const v = Math.max(...bounds.filter(Number.isFinite));
+      return Number.isFinite(v) && v > 0 ? v : NaN;
+    });
   }
 
   /** Vücut ölçeği (piksel): üst kol gerçek boyu → omuz genişliği → gövde/1.6. */

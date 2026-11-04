@@ -99,18 +99,25 @@ const rowMetric = (target = 95) => ({
   returnText: 'Kollar önde tam açılmadı',
 });
 
-const raiseRules = ({ side = 'lateral', sway = true, roll = true } = {}) => [
+// Varsayılanlar kabloyla yan açış (59) ve yana eğilerek açış (61) için ayarlanmış değerlerdir — değiştirme.
+// Hareket bazlı gevşetmeler parametreyle verilir (kullanıcı geri bildirimi 2026-11-05).
+const raiseRules = ({
+  side = 'lateral', sway = true, roll = true,
+  elbowMin = [140, 115], // dirsek açısı alt sınırı [uyarı, ret]
+  elbowFixed = [20, 35], // tekrar içinde dirsek açısı değişimi [uyarı, ret]
+  swayLimits = [6, 12],  // gövde ileri-geri salınımı [uyarı, ret]
+} = {}) => [
   {
     id: 'too-high', measure: 'armElev', op: '>', warn: 100, phase: ['peak'], minMs: 150,
     label: 'Kol yüksekliği (omuz seviyesi)', text: 'Kollar omuz seviyesinin üstüne çıktı', cue: 'Omuz hizasında dur',
   },
   {
-    id: 'elbow-bent', measure: 'elbowAngle', op: '<', warn: 140, reject: 115, minMs: 200,
+    id: 'elbow-bent', measure: 'elbowAngle', op: '<', warn: elbowMin[0], reject: elbowMin[1], minMs: 200,
     label: 'Dirsek hafif bükük (bükülü kaldırma değil)', text: 'Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı', cue: 'Kollarını uzat, hafif bük',
   },
-  R.elbowAngleFixed({ warn: 20, reject: 35 }),
+  R.elbowAngleFixed({ warn: elbowFixed[0], reject: elbowFixed[1] }),
   R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
-  sway && R.sway({ warn: 6, reject: 12, text: 'Gövde sallanarak kaldırıldı — momentum kullanıldı' }),
+  sway && R.sway({ warn: swayLimits[0], reject: swayLimits[1], text: 'Gövde sallanarak kaldırıldı — momentum kullanıldı' }),
   roll && R.swayLateral({ warn: 6, reject: 11 }),
   R.kneeDip(),
   R.bounce(),
@@ -360,12 +367,12 @@ export const EXERCISES = [
     plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı tam karşına koy; kollar yukarıdayken eller kadrajda kalmalı.',
     startText: 'dambıllar omuz hizasında, dirsekler bükülü',
-    metric: { fn: 'elbowAngle', start: 90, target: 160, label: 'Dirsek açısı', romText: 'Kollar yukarıda tam açılmadı', returnText: 'Ağırlık omuz hizasına kadar indirilmedi' },
+    metric: { fn: 'elbowAngle', start: 90, target: 155, label: 'Dirsek açısı', romText: 'Kollar yukarıda tam açılmadı', returnText: 'Ağırlık omuz hizasına kadar indirilmedi' },
     tempo: { minBackMs: 600, backText: 'Ağırlık hızlı indirildi — kontrollü indir' },
     rules: [
       R.symmetryWrist({ warn: 0.35, reject: 0.6 }),
       { id: 'forearm-vertical', measure: 'forearmTilt', op: '>', warn: 20, reject: 35, views: ['front'], minMs: 200, label: 'Ön kol dik (bilek dirseğin üstünde)', text: 'Bilekler dirseklerin üstünde değil — ön kollar dik olmalı', cue: 'Bileklerini dirseğinin üstüne al' },
-      R.elbowForward({ warn: 45, reject: 65, text: 'Dirsekler fazla öne geldi' }),
+      R.elbowForward({ warn: 38, reject: 56, text: 'Dirsekler fazla öne geldi' }),
       { id: 'arch', measure: 'torsoPitch', relative: 'rep', op: '<', warn: -7, reject: -13, bestView: 'side', minMs: 150, label: 'Bel kavisi / geriye yaslanma', text: 'Belini büküp geriye yaslandın', cue: 'Karnını sık, geriye yaslanma' },
       R.kneeDip({ warn: 12, reject: 22 }),
       R.swayLateral(),
@@ -375,12 +382,16 @@ export const EXERCISES = [
   ex(12, 'lateral-raise', 'Yana Dambıl Açış', 'Dumbbell Lateral Raise', 'Omuz', 'lateral-raise.webp', {
     plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı tam karşına koy; kollar yandayken eller kadrajda kalmalı.',
-    startText: 'kollar yanda aşağıda', metric: raiseMetric(), tempo: raiseTempo, rules: [...raiseRules(), R.symmetryArm()],
+    startText: 'kollar yanda aşağıda', metric: raiseMetric(), tempo: raiseTempo,
+    // dirsek açısına daha fazla tolerans (omuz silkme kuralı aynen korunur)
+    rules: [...raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50] }), R.symmetryArm()],
   }),
   ex(13, 'front-raise', 'Öne Dambıl Kaldırış', 'Front Raise', 'Omuz', 'front-raise.webp', {
     plane: 'sagittal', view: 'side', viewAlt: ['front'], required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı yanına koy (önden de çalışır ama salınım yandan daha iyi ölçülür).',
-    startText: 'kollar önde aşağıda', metric: raiseMetric(), tempo: raiseTempo, rules: raiseRules({ side: 'front' }),
+    startText: 'kollar önde aşağıda', metric: raiseMetric(), tempo: raiseTempo,
+    // salınım/kayma ve dirsek açısı biraz gevşetildi
+    rules: raiseRules({ side: 'front', swayLimits: [10, 18], elbowMin: [132, 108], elbowFixed: [25, 40] }),
   }),
   ex(14, 'reverse-pec-deck', 'Ters Pec Deck', 'Reverse Pec Deck', 'Omuz', 'reverse-pec-deck.webp', {
     posture: 'seated', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist'],
