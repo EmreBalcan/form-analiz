@@ -2,6 +2,7 @@
 // ctx: { angleMode: '2d'|'3d', calib: {...}, def }
 import { LM } from './landmarks.js';
 import { DEG, sub, dot2, len2, norm2, angle2, mid } from './geometry.js';
+import { profileShrug } from './profile.js';
 
 const elbowPriors = [1, -1]; // dirsek→omuz biraz geride, ön kol kameraya doğru (belirsiz durumda)
 
@@ -447,6 +448,19 @@ Object.assign(M, {
     const sw = len2(sub(ls, rs));
     if (sw < 5) return null;
     return { v: len2(sub(mid(ls, rs), mid(lh, rh))) / sw, conf: Math.min(ls.v, rs.v, lh.v, rh.v), src: 'gövde boyu / omuz genişliği' };
+  },
+});
+
+Object.assign(M, {
+  /**
+   * Omuz silkme — vücut ölçümüne (kalıcı profil) göre VE set başı kalibrasyonuna göre; büyük olan alınır.
+   * Böylece set başında omuz zaten kalkıksa da yakalanır. Profil yoksa yalnızca set kalibrasyonu.
+   */
+  shrugP: (P, ctx, s) => {
+    const a = profileShrug(P, ctx.profile, s);
+    const b = M.shrugX(P, ctx, s);
+    if (a && b) return a.v >= b.v ? a : b;
+    return a || b;
   },
 });
 

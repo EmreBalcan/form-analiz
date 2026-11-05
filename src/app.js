@@ -4,6 +4,11 @@ import { FormEngine } from './core/engine.js';
 import { createDetector } from './ui/detector.js';
 import { Speaker } from './ui/speech.js';
 import { drawPose } from './ui/overlay.js';
+import { ProfileCapture, loadProfile, saveProfile } from './core/profile.js';
+
+// Kalıcı vücut ölçümü: omuz silkme her harekette kişinin RAHAT duruşuna göre ölçülür.
+let profile = loadProfile();
+let profileCap = null; // ölçüm sırasında ProfileCapture
 
 const $ = (id) => document.getElementById(id);
 const el = {
@@ -52,7 +57,7 @@ function selectExercise(id) {
 }
 
 function newSet() {
-  engine = new FormEngine(def, onEngineEvent);
+  engine = new FormEngine(def, onEngineEvent, { profile });
   tracker.reset();
   el.ok.textContent = '0'; el.bad.textContent = '0';
   el.rejects.innerHTML = ''; el.reps.innerHTML = '';
@@ -210,6 +215,7 @@ async function startFile(file) {
 
 function begin() {
   running = true;
+  if (!profile) startProfile();
   el.view.textContent = 'Kamera açık';
   el.empty.classList.add('hidden');
   $('stopBtn').disabled = false;
@@ -253,7 +259,21 @@ function loop() {
     const now = performance.now();
     const res = detector.detect(v, now);
     if (res) {
-      const P = tracker.process({ ...res, width: v.videoWidth, height: v.videoHeight, t: now, posture: def.posture, allSides: def.allSides });
+      const P = tracker.process({ ...res, width: v.videoWidth, height: v.videoHeight, t: now, posture: profileCap ? 'upright' : def.posture, allSides: def.allSides });
+      if (profileCap) {
+        const r = profileCap.update(P);
+        drawPose(ctx2d, P, null, def);
+        el.msg.textContent = r.message; el.state.textContent = 'Vücut ölçümü';
+        el.bar.style.width = `${Math.round((r.progress || 0) * 100 / 1.15)}%`;
+        if (r.done) {
+          profile = r.profile; saveProfile(profile); profileCap = null;
+          renderProfileStatus(); newSet();
+          showCue('Vücut ölçümü kaydedildi — şimdi harekete başlayabilirsin', 'good');
+          speaker.say('Vücut ölçümü kaydedildi', 1, 0);
+        }
+        requestAnimationFrame(loop);
+        return;
+      }
       const snap = engine.update(P);
       lastPose = P; lastSnap = snap;
       record(res, now);
@@ -324,6 +344,18 @@ $('mirrorToggle').onchange = applyMirror;
 $('cameraSelect').onchange = () => { if (running && stream) startCamera(); };
 $('modelSelect').onchange = () => { if (running && stream) startCamera(); };
 
+function startProfile() {
+  profileCap = new ProfileCapture();
+  showCue('Vücut ölçümü: kameraya dönük dik dur, kolların yanda, omuzların rahat', 'good');
+  speaker.say('Vücut ölçümü. Kameraya dönük dik dur, kolların yanda, omuzların rahat olsun', 1, 0);
+}
+function renderProfileStatus() {
+  const s = $('profileStatus');
+  if (!s) return;
+  s.textContent = profile ? `Vücut ölçümü kayıtlı (${new Date(profile.t).toLocaleDateString('tr-TR')}). Omuz silkme bu rahat duruşa göre ölçülür.` : 'Vücut ölçümü yok — kamera açılınca önce dik durup ölçüm alınacak.';
+}
+$('profileBtn').onclick = () => { if (running) startProfile(); else { profile = null; renderProfileStatus(); } };
+renderProfileStatus();
 $('appVersion').textContent = `sürüm ${document.querySelector('meta[name="app-version"]')?.content || 'dev'}`;
 applyMirror();
 selectExercise(def.id);

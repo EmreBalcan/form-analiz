@@ -3,6 +3,7 @@ import { BodyTracker } from '../src/core/body.js';
 import { FormEngine } from '../src/core/engine.js';
 import { EXERCISES, byId } from '../src/exercises/catalog.js';
 import { sequence, lerp, skeleton, project, mulberry } from './synth.mjs';
+import { ProfileCapture } from '../src/core/profile.js';
 
 let failed = 0, passed = 0;
 const results = [];
@@ -10,11 +11,11 @@ function check(name, cond, info = '') {
   if (cond) { passed++; results.push(`  ✓ ${name}`); } else { failed++; results.push(`  ✗ ${name}  ${info}`); }
 }
 
-function run(exId, frames) {
+function run(exId, frames, opts = {}) {
   const def = byId(exId);
   const tr = new BodyTracker();
   const events = [];
-  const eng = new FormEngine(def, (e) => events.push(e));
+  const eng = new FormEngine(def, (e) => events.push(e), { profile: opts.profile });
   let last;
   for (const f of frames) {
     const P = tr.process({ ...f, posture: def.posture, allSides: def.allSides });
@@ -268,7 +269,7 @@ const press = (o = {}) => (u) => ({
   const pressIn = (u) => ({ arms: { both: { flex: lerp(55, 150, u), abd: 4, elbow: lerp(75, 172, u), bend: 'up' } } });
   let r = run('shoulder-press', sequence({ specAt: pressIn, reps: 3, view: 'front' }));
   check('press: dirsekler birbirine yaklaşıyor → ret', r.bad === 3 && has(r, 'birbirine'), desc(r));
-  r = run('shoulder-press', sequence({ specAt: (u) => ({ ...press()(u), shrug: lerp(0, 0.09, u) }), reps: 3, view: 'front' }));
+  r = run('shoulder-press', sequence({ specAt: (u) => ({ ...press()(u), shrug: lerp(0, 0.11, u) }), reps: 3, view: 'front' }));
   check('press: belirgin silkme → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
 
   // yana eğilerek açış: silkme yana açıştan bir tık katı
@@ -307,7 +308,7 @@ const press = (o = {}) => (u) => ({
   r = run('reverse-pec-deck', sequence({ specAt: rpd({ lean: 14 }), reps: 3, view: 'side', repMs: 2600 }));
   check('ters pec deck: öne eğilmiş çalışma → ret', r.bad === 3, desc(r));
   r = run('reverse-pec-deck', sequence({ specAt: rpd({ bend: 110 }), reps: 3, view: 'side', repMs: 2600 }));
-  check('ters pec deck: dirsek bükülüyor → ret', r.bad === 3 && has(r, 'dirsek'), desc(r));
+  check('ters pec deck: dirsek bükülmesi artık önemsiz (kabul)', r.ok === 3 && !has(r, 'dirsek'), desc(r));
 
   // sırt: oturarak kablo kürek ve lat çekiş (yandan)
   const row = (o = {}) => (u, k) => ({
@@ -396,6 +397,91 @@ const press = (o = {}) => (u) => ({
     r = run(id, sequence({ specAt: inc(45, -8), reps: 3, view: 'side' }));
     check(`${id}: 45° sehpada kalibrasyon tamamlanıyor ve tekrarlar algılanıyor`, r.eng.calib && r.ok + r.bad === 3, desc(r));
   }
+}
+// ---------------------------------------------------------------- KALICI VÜCUT ÖLÇÜMÜ (omuz silkme)
+function makeProfile(hide = []) {
+  const tr = new BodyTracker(); const cap = new ProfileCapture();
+  for (const f of sequence({ specAt: () => ({ arms: { both: { abd: 6, elbow: 172 } } }), reps: 0, idleMs: 3000, view: 'front', hide })) {
+    const r = cap.update(tr.process({ ...f, posture: 'upright' }));
+    if (r.done) return r.profile;
+  }
+  return null;
+}
+{
+  results.push('Vücut ölçümü + omuz silkme (yana açış, kablo, curl, itiş)');
+  const prof = makeProfile();
+  check('vücut ölçümü alınabiliyor', !!prof && Number.isFinite(prof.swUA) && Number.isFinite(prof.sides.L?.kulak), JSON.stringify(prof));
+  const lat2 = (o = {}) => (u, k) => ({
+    shrug: (o.held && (o.fromStart || k >= 0) ? o.held : 0) + (o.shrug ? lerp(0, o.shrug, u) : 0),
+    arms: { both: { abd: lerp(12, 88, u), flex: 15, elbow: 165, bend: 'fwd' } },
+  });
+  let r = run('lateral-raise', sequence({ specAt: lat2(), reps: 3, view: 'front' }), { profile: prof });
+  check('yana açış doğru form (vücut ölçümüyle): 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat2(), reps: 4, view: 'front', noise: 0.004, seed: 51 }), { profile: prof });
+  check('yana açış doğru form gürültülü: 4/4 (yanlış alarm yok)', r.ok === 4 && r.bad === 0, desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat2({ held: 0.05, fromStart: true }), reps: 3, view: 'front' }), { profile: prof });
+  check('SET BAŞINDA OMUZ KALKIK: kalibrasyon alınmaz, uyarılır', !r.eng.calib && /kalkık/.test(r.last.message) && r.ok === 0, desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat2({ held: 0.05 }), reps: 3, view: 'front' }), { profile: prof });
+  check('kalibrasyondan sonra omuz kalkık TUTULUYOR: her tekrar ret', r.bad === 3 && r.ok === 0 && has(r, 'kulağa'), desc(r));
+  r = run('lateral-raise', sequence({ specAt: lat2({ shrug: 0.06 }), reps: 3, view: 'front' }), { profile: prof });
+  check('yana açış daha hassas: 6 cm’lik silkme ret (eskiden geçerdi)', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  for (const [name, hide] of [['kulak yok', [7, 8]], ['kulak+göz yok', [1, 2, 3, 4, 5, 6, 7, 8]], ['yalnız burun', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]]]) {
+    r = run('lateral-raise', sequence({ specAt: lat2({ held: 0.06 }), reps: 3, view: 'front', hide }), { profile: makeProfile(hide) });
+    check(`${name}: kalkık omuz yakalanır`, r.bad === 3 && has(r, 'kulağa'), desc(r));
+  }
+  const cab = (o = {}) => (u, k) => ({ shrug: o.held && k >= 0 ? o.held : 0, arms: { L: { abd: 8, elbow: 170 }, R: { abd: lerp(12, 88, u), flex: 15, elbow: 165 } } });
+  r = run('cable-lateral-raise', sequence({ specAt: cab(), reps: 3, view: 'front' }), { profile: prof });
+  check('kablo yan açış doğru form: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('cable-lateral-raise', sequence({ specAt: cab({ held: 0.05 }), reps: 3, view: 'front' }), { profile: prof });
+  check('kablo yan açış: kalkık tutulan omuz → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  r = run('dumbbell-curl', sequence({ specAt: (u, k) => ({ ...curl()(u), shrug: k >= 0 ? 0.05 : 0 }), reps: 3, view: 'front' }), { profile: prof });
+  check('curl: kalkık tutulan omuz → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  r = run('dumbbell-curl', sequence({ specAt: curl(), reps: 4, view: 'front', noise: 0.004, seed: 52 }), { profile: prof });
+  check('curl doğru form gürültülü (vücut ölçümüyle): 4/4', r.ok === 4 && r.bad === 0, desc(r));
+}
+{
+  results.push('Dirsek sabitliği / gövdeye yakınlık her kamera açısında ret');
+  let r = run('dumbbell-curl', sequence({ specAt: curl({ drift: 50 }), reps: 3, view: 'front' }));
+  check('curl ÖNDEN: dirsek öne kaçıyor → ret (eskiden yalnız uyarı)', r.bad === 3 && has(r, 'dirsek'), desc(r));
+  r = run('dumbbell-curl', sequence({ specAt: curl({ flare: 50 }), reps: 3, view: 'side' }));
+  check('curl YANDAN: dirsek yana açılıyor → ret', r.bad === 3 && (has(r, 'uzaklaştı') || has(r, 'dirsek')), desc(r));
+  r = run('cable-pushdown', sequence({ specAt: (u) => ({ ...pushdown()(u), arms: { both: { flex: 8, abd: lerp(6, 45, u), elbow: lerp(85, 170, u), bend: 'fwd' } } }), reps: 3, view: 'front' }));
+  check('triceps itiş ÖNDEN: dirsekler yana açılıyor → ret', r.bad === 3 && has(r, 'yana'), desc(r));
+  r = run('cable-pushdown', sequence({ specAt: pushdown({ drift: 55 }), reps: 3, view: 'front' }));
+  check('triceps itiş ÖNDEN: dirsek öne-arkaya oynuyor → ret', r.bad === 3 && has(r, 'dirsek'), desc(r));
+  for (const view of ['side', 'front']) {
+    r = run('dumbbell-curl', sequence({ specAt: curl(), reps: 4, view, noise: 0.004, seed: 53 }));
+    check(`curl ${view} doğru form gürültülü: 4/4 (sıkılaşma yanlış alarm üretmiyor)`, r.ok === 4 && r.bad === 0, desc(r));
+    r = run('cable-pushdown', sequence({ specAt: pushdown(), reps: 4, view, noise: 0.004, seed: 54 }));
+    check(`triceps itiş ${view} doğru form gürültülü: 4/4`, r.ok === 4 && r.bad === 0, desc(r));
+  }
+}
+{
+  results.push('Göğüs press diklik/sırt, pec deck diklik, kürek dirsek açıklığı');
+  const cp = (o = {}) => (u, k) => ({
+    torsoPitch: (k >= 0 ? (o.lean ?? 0) : (o.leanAll ?? 0)) + (o.leanAll && k >= 0 ? o.leanAll : 0) + (o.sway ? Math.sin(u * Math.PI) * o.sway : 0),
+    arms: { both: { dir: [0.35, lerp(0.75, 0.15, u), lerp(-0.2, 1, u)], elbow: lerp(80, 170, u), bend: 'fwd' } },
+    legs: { both: { flex: 90, knee: 90 } }, hipY: 0.55,
+  });
+  let r = run('chest-press', sequence({ specAt: cp(), reps: 3, view: 'side' }));
+  check('göğüs press doğru form: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('chest-press', sequence({ specAt: cp({ sway: 10 }), reps: 3, view: 'side' }));
+  check('göğüs press: iterken sırt pedden öne geliyor → ret', r.bad === 3 && has(r, 'sırt'), desc(r));
+  r = run('chest-press', sequence({ specAt: cp({ lean: 12 }), reps: 3, view: 'side' }));
+  check('göğüs press: set boyunca öne eğik (sırt pedde değil) → ret', r.bad === 3, desc(r));
+  r = run('chest-press', sequence({ specAt: (u) => ({ ...cp()(u, -1), torsoPitch: -20 }), reps: 3, view: 'side' }));
+  check('göğüs press: 20° geriye yaslanmış oturma kabul (makine sırtı eğik olabilir)', run('chest-press', sequence({ specAt: (u) => ({ ...cp()(u, -1), torsoPitch: 20 }), reps: 3, view: 'side' })).ok === 3);
+  check('göğüs press: baştan beri dik oturmuyor (öne eğik) → ret', r.bad === 3 && has(r, 'dik otur'), desc(r));
+  r = run('chest-press', sequence({ specAt: cp(), reps: 4, view: 'side', noise: 0.004, seed: 61 }));
+  check('göğüs press gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
+  const row2 = (o = {}) => (u) => ({
+    arms: { both: { dir: [lerp(0.05, o.flare ? 0.8 : 0.15, u), lerp(0.1, 0.6, u), lerp(1, -0.5, u)], elbow: lerp(170, 80, u), bend: 'fwd' } },
+    legs: { both: { flex: 85, knee: 160 } }, hipY: 0.5,
+  });
+  r = run('seated-cable-row', sequence({ specAt: row2({ flare: true }), reps: 3, view: 'side' }));
+  check('kablo kürek: dirsekler gövdeden yana açılıyor → ret', r.bad === 3 && has(r, 'yana'), desc(r));
+  r = run('seated-cable-row', sequence({ specAt: row2(), reps: 4, view: 'side', noise: 0.004, seed: 62 }));
+  check('kablo kürek gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
 }
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
 {

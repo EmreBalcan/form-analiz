@@ -2,6 +2,7 @@
 import { M } from './measures.js';
 import { median, clamp, percentile } from './geometry.js';
 import { PART_TR } from './landmarks.js';
+import { profileShrug } from './profile.js';
 
 const START_P = 0.15;   // bu ilerlemenin altında: başlangıç pozisyonu
 const ENTER_P = 0.30;   // tekrar başladı
@@ -11,9 +12,10 @@ const MIN_CONF = 0.35;  // altında ölçüm yok sayılır
 const REJECT_CONF = 0.65; // tekrar reddetmek için gereken güven
 
 export class FormEngine {
-  constructor(def, onEvent = () => {}) {
+  constructor(def, onEvent = () => {}, opts = {}) {
     this.def = def;
     this.onEvent = onEvent;
+    this.profile = opts.profile || null; // kalıcı vücut ölçümü (profile.js)
     this.rules = (def.rules || []).map(normalizeRule);
     this.reset();
   }
@@ -34,6 +36,8 @@ export class FormEngine {
     this.hold = { goodMs: 0, lastT: null, broken: false, breaks: 0 };
     this.lastT = null;
     this.message = '';
+    this.smoothBuf = new Map();
+    this.gateBuf = [];
   }
 
   /** Eklem açısı modu: 'auto' = segment kısalmasına göre 2B/3B seçimi (body.js joint). */
@@ -42,7 +46,7 @@ export class FormEngine {
   }
 
   ctx(P) {
-    return { angleMode: this.angleMode(P), calib: this.calib, def: this.def, engine: this };
+    return { angleMode: this.angleMode(P), calib: this.calib, def: this.def, engine: this, profile: this.profile };
   }
 
   /** Ölçülecek taraflar. */
@@ -142,7 +146,12 @@ export class FormEngine {
       this.state = 'calibrating';
       snap.state = 'calibrating';
       const startOk = this.def.mode === 'hold' ? this.holdFormOk(P, ctx) : p < START_P + 0.1;
-      if (startOk) {
+      // vücut ölçümü varsa: set başında omuz kalkıksa kalibrasyon ALINMAZ (kalkık omuz 'normal' sayılmasın)
+      const gate = startOk && this.def.useProfile && this.profile ? this.shrugGate(P) : null;
+      if (gate) {
+        this.calibBuf = [];
+        snap.message = gate;
+      } else if (startOk) {
         this.calibBuf.push({ t, P, v: mv.v });
         while (this.calibBuf.length && t - this.calibBuf[0].t > 1000) this.calibBuf.shift();
         const span = this.calibBuf.length ? t - this.calibBuf[0].t : 0;
@@ -210,6 +219,18 @@ export class FormEngine {
       if (this.state === 'ready') snap.message = this.def.mode === 'hold' ? '' : 'Hazır — tekrara başla';
     }
     return snap;
+  }
+
+  /** Vücut ölçümüne göre omuz kalkık mı (kalibrasyon kapısı). Kalkıksa mesaj döndürür. */
+  shrugGate(P) {
+    const lim = this.def.shrugGate ?? 0.07;
+    const vals = P.sidesFor(['shoulder']).map((s) => profileShrug(P, this.profile, s)).filter((r) => r && r.conf >= 0.5);
+    if (!vals.length) return null;
+    // tek karede değil, son 10 karenin ortancasıyla karar (titreşim kalibrasyonu bekletmesin)
+    this.gateBuf.push(Math.max(...vals.map((r) => r.v)));
+    while (this.gateBuf.length > 10) this.gateBuf.shift();
+    if (this.gateBuf.length < 5) return null;
+    return median(this.gateBuf) > lim ? 'Omuzların kalkık — omuzlarını indirip rahat bırak (kalibrasyon bekliyor)' : null;
   }
 
   captureCalib(ctx) {
@@ -295,6 +316,14 @@ export class FormEngine {
       const r = rule.fn(P, ctx, s);
       if (!r || !Number.isFinite(r.v) || r.conf < MIN_CONF) continue;
       let v = r.v;
+      // smooth: son N karenin ortancası (gürültülü, derinlikten türetilen ölçümler için; kural bazlı)
+      if (rule.smooth) {
+        const sk = `${rule.id}|${s ?? '_'}|${r.src}`;
+        const buf = this.smoothBuf.get(sk) || [];
+        buf.push(v); while (buf.length > rule.smooth) buf.shift();
+        this.smoothBuf.set(sk, buf);
+        v = median(buf);
+      }
       const key = s ?? '_';
       if (rule.relative === 'range') {
         // tekrar boyunca toplam hareket aralığı (max − min); başlangıç noktasından bağımsız

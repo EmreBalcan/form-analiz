@@ -14,7 +14,7 @@ export function mulberry(seed = 1) { return () => { seed |= 0; seed = (seed + 0x
 
 /**
  * spec: {
- *   rootPitch (derece, tüm vücut x ekseninde döner; -90 = sırtüstü yatış), torsoPitch (+ öne), torsoRoll,
+ *   rootPitch (derece, tüm vücut x ekseninde döner; -90 = sırtüstü yatış), torsoPitch (DİKKAT: + = GERİYE yatma, − = öne eğilme), torsoRoll,
  *   shrug (metre), hipY, crouch (kalça alçalması, metre),
  *   arms: {L|R: {flex, abd, elbow, bend:'fwd'|'up'|'back', dir?:[out,down,fwd]}},
  *   legs: {L|R: {flex, knee, valgus (metre içe), heel (derece topuk kalkışı)}},
