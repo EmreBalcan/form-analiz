@@ -13,10 +13,13 @@ const armElevAllowance = (k) => (P, ctx, s) => {
 };
 
 export const R = {
-  shrug: ({ warn = 0.1, reject = 0.17, phase = 'active', raiseAllowance = 0, text, cue } = {}) => {
+  // Referans: yana dambıl açış (warn 0.10, reject 0.17, raiseAllowance 0.07). allSides: tek kollu
+  // harekette de iki omuz ölçülür (en kötüsü).
+  shrug: ({ warn = 0.1, reject = 0.17, phase = 'active', raiseAllowance = 0, text, cue, allSides = false } = {}) => {
     const al = raiseAllowance ? armElevAllowance(raiseAllowance) : null;
     return {
       id: 'shrug', measure: 'shrug', op: '>', phase, minMs: 250,
+      ...(allSides ? { sides: 'all' } : {}),
       warn: al ? (P, c, s) => warn + al(P, c, s) : warn,
       reject: reject === null ? undefined : al ? (P, c, s) => reject + al(P, c, s) : reject,
       label: 'Omuz silkme (omuz–kulak mesafesi)',

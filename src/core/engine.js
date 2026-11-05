@@ -83,9 +83,10 @@ export class FormEngine {
 
   /** Tek taraflı hareketlerde çalışan tarafı bul: son 2 sn'de en çok hareket eden. */
   updateActiveSide(perSide, t) {
-    if (this.rep) return; // tekrar sırasında taraf değişmez
+    // geçmiş tekrar sırasında da kaydedilir (asıl hareket orada); taraf yalnızca tekrar dışında değişir
     this.metricHist.push({ t, perSide });
     while (this.metricHist.length && t - this.metricHist[0].t > 2500) this.metricHist.shift();
+    if (this.rep && this.activeSide) return;
     const range = (s) => {
       const vals = this.metricHist.map((h) => h.perSide[s]).filter(Number.isFinite);
       return vals.length > 5 ? Math.max(...vals) - Math.min(...vals) : 0;
@@ -269,7 +270,10 @@ export class FormEngine {
 
   /** Bir kuralı ölç: tüm taraflar için en kötü değeri döndür. */
   measureRule(rule, P, ctx, rep) {
-    const sides = rule.global ? [null] : (rule.sides === 'active' ? this.sides(P).slice(0, 1) : this.sides(P));
+    // sides 'all': tek kollu harekette bile görünen tüm omuzlar (ör. silkme iki omuzda da ölçülür)
+    const sides = rule.global ? [null]
+      : rule.sides === 'all' ? P.sidesFor(['shoulder'])
+        : rule.sides === 'active' ? this.sides(P).slice(0, 1) : this.sides(P);
     let worst = null;
     for (const s of sides) {
       const r = rule.fn(P, ctx, s);
@@ -438,7 +442,7 @@ export class FormEngine {
   }
 }
 
-const GLOBAL_MEASURES = ['torsoPitch', 'torsoLean', 'torsoRoll', 'wristSpread', 'stanceWidth', 'kneeSpreadRatio', 'chinOverHands', 'ankleSplit', 'headHeight', 'torsoFromVertical', 'wristLevel', 'armElevDiff', 'footLevel', 'frontKnee', 'backKnee', 'frontKneeOverToe', 'stepKnee'];
+const GLOBAL_MEASURES = ['torsoPitch', 'torsoLean', 'torsoRoll', 'wristSpread', 'stanceWidth', 'kneeSpreadRatio', 'chinOverHands', 'ankleSplit', 'headHeight', 'torsoFromVertical', 'wristLevel', 'armElevDiff', 'footLevel', 'frontKnee', 'backKnee', 'frontKneeOverToe', 'stepKnee', 'sideLean'];
 
 function unique(a) { return [...new Set(a)]; }
 

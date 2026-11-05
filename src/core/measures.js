@@ -359,6 +359,43 @@ Object.assign(M, {
   },
 });
 
+Object.assign(M, {
+  /**
+   * Üst kolun kamera eksenine dönme açısı (derece, işaretsiz): kemiğin ekranda kısalmasından.
+   * Önden çekimde dirseklerin gövdenin ÖNÜNE gelmesini yakalar (press'te dirsekler yanda olmalı).
+   */
+  armFrontalDev: (P, ctx, s) => {
+    // üst kolun gövdenin ön düzleminden (omuz hattı düzlemi) öne sapması; kol baş üstündeyken de anlamlı.
+    // Önden: kemiğin kameraya doğru kısalmasından; yandan: doğrudan görüntüden.
+    const a = P.arm(s);
+    if (!a) return null;
+    const v = Math.asin(Math.min(1, Math.abs(a.aa))) * DEG;
+    return { v, conf: P.view === 'side' ? a.confIn : Math.min(1, a.confIn * 0.9), src: `üst kol ${P.view === 'side' ? 'yan görüntü' : 'kısalması'}` };
+  },
+  /**
+   * Gövdenin yana eğimi (derece, işaretsiz, önden). Kalça → ayak bilekleri → omuz hattı eğimi yedekli.
+   */
+  sideLean: (P) => {
+    if (P.view === 'side') return null;
+    const ls = P.get('L', 'shoulder'), rs = P.get('R', 'shoulder');
+    if (!ls || !rs) return null;
+    const sm = mid(ls, rs);
+    const tilt = (lower, src, conf) => {
+      const v = sub(sm, lower);
+      return { v: Math.abs(Math.atan2(v.x, -v.y) * DEG), conf, src };
+    };
+    const lh = P.get('L', 'hip'), rh = P.get('R', 'hip');
+    if (lh && rh) return tilt(mid(lh, rh), 'kalça-omuz', Math.min(lh.v, rh.v, ls.v, rs.v));
+    const la = P.get('L', 'ankle'), ra = P.get('R', 'ankle');
+    if (la && ra) return tilt(mid(la, ra), 'ayak-omuz', Math.min(la.v, ra.v) * 0.9);
+    // omuz hattı eğimi: gövde yana yattıkça omuz hattı da eğilir
+    const d = sub(rs, ls);
+    let a = Math.abs(Math.atan2(d.y, d.x) * DEG);
+    if (a > 90) a = 180 - a;
+    return { v: a, conf: Math.min(ls.v, rs.v) * 0.7, src: 'omuz hattı eğimi' };
+  },
+});
+
 /** Ölçüm açıklamaları (UI hata ayıklama paneli için). */
 export const MEASURE_UNITS = {
   elbowAngle: '°', kneeAngle: '°', hipAngle: '°', armElev: '°', armFlex: '°', armAbd: '°', armPlane: '°',

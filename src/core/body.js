@@ -390,7 +390,9 @@ export class Pose {
       const inPlaneComp = sideView ? aa : ll;
       const outComp = sideView ? ll : aa;
       const elev = Math.atan2(Math.hypot(aa, ll), dd) * DEG;
-      const flex = Math.atan2(aa, Math.max(dd, -1)) * DEG;
+      // kol baş üstündeyken atan2 ±180'de sıçrar → sürekli tut (arkaya −100°'den fazla açılma olmaz)
+      let flex = Math.atan2(aa, Math.max(dd, -1)) * DEG;
+      if (flex < -100) flex += 360;
       const abd = Math.atan2(ll, dd) * DEG;
       const plane = Math.atan2(Math.abs(ll), Math.abs(aa) + 1e-6) * DEG;
       const vis = s.conf * ax.T.conf;
