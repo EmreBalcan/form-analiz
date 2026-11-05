@@ -7,19 +7,23 @@
 //   agg: 'extreme' → fazdaki en iyi değer eşikle karşılaştırılır (tepe/dip kontrolü)
 import { clamp } from '../core/geometry.js';
 
-const armElevAllowance = (k) => (P, ctx, s) => {
+const armElevAllowance = (k, cap = 1.3) => (P, ctx, s) => {
   const a = P.arm(s);
-  return a ? k * clamp(a.elev / 90, 0, 1.3) : 0;
+  return a ? k * clamp(a.elev / 90, 0, cap) : 0;
 };
 
 export const R = {
   // Referans: yana dambıl açış (warn 0.10, reject 0.17, raiseAllowance 0.07). allSides: tek kollu
   // harekette de iki omuz ölçülür (en kötüsü).
-  shrug: ({ warn = 0.1, reject = 0.17, phase = 'active', raiseAllowance = 0, text, cue, allSides = false } = {}) => {
-    const al = raiseAllowance ? armElevAllowance(raiseAllowance) : null;
+  // allowanceCap: kolun omuz hizasının üstüne çıkmasıyla payın büyümesini sınırlar (1 = omuz hizasındaki pay).
+  // measure: 'shrugX' → yandan çekimde taraf değişimine dayanıklı sürüm.
+  shrug: ({ warn = 0.1, reject = 0.17, phase = 'active', raiseAllowance = 0, text, cue, allSides = false, allowanceCap, measure, rejectConf } = {}) => {
+    const al = raiseAllowance ? armElevAllowance(raiseAllowance, allowanceCap) : null;
     return {
       id: 'shrug', measure: 'shrug', op: '>', phase, minMs: 250,
       ...(allSides ? { sides: 'all' } : {}),
+      ...(measure ? { measure } : {}),
+      ...(rejectConf ? { rejectConf } : {}),
       warn: al ? (P, c, s) => warn + al(P, c, s) : warn,
       reject: reject === null ? undefined : al ? (P, c, s) => reject + al(P, c, s) : reject,
       label: 'Omuz silkme (omuz–kulak mesafesi)',
@@ -27,13 +31,30 @@ export const R = {
       cue: cue || 'Omuzlarını indir',
     };
   },
-  sway: ({ warn = 7, reject = 14, phase = 'active', text, cue } = {}) => ({
+  sway: ({ warn = 7, reject = 14, phase = 'active', text, cue, rejectConf } = {}) => ({
     id: 'sway', measure: 'torsoPitch', relative: 'range', op: '>', warn, reject: reject ?? undefined, phase, bestView: 'side', minMs: 150,
+    ...(rejectConf ? { rejectConf } : {}),
     label: 'Gövde salınımı (ileri-geri)',
     text: text || 'Gövde ileri-geri sallandı — momentum kullanıldı',
     cue: cue || 'Gövdeni sabit tut',
   }),
-  swayLateral: ({ warn = 6, reject = 11, text } = {}) => ({
+  /**
+   * Gövdenin başlangıç duruşundan (kalibrasyon) öne/arkaya sapması. Tekrar içindeki salınımı değil,
+   * tüm set boyunca öne eğilip / geriye yatarak çalışmayı yakalar. Kalça yoksa omuz kayması yedeği.
+   */
+  leanDrift: ({ warn = 10, reject = 18, text, cue, rejectConf = 0.55 } = {}) => ({
+    id: 'lean-drift', measure: 'torsoPitch', relative: 'calib', abs: true, op: '>', warn, reject, bestView: 'side', minMs: 250, rejectConf,
+    label: 'Gövde başlangıç duruşunda (öne/arkaya eğilmeden)',
+    text: text || 'Gövde başlangıç duruşundan öne/arkaya eğildi',
+    cue: cue || 'Gövdeni dik tut, eğilme',
+  }),
+  /** Önden çekimde öne/arkaya eğilme yedeği: gövde ekranda kısalırsa (kalibrasyona göre). */
+  leanDepthFront: ({ warn = -0.09, reject = -0.16, text } = {}) => ({
+    id: 'lean-front', measure: 'torsoLenRatio', relative: 'calib', op: '<', warn, reject, views: ['front', 'oblique'], minMs: 250,
+    label: 'Öne/arkaya eğilme (önden)',
+    text: text || 'Gövde öne/arkaya eğildi',
+    cue: 'Gövdeni dik tut, eğilme',
+  }),  swayLateral: ({ warn = 6, reject = 11, text } = {}) => ({
     id: 'sway-lat', measure: 'torsoRoll', relative: 'range', op: '>', warn, reject: reject ?? undefined, views: ['front'], minMs: 200,
     label: 'Gövdenin yana kayması',
     text: text || 'Gövde yana doğru kaydı/eğildi',

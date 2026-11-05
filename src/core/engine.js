@@ -292,6 +292,11 @@ export class FormEngine {
         const store = rule.relative === 'calib' ? this.calib?.values?.[rule.id] : rep?.base?.[rule.id];
         if (!store) continue;
         let b = store[key];
+        // yandan çekimde yakın taraf kalibrasyondan sonra değişebilir → diğer tarafın tabanını kullan
+        if ((!b || b.src !== r.src) && rule.relative === 'calib' && key !== '_') {
+          const ob = store[key === 'L' ? 'R' : 'L'];
+          if (ob && ob.src === r.src) b = ob;
+        }
         if (!b || b.src !== r.src) {
           // kaynak değişti (ör. kalça kadrajdan çıktı) → bu kaynak için tabanı şimdi kur
           if (rule.relative === 'rep' && rep) { store[key] = { v, src: r.src }; b = store[key]; } else continue;
@@ -329,7 +334,7 @@ export class FormEngine {
         continue;
       }
       const viewMatch = !rule.bestView || rule.bestView === P.view;
-      const trusted = res.conf >= REJECT_CONF && viewMatch;
+      const trusted = res.conf >= (rule.rejectConf ?? REJECT_CONF) && viewMatch;
       const canReject = res.violReject && trusted;
       // güvenilmeyen ölçüm (yanlış açı / düşük güven): yalnızca ret eşiği aşılırsa uyar
       if (!trusted && rule.reject !== undefined) res.violWarn = res.violReject;
@@ -341,7 +346,7 @@ export class FormEngine {
           const e = rep.extremes.get(rule.id);
           const better = rule.op === '<' ? (e === undefined || res.v > e.v) : (e === undefined || res.v < e.v);
           // 'extreme' kuralında hedef: fazın en iyi değeri eşiği geçmeli (ör. tepe noktasında kilit)
-          if (better) rep.extremes.set(rule.id, { v: res.v, conf: res.conf, canRejectCtx: res.conf >= REJECT_CONF && viewMatch, src: res.src });
+          if (better) rep.extremes.set(rule.id, { v: res.v, conf: res.conf, canRejectCtx: res.conf >= (rule.rejectConf ?? REJECT_CONF) && viewMatch, src: res.src });
         }
         continue;
       }
@@ -442,7 +447,7 @@ export class FormEngine {
   }
 }
 
-const GLOBAL_MEASURES = ['torsoPitch', 'torsoLean', 'torsoRoll', 'wristSpread', 'stanceWidth', 'kneeSpreadRatio', 'chinOverHands', 'ankleSplit', 'headHeight', 'torsoFromVertical', 'wristLevel', 'armElevDiff', 'footLevel', 'frontKnee', 'backKnee', 'frontKneeOverToe', 'stepKnee', 'sideLean'];
+const GLOBAL_MEASURES = ['torsoPitch', 'torsoLean', 'torsoRoll', 'wristSpread', 'stanceWidth', 'kneeSpreadRatio', 'chinOverHands', 'ankleSplit', 'headHeight', 'torsoFromVertical', 'wristLevel', 'armElevDiff', 'footLevel', 'frontKnee', 'backKnee', 'frontKneeOverToe', 'stepKnee', 'sideLean', 'elbowSpread', 'torsoLenRatio'];
 
 function unique(a) { return [...new Set(a)]; }
 

@@ -396,6 +396,45 @@ Object.assign(M, {
   },
 });
 
+Object.assign(M, {
+  /**
+   * Omuz silkme (shrug ile aynı ölçek) + yandan çekimde taraf değişimine dayanıklı: ölçülen tarafın
+   * kalibrasyonu yoksa (yakın taraf değişti) diğer tarafın kalibrasyonu kullanılır.
+   * Yana dambıl açış (referans hareket) değişmesin diye orada eski 'shrug' kalır.
+   */
+  shrugX: (P, ctx, s) => {
+    const r = M.shrug(P, ctx, s);
+    if (r) return r;
+    const base = ctx.calib?.hsd;
+    if (!base || base[s]) return null;
+    const o = s === 'L' ? 'R' : 'L';
+    if (!base[o]) return null;
+    const r2 = M.shrug(P, { ...ctx, calib: { ...ctx.calib, hsd: { ...base, [s]: base[o] } } }, s);
+    return r2 && { ...r2, conf: r2.conf * 0.95, src: `${r2.src} · diğer taraf kalibrasyonu` };
+  },
+  /** Dirsekler arası mesafe / omuz genişliği (önden). Press'te dirsekler yanda olmalı (geniş). */
+  elbowSpread: (P) => {
+    if (P.view === 'side') return null;
+    const le = P.get('L', 'elbow'), re = P.get('R', 'elbow'), ls = P.get('L', 'shoulder'), rs = P.get('R', 'shoulder');
+    if (!le || !re || !ls || !rs) return null;
+    const sw = len2(sub(ls, rs));
+    if (sw < 5) return null;
+    return { v: Math.abs(le.x - re.x) / sw, conf: Math.min(le.v, re.v, ls.v, rs.v), src: 'dirsek aralığı / omuz genişliği' };
+  },
+  /**
+   * Önden çekimde öne/arkaya eğilme: gövdenin ekrandaki boyu / omuz genişliği. Gövde kameraya doğru
+   * veya geriye yattıkça kısalır (cos). Kalibrasyona göre kullanılır.
+   */
+  torsoLenRatio: (P) => {
+    if (P.view === 'side') return null;
+    const ls = P.get('L', 'shoulder'), rs = P.get('R', 'shoulder'), lh = P.get('L', 'hip'), rh = P.get('R', 'hip');
+    if (!ls || !rs || !lh || !rh) return null;
+    const sw = len2(sub(ls, rs));
+    if (sw < 5) return null;
+    return { v: len2(sub(mid(ls, rs), mid(lh, rh))) / sw, conf: Math.min(ls.v, rs.v, lh.v, rh.v), src: 'gövde boyu / omuz genişliği' };
+  },
+});
+
 /** Ölçüm açıklamaları (UI hata ayıklama paneli için). */
 export const MEASURE_UNITS = {
   elbowAngle: '°', kneeAngle: '°', hipAngle: '°', armElev: '°', armFlex: '°', armAbd: '°', armPlane: '°',

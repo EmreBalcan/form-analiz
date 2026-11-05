@@ -8,8 +8,11 @@ const ex = (no, id, tr, en, group, img, spec) => ({
   no, id, tr, en, group, img: `assets/exercises/${img}`,
   mode: 'rep', sides: 'both', plane: 'sagittal', posture: 'upright', view: 'side',
   ...spec,
-  rules: (spec.rules || []).flat(),
+  rules: (spec.rules || []).flat().map((r) => (r && r.measure === 'shrug' && !SHRUG_REFERENCE.includes(id) ? { ...r, measure: 'shrugX' } : r)),
 });
+// Yana dambıl açış (kullanıcının referans hareketi, değiştirilmeyecek) ve onunla birebir aynı olması istenen kablo yan açış
+// orijinal silkme ölçümünü kullanır; diğer hareketler yandan çekimde taraf değişimine dayanıklı 'shrugX' kullanır.
+const SHRUG_REFERENCE = ['lateral-raise', 'cable-lateral-raise'];
 
 // ---------------------------------------------------------------- ortak gruplar
 const curlRules = ({ forward = true, flare = true, sway = true, drift = [15, 25] } = {}) => [
@@ -75,12 +78,13 @@ const benchTempo = { minOutMs: 650, outText: 'Bar hızlı indirildi / göğüste
 
 const rowRules = ({ hinge = false, supported = false } = {}) => [
   R.sway(supported
-    ? { warn: 6, reject: 12, text: 'Göğüs pedden kalktı — gövdeyle çekildi' }
-    : { warn: 10, reject: 18, text: 'Gövde sallanarak çekildi — momentum kullanıldı' }),
+    ? { warn: 5, reject: 10, rejectConf: 0.55, text: 'Göğüs pedden kalktı — gövdeyle çekildi' }
+    : { warn: 7, reject: 13, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi — momentum kullanıldı' }),
+  R.leanDrift(supported ? { warn: 7, reject: 12, text: 'Göğüs pedden ayrıldı / gövde başlangıç duruşundan çıktı' } : hinge ? { warn: 9, reject: 15, text: 'Gövdenin eğim açısı değişti — sırtı aynı açıda sabit tut' } : { warn: 9, reject: 15, text: 'Gövde başlangıçtaki dik duruştan öne/arkaya eğildi' }),
   hinge && R.leanMin({ warn: 35, text: 'Gövde fazla dik — kalçadan öne eğil (gövde yere yakın)' }),
   !hinge && !supported && R.leanMax({ warn: 30, reject: 45, phase: ['out'], text: 'Çekerken öne fazla eğildin' }),
   !hinge && !supported && {
-    id: 'lean-back', measure: 'torsoLean', op: '<', warn: -15, reject: -28, phase: ['peak'], bestView: 'side', minMs: 200,
+    id: 'lean-back', measure: 'torsoLean', op: '<', warn: -12, reject: -22, phase: ['peak', 'back'], bestView: 'side', minMs: 200,
     label: 'Geriye yaslanma', text: 'Çekişin sonunda geriye fazla yaslandın', cue: 'Gövdeni dik tut',
   },
   {
@@ -293,14 +297,16 @@ export const EXERCISES = [
 
   // ======================= SIRT
   ex(6, 'lat-pulldown', 'Lat Çekiş', 'Lat Pulldown', 'Sırt', 'lat-pulldown.webp', {
-    posture: 'seated', plane: 'frontal', view: 'front', viewAlt: ['side'], required: ['shoulder', 'elbow', 'wrist'],
+    posture: 'seated', plane: 'frontal', view: 'side', viewAlt: ['front'], required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı karşına, yukarıdaki bar da görünecek şekilde koy.',
     startText: 'kollar yukarıda düz',
     metric: { fn: 'wristDrop', start: -1.5, target: -0.4, label: 'Bar yüksekliği', romText: 'Bar üst göğse (çene altına) kadar çekilmedi', returnText: 'Kollar yukarıda tam açılmadı' },
     tempo: { minBackMs: 700, backText: 'Bar hızlı bırakıldı — kontrollü yukarı bırak' },
     rules: [
-      R.sway({ warn: 12, reject: 22, text: 'Geriye yaslanıp gövdeyle çekildi' }),
-      { id: 'lean-back', measure: 'torsoLean', op: '<', warn: -25, reject: -40, bestView: 'side', minMs: 250, label: 'Geriye yaslanma (en fazla ~20°)', text: 'Geriye fazla yaslandın', cue: 'Gövdeni dikleştir' },
+      R.sway({ warn: 8, reject: 14, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi — momentum kullanıldı' }),
+      R.leanDrift({ warn: 10, reject: 16, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
+      R.leanDepthFront(),
+      { id: 'lean-back', measure: 'torsoLean', op: '<', warn: -20, reject: -32, bestView: 'side', minMs: 250, label: 'Geriye yaslanma (en fazla ~15-20°)', text: 'Geriye fazla yaslandın', cue: 'Gövdeni dikleştir' },
       R.shrug({ warn: 0.06, reject: 0.14, text: 'Çekişte omuzlar kulağa kalktı — kürek kemiklerini aşağı indir' }),
       R.symmetryWrist({ warn: 0.3, reject: 0.5 }),
       R.swayLateral(),
@@ -329,7 +335,9 @@ export const EXERCISES = [
     tempo: { minBackMs: 700 },
     rules: [
       { id: 'kip', measure: 'hipAngle', relative: 'range', op: '>', warn: 25, reject: 40, minMs: 150, label: 'Bacak savurma', text: 'Bacaklar/kalça savrularak çekildi', cue: 'Bacaklarını sabit tut' },
-      R.sway({ warn: 12, reject: 22, text: 'Vücut sallanarak çekildi' }),
+      R.sway({ warn: 9, reject: 16, rejectConf: 0.55, text: 'Vücut öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 12, reject: 20, text: 'Gövde öne/arkaya eğildi — vücut dik asılı kalmalı' }),
+      R.leanDepthFront(),
       R.swayLateral({ warn: 8, reject: 14, text: 'Vücut bir yana eğildi — iki kolla eşit çek' }),
       R.shrug({ warn: 0.06, reject: 0.14, text: 'Çekerken omuzlar kulağa kalktı — kürek kemiklerini aşağı çek' }),
     ],
@@ -342,7 +350,9 @@ export const EXERCISES = [
     tempo: { minBackMs: 700 },
     rules: [
       { id: 'kip', measure: 'hipAngle', relative: 'range', op: '>', warn: 25, reject: 40, minMs: 150, label: 'Bacak savurma (kipping)', text: 'Bacaklar/kalça savrularak çekildi (kipping)', cue: 'Bacaklarını sabit tut' },
-      R.sway({ warn: 12, reject: 22, text: 'Vücut sallanarak çekildi' }),
+      R.sway({ warn: 9, reject: 16, rejectConf: 0.55, text: 'Vücut öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 12, reject: 20, text: 'Gövde öne/arkaya eğildi — vücut dik asılı kalmalı' }),
+      R.leanDepthFront(),
       R.swayLateral({ warn: 8, reject: 14, text: 'Vücut bir yana eğildi — iki kolla eşit çek' }),
       R.shrug({ warn: 0.06, reject: 0.14, text: 'Çekerken omuzlar kulağa kalktı — kürek kemiklerini aşağı çek' }),
     ],
@@ -355,7 +365,9 @@ export const EXERCISES = [
     tempo: { minBackMs: 700 },
     rules: [
       { id: 'kip', measure: 'hipAngle', relative: 'range', op: '>', warn: 25, reject: 40, minMs: 150, label: 'Bacak savurma', text: 'Bacaklar/kalça savrularak çekildi', cue: 'Bacaklarını sabit tut' },
-      R.sway({ warn: 12, reject: 22 }),
+      R.sway({ warn: 9, reject: 16, rejectConf: 0.55, text: 'Vücut öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 12, reject: 20, text: 'Gövde öne/arkaya eğildi — vücut dik asılı kalmalı' }),
+      R.leanDepthFront(),
       R.swayLateral({ warn: 8, reject: 14 }),
       R.shrug({ warn: 0.06, reject: 0.14, text: 'Çekerken omuzlar kulağa kalktı — kürek kemiklerini aşağı çek' }),
     ],
@@ -395,7 +407,12 @@ export const EXERCISES = [
       R.kneeDip({ warn: 12, reject: 22 }),
       R.swayLateral(),
       // yana dambıl açış referansı, çok az daha toleranslı (baş üstünde doğal omuz yükselmesi için pay)
-      R.shrug({ warn: 0.11, reject: 0.19, raiseAllowance: 0.055, text: 'Omuzlar kulağa kalktı — omuzları aşağıda tut' }),
+      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — omuzları aşağıda tut' }),
+      // dirseklerin birbirine yaklaşması = kolların gövdenin önünden kalkması
+      {
+        id: 'elbows-close', measure: 'elbowSpread', op: '<', warn: 1.45, reject: 1.25, phase: ['out', 'back'], views: ['front', 'oblique'], bestView: 'front', minMs: 200,
+        label: 'Dirsekler birbirinden uzak (yanda)', text: 'Dirsekler birbirine yaklaştı — kollar gövdenin önünden kalkıyor, dirsekleri yana aç', cue: 'Dirseklerini yana aç',
+      },
     ],
   }),
   ex(12, 'lateral-raise', 'Yana Dambıl Açış', 'Dumbbell Lateral Raise', 'Omuz', 'lateral-raise.webp', {
@@ -425,9 +442,11 @@ export const EXERCISES = [
     rules: [
       { id: 'arm-height-low', measure: 'elbowDrop', op: '>', warn: 0.45, reject: 0.7, minMs: 200, label: 'Kol yüksekliği (omuz hizası)', text: 'Kollar omuz hizasının altına düştü', cue: 'Kollarını omuz hizasında tut' },
       { id: 'arm-height-high', measure: 'elbowDrop', op: '<', warn: -0.4, minMs: 200, label: 'Kol yüksekliği (fazla yukarı)', text: 'Kollar omuzun üstüne çıktı', cue: 'Kollarını omuz hizasına indir' },
-      R.elbowAngleFixed({ warn: 20, reject: 35 }),
-      R.sway({ warn: 8, reject: 14, text: 'Gövdeyle çekildi — göğsünü pedden ayırma' }),
-      R.shrug({ warn: 0.1, reject: 0.17 }),
+      { ...R.elbowAngleFixed({ warn: 15, reject: 28 }), rejectConf: 0.55 },
+      { id: 'elbow-bent', measure: 'elbowAngle', op: '<', warn: 140, reject: 120, minMs: 200, rejectConf: 0.55, label: 'Dirsek hafif bükük (fazla bükme)', text: 'Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı', cue: 'Kollarını uzat' },
+      R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallandı — göğsünü pedden ayırma' }),
+      R.leanDrift({ warn: 8, reject: 13, text: 'Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı' }),
+      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
     ],
   }),
   ex(15, 'face-pull', 'Yüze Kablo Çekiş', 'Face Pull', 'Omuz', 'face-pull.webp', {
@@ -439,15 +458,17 @@ export const EXERCISES = [
     rules: [
       { id: 'elbow-high', measure: 'elbowDrop', op: '>', warn: 0.3, reject: 0.55, phase: ['peak'], minMs: 150, label: 'Dirsekler yüksekte', text: 'Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı', cue: 'Dirseklerini kaldır' },
       { id: 'ext-rot', measure: 'wristOverElbow', op: '<', warn: 0.1, agg: 'extreme', phase: ['peak'], label: 'Eller dirseğin üstünde (dış rotasyon)', text: 'Eller kulak hizasına açılmadı — dış rotasyon eksik', cue: 'Ellerini kulaklarına doğru aç' },
-      R.sway({ warn: 8, reject: 15, text: 'Geriye yaslanarak çekildi' }),
-      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.06 }),
+      R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 8, reject: 13, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
+      { id: 'upright', measure: 'torsoLean', op: '>', abs: true, warn: 15, reject: 25, bestView: 'side', minMs: 300, label: 'Gövde dik', text: 'Gövde öne/arkaya eğik — dik dur', cue: 'Dik dur' },
+      R.shrug({ warn: 0.08, reject: 0.15, raiseAllowance: 0.03, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
     ],
   }),
   ex(59, 'cable-lateral-raise', 'Kabloyla Yan Omuz Açış', 'Cable Lateral Raise', 'Omuz', 'cable-lateral-raise.png', {
     plane: 'frontal', view: 'front', sides: 'single', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı tam karşına koy.',
     // silkme yana dambıl açışla aynı; tek kollu olsa da iki omuz ölçülür
-    startText: 'çalışan kol aşağıda', metric: raiseMetric(), tempo: raiseTempo, rules: raiseRules({ shrugOpts: { allSides: true } }),
+    startText: 'çalışan kol aşağıda', metric: raiseMetric(), tempo: raiseTempo, rules: raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50], shrugOpts: { allSides: true } }),
   }),
   ex(60, 'rear-delt-fly', 'Öne Eğilerek Arka Omuz Açış', 'Bent Over Rear Delt Fly', 'Omuz', 'rear-delt-fly.png', {
     posture: 'hinge', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
@@ -472,7 +493,7 @@ export const EXERCISES = [
     tempo: raiseTempo,
     rules: [
       // yana dambıl açış referansı (dirsek toleransı ve silkme aynı); gövde yana eğik olduğu için yana kayma kuralı yerine eğim kuralları
-      ...raiseRules({ roll: false, elbowMin: [125, 100], elbowFixed: [30, 50], tooHigh: [115] }),
+      ...raiseRules({ roll: false, elbowMin: [125, 100], elbowFixed: [30, 50], tooHigh: [115], shrugOpts: { warn: 0.09, reject: 0.15 } }),
       {
         id: 'lean-required', measure: 'sideLean', op: '<', warn: 13, reject: 8, phase: 'active', views: ['front', 'oblique'], bestView: 'front', minMs: 300,
         label: 'Gövdenin yana eğik olması (≥ ~15°)', text: 'Gövde yana eğilmedi — hareketin amacı gövdeyi yana yatırarak yapmak', cue: 'Gövdeni yana yatır',

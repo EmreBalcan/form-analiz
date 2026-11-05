@@ -3,7 +3,7 @@ import { CONNECTIONS, SIDE } from '../core/landmarks.js';
 
 const MEASURE_PARTS = {
   elbowAngle: ['elbow'], armFlex: ['shoulder', 'elbow'], armAbd: ['shoulder', 'elbow'], armElev: ['shoulder', 'elbow'],
-  armPlane: ['elbow'], shrug: ['shoulder', 'ear'], torsoPitch: ['shoulder', 'hip'], torsoLean: ['shoulder', 'hip'],
+  armPlane: ['elbow'], shrug: ['shoulder', 'ear'], shrugX: ['shoulder', 'ear'], elbowSpread: ['elbow'], torsoLenRatio: ['shoulder', 'hip'], sideLean: ['shoulder', 'hip'], armFrontalDev: ['elbow'], torsoPitch: ['shoulder', 'hip'], torsoLean: ['shoulder', 'hip'],
   torsoRoll: ['shoulder', 'hip'], torsoFromVertical: ['shoulder', 'hip'], forearmTilt: ['elbow', 'wrist'],
   wristOverElbow: ['wrist'], elbowDrop: ['elbow'], wristDrop: ['wrist'], elbowOut: ['elbow'], wristSpread: ['wrist'],
   bodyLine: ['hip'], kneeValgus: ['knee'], kneeSpreadRatio: ['knee'], stanceWidth: ['ankle'], footLevel: ['ankle'],
