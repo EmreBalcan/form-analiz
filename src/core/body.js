@@ -332,6 +332,29 @@ export class Pose {
     });
   }
 
+  /**
+   * headShoulderDist'in piksel sürümü (ölçeğe bölünmemiş) + gövde boyu. shrugX bunu kalibrasyondaki
+   * sabit ölçekle karşılaştırır: kolların kamera düzlemine girip çıkması (pec deck, ters pec deck vb.)
+   * vücut ölçeğini değiştirip sahte silkme üretmesin diye.
+   */
+  headShoulderPx() {
+    return this.memo('hsdPx', () => {
+      const T = this.torso();
+      if (!T) return null;
+      const axis = T.src === 'kalça' ? T.down : (this.posture === 'upright' || this.posture === 'seated') ? { x: 0, y: 1 } : null;
+      if (!axis) return null;
+      const res = { torsoLen: T.src === 'kalça' ? T.len : NaN, sides: {} };
+      for (const s of this.sidesFor(['shoulder'])) {
+        const S = this.get(s, 'shoulder');
+        let refs = this.headRefs(this.view === 'front' ? s : null);
+        if (!refs.length) refs = this.headRefs(null);
+        res.sides[s] = {};
+        for (const [name, P] of refs) res.sides[s][name] = dot2(sub(S, P), axis);
+      }
+      return res;
+    });
+  }
+
   // ---------------------------------------------------------------- 3B segment yeniden kurma
   /**
    * a→b segmentini 3B'ye kurar. Düzlem dışı bileşen = sqrt(gerçekBoy² − ekranBoyu²),
@@ -482,10 +505,11 @@ export class Pose {
     if (!T || !S || !P || !Number.isFinite(sc)) return null;
     const d = sub(P, S);
     const res = { down: dot2(d, T.down) / sc, conf: Math.min(S.v, P.v) * T.conf };
-    if (this.view === 'side') {
+    if (this.view === 'side' || this.view === 'oblique') {
       const a = this.anterior();
       res.ant = a ? dot2(d, a) / sc : NaN;
-    } else {
+    }
+    if (this.view !== 'side') {
       const ax = this.axes(side);
       res.out = dot2(d, { x: ax.l3.x, y: ax.l3.y }) / sc;
     }

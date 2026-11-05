@@ -22,9 +22,15 @@ jobs:
         with:
           node-version: 20
       - run: npm test
+      # Her yayın kendi sürüm klasörüne konur (v/<commit>/). Böylece tarayıcı önbelleği eski ve yeni
+      # dosyaları karıştıramaz: sayfa her zaman tek bir sürümün tüm dosyalarını birlikte yükler.
       - run: |
-          mkdir _site
-          cp -r index.html styles.css src assets docs _site/
+          V=${GITHUB_SHA::8}
+          mkdir -p _site/v/$V
+          cp -r index.html assets docs _site/
+          cp -r src styles.css _site/v/$V/
+          sed -i "s#href=\"styles.css\"#href=\"v/$V/styles.css\"#; s#src=\"src/app.js\"#src=\"v/$V/src/app.js\"#; s#content=\"dev\"#content=\"$V\"#" _site/index.html
+          grep -q "v/$V/src/app.js" _site/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

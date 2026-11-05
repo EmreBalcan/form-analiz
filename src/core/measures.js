@@ -152,7 +152,7 @@ export const M = {
   },
   /** Omuzun öne yuvarlanması: omuzun kalça–kulak çizgisinden öne sapması (ölçek birimi). */
   shoulderForward: (P, ctx, s) => {
-    if (P.view !== 'side') return null;
+    if (P.view === 'front') return null;
     const S = P.get(s, 'shoulder'), a = P.anterior();
     const ear = P.get(s, 'ear', 0.5) || P.get(s, 'eye', 0.5);
     const H = P.get(s, 'hip');
@@ -403,14 +403,29 @@ Object.assign(M, {
    * Yana dambıl açış (referans hareket) değişmesin diye orada eski 'shrug' kalır.
    */
   shrugX: (P, ctx, s) => {
-    const r = M.shrug(P, ctx, s);
-    if (r) return r;
-    const base = ctx.calib?.hsd;
-    if (!base || base[s]) return null;
-    const o = s === 'L' ? 'R' : 'L';
-    if (!base[o]) return null;
-    const r2 = M.shrug(P, { ...ctx, calib: { ...ctx.calib, hsd: { ...base, [s]: base[o] } } }, s);
-    return r2 && { ...r2, conf: r2.conf * 0.95, src: `${r2.src} · diğer taraf kalibrasyonu` };
+    // Ölçek kalibrasyonda SABİTLENİR (gövde boyu/1.6 ≈ üst kol boyu; gövde yoksa o anki vücut ölçeği).
+    // Kişi kameraya yaklaşır/uzaklaşırsa gövde boyu oranıyla düzeltilir. Birim 'shrug' ile aynı.
+    const c = ctx.calib;
+    const cur = P.headShoulderPx();
+    if (!c?.hsdPx || !cur || !cur.sides[s]) return null;
+    let base = c.hsdPx[s];
+    let cross = false;
+    if (!base) { base = c.hsdPx[s === 'L' ? 'R' : 'L']; cross = true; }
+    if (!base) return null;
+    const S0 = Number.isFinite(c.torsoLen0) ? c.torsoLen0 / 1.6 : c.scale0;
+    if (!Number.isFinite(S0) || S0 <= 0) return null;
+    const k = Number.isFinite(c.torsoLen0) && Number.isFinite(cur.torsoLen) && cur.torsoLen > 0 ? c.torsoLen0 / cur.torsoLen : 1;
+    const vals = [];
+    for (const name of ['kulak', 'göz', 'ağız', 'burun']) {
+      const cv = cur.sides[s][name], b = base[name];
+      if (Number.isFinite(cv) && Number.isFinite(b) && b / S0 > 0.1) vals.push({ name, v: (b - cv * k) / S0 });
+    }
+    if (!vals.length) return null;
+    const [p1, p2] = vals;
+    let conf = p1.name === 'burun' ? 0.6 : 0.9;
+    if (p2 && Math.abs(p1.v - p2.v) > 0.08) conf *= 0.7;
+    if (cross) conf *= 0.95;
+    return { v: p1.v, conf, src: `omuz–${p1.name}${p2 ? ` (+${p2.name})` : ''}${cross ? ' · diğer taraf kalibrasyonu' : ''}` };
   },
   /** Dirsekler arası mesafe / omuz genişliği (önden). Press'te dirsekler yanda olmalı (geniş). */
   elbowSpread: (P) => {

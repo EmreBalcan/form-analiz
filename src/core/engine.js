@@ -227,6 +227,22 @@ export class FormEngine {
         if (vals.length >= Math.max(3, hsdAll.length * 0.4)) calib.hsd[s][n] = median(vals);
       }
     }
+    // piksel sürümü + sabit ölçek (shrugX için; yana dambıl açışın kullandığı 'shrug' etkilenmez)
+    const pxAll = frames.map((f) => f.P.headShoulderPx()).filter(Boolean);
+    calib.hsdPx = {};
+    for (const s of ['L', 'R']) {
+      const names = new Set();
+      pxAll.forEach((h) => h.sides[s] && Object.keys(h.sides[s]).forEach((n) => names.add(n)));
+      if (!names.size) continue;
+      calib.hsdPx[s] = {};
+      for (const n of names) {
+        const vals = pxAll.map((h) => h.sides[s]?.[n]).filter(Number.isFinite);
+        if (vals.length >= Math.max(3, pxAll.length * 0.4)) calib.hsdPx[s][n] = median(vals);
+      }
+    }
+    const tl = pxAll.map((h) => h.torsoLen).filter(Number.isFinite);
+    calib.torsoLen0 = tl.length >= Math.max(3, pxAll.length * 0.6) ? median(tl) : NaN;
+    calib.scale0 = median(frames.map((f) => f.P.scale()).filter(Number.isFinite));
     this.calib = calib;
     // kalibrasyona göre ölçülen kuralların taban değerleri
     const ctx2 = { ...ctx, calib };
@@ -283,6 +299,8 @@ export class FormEngine {
       if (rule.relative === 'range') {
         // tekrar boyunca toplam hareket aralığı (max − min); başlangıç noktasından bağımsız
         if (!rep) continue;
+        // rangeMinConf: aralığa yalnızca güvenilir okumalar girer (kural bazlı, isteğe bağlı)
+        if (rule.rangeMinConf && r.conf < rule.rangeMinConf) continue;
         const rk = `${rule.id}|${key}`;
         let g = rep.range.get(rk);
         if (!g || g.src !== r.src) { g = { min: v, max: v, src: r.src }; rep.range.set(rk, g); }

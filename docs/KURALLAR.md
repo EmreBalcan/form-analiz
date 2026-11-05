@@ -59,7 +59,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 - **Kamera:** yandan — Kamera yanda, sehpa hizasında. Omuz, dirsek, bilek ve kalça görünmeli.
 - **Başlangıç:** dambıllar yukarıda, kollar düz
-- **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.5 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
+- **Tekrar:** Bar/bilek yüksekliği: 1.3 → 0.5 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
@@ -83,40 +83,43 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Sırt pedden ayrıldı — gövdeyle itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.07 (vücut ölçeği) · ret > 0.12 (vücut ölçeği) | tüm tekrar | tümü |
 | Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | Uyarı | kalibrasyona göre uyarı > 0.18 (vücut ölçeği) | tepe/dip noktası | yandan |
 | Dirsekler omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.15 (vücut ölçeği) · ret < -0.35 (vücut ölçeği) | tüm tekrar | tümü |
 | Ön kollar itiş yönünde değil — bilek dirsekle aynı hizada olmalı | Uyarı | uyarı < 55° | hedefe giderken, dönüşte | yandan |
 
 ### 4. Pec Deck Açış (Pec Deck Fly)
 
-- **Kamera:** önden — Kamerayı tam karşına, göğüs hizasına koy. İki kol da açıkken kadrajda kalmalı.
-- **Başlangıç:** kollar açık, göğüs gergin
-- **Tekrar:** Eller arası mesafe: 2.3 → 0.9 · hedefe ulaşmazsa: "Kollar önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
+- **Kamera:** yandan / çapraz — Kamerayı yanına veya hafif yan çaprazına (~30°), omuz hizasına koy. Göğüs, gövde ve omuz her ikisinde de ölçülür; dirsek açısı yan çaprazdan tekrarı reddedebilir, tam yandan yalnızca uyarır (dirsek o açıda derinlikte bükülür).
+- **Başlangıç:** kollar yanlarda açık, göğüs önde
+- **Tekrar:** Kolların önde birleşmesi: 0.5 → 1.15 · hedefe ulaşmazsa: "Kollar önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek açısı değişti — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 20° · ret > 35° | tüm tekrar | tümü |
+| Dirsek açısı değişti — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 25° · ret > 40° | tüm tekrar | ret: çapraz |
+| Dirsekler fazla büküldü — hareket press’e döndü | **Kritik** | uyarı < 125° · ret < 110° | tepe/dip noktası | ret: çapraz |
 | Dirsekler omuz seviyesinin üstüne çıktı | **Kritik** | uyarı < -0.25 (vücut ölçeği) · ret < -0.45 (vücut ölçeği) | tüm tekrar | tümü |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | tümü |
-| Sırt pedden ayrıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Kollar eşit hareket etmiyor — bir taraf geride kaldı | **Kritik** | uyarı > 0.3 (vücut ölçeği) · ret > 0.55 (vücut ölçeği) | tüm tekrar | önden |
+| Dirsekler göğüs hizasının altına düştü | Uyarı | uyarı > 0.6 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | **Kritik** | kalibrasyona göre uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | yandan/çapraz |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
+| Gövde öne-arkaya sallandı — sırtını pedde sabit tut | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
+| Sırt pedden ayrıldı / gövde öne eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
 
 ### 5. Şınav (Push-up)
 
 - **Kamera:** yandan — Kamerayı yere yakın, vücudunun yanına koy. Baştan ayağa kadar tüm vücut görünsün.
 - **Başlangıç:** kollar düz, plank pozisyonu
-- **Tekrar:** Omuz yüksekliği: 1.55 → 0.85 · hedefe ulaşmazsa: "Yeterince inilmedi — dirsekler en az 90° bükülmeli" · dönmezse: "Kollar yukarıda tam açılmadı"
-- **Tempo (uyarı):** hedefe gidiş ≥ 500 ms
+- **Tekrar:** Omuz yüksekliği: 1.4 → 1 · hedefe ulaşmazsa: "Yeterince inilmedi — göğsünü yere biraz daha yaklaştır" · dönmezse: "Kollar yukarıda tam açılmadı"
+- **Tempo (uyarı):** hedefe gidiş ≥ 300 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kalça çöktü — omuz, kalça ve ayak bileği düz bir çizgide olmalı | **Kritik** | uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
-| Kalça fazla yukarıda — vücudu düz tut | **Kritik** | uyarı < -15° · ret < -25° | tüm tekrar | ret: yandan |
-| Dirsekler gövdeye 90° açıldı — 45° civarında tut | **Kritik** | uyarı > 70° · ret > 85° | tepe/dip noktası | ret: yandan |
-| Baş gövde hizasından çıktı — boynunu nötr tut | Uyarı | uyarı > 35° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı — kürek kemiklerini aşağı tut | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
+| Kalça çöktü — omuz, kalça ve ayak bileği düz bir çizgide olmalı | **Kritik** | uyarı > 15° · ret > 26° | tüm tekrar | ret: yandan |
+| Kalça fazla yukarıda — vücudu düz tut | **Kritik** | uyarı < -20° · ret < -34° | tüm tekrar | ret: yandan |
+| Dirsekler gövdeye 90° açıldı — 45° civarında tut | **Kritik** | uyarı > 80° · ret > 95° | tepe/dip noktası | ret: yandan |
+| Baş gövde hizasından çıktı — boynunu nötr tut | Uyarı | uyarı > 45° | tüm tekrar | ret: yandan |
+| Omuzlar kulağa doğru kalktı — kürek kemiklerini aşağı tut | **Kritik** | uyarı > 0.15 (vücut ölçeği) · ret > 0.25 (vücut ölçeği) | tüm tekrar | tümü |
 
 ## Sırt
 
@@ -252,7 +255,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kollar omuz seviyesinin üstüne çıktı | **Kritik** | uyarı > 98° · ret > 108° | tepe/dip noktası | tümü |
+| Kollar omuz seviyesinin üstüne çıktı | **Kritik** | uyarı > 100° · ret > 118° | tepe/dip noktası | tümü |
 | Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 132° · ret < 108° | tüm tekrar | tümü |
 | Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 25° · ret > 40° | tüm tekrar | tümü |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
@@ -273,8 +276,8 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 |---|---|---|---|---|
 | Kollar omuz hizasının altına düştü | **Kritik** | uyarı > 0.45 (vücut ölçeği) · ret > 0.7 (vücut ölçeği) | tüm tekrar | tümü |
 | Kollar omuzun üstüne çıktı | Uyarı | uyarı < -0.4 (vücut ölçeği) | tüm tekrar | tümü |
-| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 15° · ret > 28° | tüm tekrar | tümü |
-| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 140° · ret < 120° | tüm tekrar | tümü |
+| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 24° · ret > 40° | tüm tekrar | tümü |
+| Dirsekler fazla büküldü — kollar hafif bükük ve sabit olmalı | **Kritik** | uyarı < 125° · ret < 105° | tüm tekrar | tümü |
 | Gövde öne-arkaya sallandı — göğsünü pedden ayırma | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
@@ -710,7 +713,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 - **Kamera:** yandan — Kamera yanda, sehpa hizasında.
 - **Başlangıç:** kollar yukarıda düz
-- **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
+- **Tekrar:** Bar/bilek yüksekliği: 1.3 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
@@ -728,22 +731,27 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 - **Kamera:** önden — Kamerayı karşına koy; kollar açıkken eller kadrajda kalmalı.
 - **Başlangıç:** kollar aşağıda ve yanlarda açık
-- **Tekrar:** Eller arası mesafe: 2.2 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
+- **Tekrar:** Eller arası mesafe: 1.85 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 20° · ret > 35° | tüm tekrar | tümü |
+| Dirsek açısı değişti — kollar hafif bükülü sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 45° | tüm tekrar | tümü |
 | Eller üst göğüs hizasına kadar kaldırılmadı | Uyarı | fazdaki en iyi değer uyarı > 1.1 (vücut ölçeği) | tepe/dip noktası | tümü |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
-| Gövde ileri-geri sallandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
+| Gövde öne-arkaya sallandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
+| Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
+| Gövde öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı < -0.07 (vücut ölçeği) · ret < -0.13 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Gövde yana doğru kaydı/eğildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 10° | tüm tekrar | önden |
+| Dizler bükülerek yaylanıldı — bacaktan momentum alındı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
+| Vücut aşağı-yukarı yaylandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 0.1 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | tümü |
 | Kollar eşit hareket etmiyor — bir taraf geride kaldı | **Kritik** | uyarı > 0.35 (vücut ölçeği) · ret > 0.6 (vücut ölçeği) | tüm tekrar | önden |
 
 ### 47. Yukarıdan Aşağı Kablo Açışı (High to Low Cable Fly)
 
 - **Kamera:** önden — Kamerayı karşına koy; kollar yukarıda açıkken eller kadrajda kalmalı.
 - **Başlangıç:** kollar yukarıda ve yanlarda açık
-- **Tekrar:** Eller arası mesafe: 2.2 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
+- **Tekrar:** Eller arası mesafe: 1.85 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
@@ -773,16 +781,16 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 - **Kamera:** yandan — Kamera yere yakın, yanda. Baştan ayağa görünmeli.
 - **Başlangıç:** kollar düz, ayaklar yüksekte
-- **Tekrar:** Omuz yüksekliği: 1.5 → 0.8 · hedefe ulaşmazsa: "Yeterince inilmedi" · dönmezse: "Kollar yukarıda tam açılmadı"
-- **Tempo (uyarı):** hedefe gidiş ≥ 500 ms
+- **Tekrar:** Omuz yüksekliği: 1.35 → 0.95 · hedefe ulaşmazsa: "Yeterince inilmedi — göğsünü biraz daha indir" · dönmezse: "Kollar yukarıda tam açılmadı"
+- **Tempo (uyarı):** hedefe gidiş ≥ 300 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kalça çöktü — omuz, kalça ve ayak bileği düz bir çizgide olmalı | **Kritik** | uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
-| Kalça fazla yukarıda — vücudu düz tut | **Kritik** | uyarı < -15° · ret < -25° | tüm tekrar | ret: yandan |
-| Dirsekler gövdeye 90° açıldı | **Kritik** | uyarı > 70° · ret > 85° | tepe/dip noktası | ret: yandan |
-| Baş gövde hizasından çıktı — boynunu nötr tut | Uyarı | uyarı > 35° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı — kürek kemiklerini aşağı tut | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
+| Kalça çöktü — omuz, kalça ve ayak bileği düz bir çizgide olmalı | **Kritik** | uyarı > 15° · ret > 26° | tüm tekrar | ret: yandan |
+| Kalça fazla yukarıda — vücudu düz tut | **Kritik** | uyarı < -20° · ret < -34° | tüm tekrar | ret: yandan |
+| Dirsekler gövdeye 90° açıldı | **Kritik** | uyarı > 80° · ret > 95° | tepe/dip noktası | ret: yandan |
+| Baş gövde hizasından çıktı — boynunu nötr tut | Uyarı | uyarı > 45° | tüm tekrar | ret: yandan |
+| Omuzlar kulağa doğru kalktı — kürek kemiklerini aşağı tut | **Kritik** | uyarı > 0.15 (vücut ölçeği) · ret > 0.25 (vücut ölçeği) | tüm tekrar | tümü |
 
 ## Triceps
 

@@ -324,6 +324,7 @@ $('mirrorToggle').onchange = applyMirror;
 $('cameraSelect').onchange = () => { if (running && stream) startCamera(); };
 $('modelSelect').onchange = () => { if (running && stream) startCamera(); };
 
+$('appVersion').textContent = `sürüm ${document.querySelector('meta[name="app-version"]')?.content || 'dev'}`;
 applyMirror();
 selectExercise(def.id);
 listCameras();
