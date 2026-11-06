@@ -164,15 +164,18 @@ const raiseMetric = () => ({
 const raiseTempo = { minOutMs: 450, outText: 'Kollar savrularak kaldırıldı — yavaş ve kontrollü kaldır', minBackMs: 600, backText: 'Kollar hızlı bırakıldı — kontrollü indir' };
 
 // Kabloyla yan açış ve yana dambıl açış TEK tanımdan üretilir: tüm kontroller birebir aynı.
-// Tek fark: dambılda iki kol birden çalışır — her iki kol da hedefe ulaşmalı (en geride kalan kol sayılır)
-// ve iki kol aynı yükseklikte kalkmalı.
+// Tek fark: dambılda iki kol birden istenir — tekrar, en yükseğe kalkan kola göre sayılır; bir kol geride
+// kalırsa veya tek kol kaldırılırsa tekrar SAYILIR ama 'iki kolu birden kaldır' uyarısı verilir.
 const sideRaiseDef = (bothArms) => ({
   plane: 'frontal', view: 'front', sides: bothArms ? 'both' : 'single', required: ['shoulder', 'elbow', 'wrist'],
-  metric: bothArms ? { ...raiseMetric(), agg: 'minProgress' } : raiseMetric(),
+  metric: bothArms ? { ...raiseMetric(), agg: 'maxProgress' } : raiseMetric(),
   tempo: raiseTempo, useProfile: true, shrugGate: 0.06,
   rules: [
     ...raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50], shrugOpts: { allSides: true, warn: 0.07, reject: 0.12, raiseAllowance: 0.06 } }),
-    ...(bothArms ? [R.symmetryArm()] : []),
+    ...(bothArms ? [{
+      id: 'both-arms', measure: 'armElevDiff', op: '>', warn: 15, minMs: 250, views: ['front', 'oblique'],
+      label: 'İki kol birlikte', text: 'İki kolu birden kaldır — kollar aynı yükseklikte kalkmalı', cue: 'İki kolu birden kaldır',
+    }] : []),
   ],
 });
 const squatRules = ({ leanWarn = 50, leanReject = 65, torso = true, heel = true } = {}) => [
@@ -238,7 +241,10 @@ export const EXERCISES = [
     metric: { fn: 'wristAnt', start: 0.6, target: 1.55, label: 'Kol uzanması', romText: 'Kollar tam uzatılmadı', returnText: 'Tutamaklar göğüs hizasına kadar geri gelmedi' },
     tempo: { minBackMs: 650, backText: 'Ağırlık hızlı bırakıldı — kontrollü geri gel' },
     rules: [
-      R.sway({ warn: 8, reject: 15, text: 'Sırt pedden ayrıldı — gövdeyle itildi' }),
+      R.sway({ warn: 4, reject: 8, rejectConf: 0.5, text: 'Sırt pedden ayrıldı — gövdeyle itildi' }),
+      R.leanDrift({ warn: 5, reject: 9, rejectConf: 0.5, text: 'Sırt pedden ayrılıp öne geldi — sırtını pede yasla' }),
+      { id: 'upright', measure: 'torsoLean', op: '>', warn: 8, reject: 15, bestView: 'side', minMs: 250, label: 'Dik oturma (sırt pedde)', text: 'Gövde öne eğik — dik otur, sırtını pede yasla', cue: 'Dik otur' },
+      { id: 'recline', measure: 'torsoLean', op: '<', warn: -25, minMs: 300, label: 'Aşırı geriye yaslanma', text: 'Gövde fazla geriye yatık', cue: 'Dik otur' },
       R.shrug({ warn: 0.07, reject: 0.12, text: 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut' }),
       R.shoulderRoll({ warn: 0.18, phase: ['peak'] }),
       { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.15, reject: -0.35, minMs: 200, label: 'Dirsek yüksekliği', text: 'Dirsekler omuz hizasının üstüne çıktı', cue: 'Dirseklerini omuzun biraz altında tut' },

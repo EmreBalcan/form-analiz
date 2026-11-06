@@ -96,13 +96,14 @@ function ruleCue(text) {
 function onEngineEvent(e) {
   if (e.type === 'cue') {
     showCue(e.text, e.level);
-    if (!e.silent) speaker.say(e.cue, e.level === 'critical' ? 3 : 2);
+    // sesli komut yalnızca kırmızı (tekrarı reddeden) hatalar için; uyarılar yalnızca ekranda yazılır
+    if (!e.silent && e.level === 'critical') speaker.say(e.cue, 3);
   } else if (e.type === 'rep') {
     el.ok.textContent = String(e.accepted);
     el.bad.textContent = String(e.rejected);
     addRep(e.rep);
     if (e.rep.ok) {
-      if (!e.rep.hold) speaker.say(String(e.accepted), e.rep.warnings.length ? 2 : 1, 0);
+      if (!e.rep.hold) speaker.say(String(e.accepted), 1, 0);
       if (e.rep.warnings.length) showCue(e.rep.warnings[0], 'warning');
     } else {
       showCue(`Sayılmadı: ${e.rep.reasons[0]}`, 'critical');

@@ -465,7 +465,13 @@ function makeProfile(hide = []) {
   });
   let r = run('chest-press', sequence({ specAt: cp(), reps: 3, view: 'side' }));
   check('göğüs press doğru form: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
-  // göğüs press 2026-11-06'da kullanıcı isteğiyle önceki sürüme döndürüldü (sırt/diklik kuralları yok)
+  r = run('chest-press', sequence({ specAt: cp({ sway: -10 }), reps: 3, view: 'side' }));
+  check('göğüs press: iterken sırt pedden öne geliyor → ret', r.bad === 3 && has(r, 'sırt'), desc(r));
+  r = run('chest-press', sequence({ specAt: cp({ lean: -12 }), reps: 3, view: 'side' }));
+  check('göğüs press: kalibrasyondan sonra öne eğik çalışma → ret', r.bad === 3, desc(r));
+  r = run('chest-press', sequence({ specAt: (u) => ({ ...cp()(u, -1), torsoPitch: -20 }), reps: 3, view: 'side' }));
+  check('göğüs press: baştan beri dik oturmuyor (öne eğik) → ret', r.bad === 3 && has(r, 'dik otur'), desc(r));
+  check('göğüs press: 20° geriye yaslanmış oturma kabul', run('chest-press', sequence({ specAt: (u) => ({ ...cp()(u, -1), torsoPitch: 20 }), reps: 3, view: 'side' })).ok === 3);
   r = run('chest-press', sequence({ specAt: cp(), reps: 4, view: 'side', noise: 0.004, seed: 61 }));
   check('göğüs press gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
   const row2 = (o = {}) => (u) => ({
@@ -487,7 +493,9 @@ function makeProfile(hide = []) {
   let r = run('lateral-raise', sequence({ specAt: two(), reps: 3, view: 'front' }), { profile: prof });
   check('iki kol birlikte doğru: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
   r = run('lateral-raise', sequence({ specAt: two({ lagTop: 62 }), reps: 3, view: 'front' }), { profile: prof });
-  check('bir kol omuz hizasına çıkmıyor → ret (her kol kablodaki gibi tam kalkmalı)', r.bad === 3 && has(r, 'omuz hizasına'), desc(r));
+  check('bir kol geride kalıyor → tekrar SAYILIR, ‘iki kolu birden kaldır’ uyarısı', r.ok === 3 && hasW(r, 'iki kolu birden'), desc(r));
+  r = run('lateral-raise', sequence({ specAt: (u, k) => ({ arms: { L: { abd: lerp(12, 88, u), flex: 15, elbow: 165 }, R: { abd: 10, elbow: 170 } } }), reps: 3, view: 'front' }), { profile: prof });
+  check('tek kolla kaldırınca → tekrar sayılır + uyarı', r.ok === 3 && hasW(r, 'iki kolu birden'), desc(r));
   r = run('lateral-raise', sequence({ specAt: two({ held: 0.05 }), reps: 3, view: 'front' }), { profile: prof });
   const rc = run('cable-lateral-raise', sequence({ specAt: (u, k) => ({ shrug: k >= 0 ? 0.05 : 0, arms: { L: { abd: 8, elbow: 170 }, R: { abd: lerp(12, 88, u), flex: 15, elbow: 165 } } }), reps: 3, view: 'front' }), { profile: prof });
   check('kalkık omuz: yana açış ve kablo aynı kararı veriyor (ret)', r.bad === 3 && rc.bad === 3 && has(r, 'kulağa') && has(rc, 'kulağa'), `${desc(r)} || ${desc(rc)}`);
