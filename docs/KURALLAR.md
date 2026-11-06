@@ -82,11 +82,8 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Sırt pedden ayrıldı — gövdeyle itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 4° · ret > 8° | tüm tekrar | ret: yandan |
-| Sırt pedden ayrılıp öne geldi — sırtını pede yasla | **Kritik** | kalibrasyona göre uyarı > 5° · ret > 9° | tüm tekrar | ret: yandan |
-| Gövde öne eğik — dik otur, sırtını pede yasla | **Kritik** | uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Gövde fazla geriye yatık | Uyarı | uyarı < -25° | tüm tekrar | tümü |
-| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.07 (vücut ölçeği) · ret > 0.12 (vücut ölçeği) | sürekli | tümü |
+| Sırt pedden ayrıldı — gövdeyle itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.07 (vücut ölçeği) · ret > 0.12 (vücut ölçeği) | tüm tekrar | tümü |
 | Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | Uyarı | kalibrasyona göre uyarı > 0.18 (vücut ölçeği) | tepe/dip noktası | yandan |
 | Dirsekler omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.15 (vücut ölçeği) · ret < -0.35 (vücut ölçeği) | tüm tekrar | tümü |
 | Ön kollar itiş yönünde değil — bilek dirsekle aynı hizada olmalı | Uyarı | uyarı < 55° | hedefe giderken, dönüşte | yandan |

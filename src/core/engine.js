@@ -81,6 +81,12 @@ export class FormEngine {
       const s = this.activeSide && perSide[this.activeSide] !== undefined ? this.activeSide : keys[0];
       return { v: perSide[s], conf: 1, perSide, side: s };
     }
+    if (m.agg === 'minProgress') {
+      // iki kol birden: en geride kalan kol belirler (her kol tek başına hedefe ulaşmalı)
+      const prog = (x) => (x - m.start) / (m.target - m.start);
+      const s = keys.reduce((a, k) => (prog(perSide[k]) < prog(perSide[a]) ? k : a), keys[0]);
+      return { v: perSide[s], conf: 1, perSide, side: s };
+    }
     const v = keys.reduce((a, k) => a + perSide[k], 0) / keys.length;
     return { v, conf: 1, perSide };
   }

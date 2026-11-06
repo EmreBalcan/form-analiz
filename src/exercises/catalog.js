@@ -163,6 +163,18 @@ const raiseMetric = () => ({
 });
 const raiseTempo = { minOutMs: 450, outText: 'Kollar savrularak kaldırıldı — yavaş ve kontrollü kaldır', minBackMs: 600, backText: 'Kollar hızlı bırakıldı — kontrollü indir' };
 
+// Kabloyla yan açış ve yana dambıl açış TEK tanımdan üretilir: tüm kontroller birebir aynı.
+// Tek fark: dambılda iki kol birden çalışır — her iki kol da hedefe ulaşmalı (en geride kalan kol sayılır)
+// ve iki kol aynı yükseklikte kalkmalı.
+const sideRaiseDef = (bothArms) => ({
+  plane: 'frontal', view: 'front', sides: bothArms ? 'both' : 'single', required: ['shoulder', 'elbow', 'wrist'],
+  metric: bothArms ? { ...raiseMetric(), agg: 'minProgress' } : raiseMetric(),
+  tempo: raiseTempo, useProfile: true, shrugGate: 0.06,
+  rules: [
+    ...raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50], shrugOpts: { allSides: true, warn: 0.07, reject: 0.12, raiseAllowance: 0.06 } }),
+    ...(bothArms ? [R.symmetryArm()] : []),
+  ],
+});
 const squatRules = ({ leanWarn = 50, leanReject = 65, torso = true, heel = true } = {}) => [
   torso && R.leanMax({ warn: leanWarn, reject: leanReject, phase: ['peak', 'back'], text: 'Gövde fazla öne eğildi — göğsünü dik tut' }),
   torso && {
@@ -220,17 +232,13 @@ export const EXERCISES = [
     startText: 'dambıllar yukarıda, kollar düz', metric: { ...benchMetric(0.8), start: 1.3, romText: 'Dambıllar yeterince indirilmedi' }, tempo: benchTempo, rules: benchRules({ lowBar: [0.05, 1.2] }),
   }),
   ex(3, 'chest-press', 'Göğüs Press Makinesi', 'Chest Press', 'Göğüs', 'chest-press.webp', {
-    useProfile: true,
     posture: 'seated', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı makinenin yanına, omuz hizasına koy.',
     startText: 'tutamaklar göğüs hizasında',
     metric: { fn: 'wristAnt', start: 0.6, target: 1.55, label: 'Kol uzanması', romText: 'Kollar tam uzatılmadı', returnText: 'Tutamaklar göğüs hizasına kadar geri gelmedi' },
     tempo: { minBackMs: 650, backText: 'Ağırlık hızlı bırakıldı — kontrollü geri gel' },
     rules: [
-      R.sway({ warn: 4, reject: 8, rejectConf: 0.5, text: 'Sırt pedden ayrıldı — gövdeyle itildi' }),
-      R.leanDrift({ warn: 5, reject: 9, rejectConf: 0.5, text: 'Sırt pedden ayrılıp öne geldi — sırtını pede yasla' }),
-      { id: 'upright', measure: 'torsoLean', op: '>', warn: 8, reject: 15, bestView: 'side', minMs: 250, label: 'Dik oturma (sırt pedde)', text: 'Gövde öne eğik — dik otur, sırtını pede yasla', cue: 'Dik otur' },
-      { id: 'recline', measure: 'torsoLean', op: '<', warn: -25, minMs: 300, label: 'Aşırı geriye yaslanma', text: 'Gövde fazla geriye yatık', cue: 'Dik otur' },
+      R.sway({ warn: 8, reject: 15, text: 'Sırt pedden ayrıldı — gövdeyle itildi' }),
       R.shrug({ warn: 0.07, reject: 0.12, text: 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut' }),
       R.shoulderRoll({ warn: 0.18, phase: ['peak'] }),
       { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.15, reject: -0.35, minMs: 200, label: 'Dirsek yüksekliği', text: 'Dirsekler omuz hizasının üstüne çıktı', cue: 'Dirseklerini omuzun biraz altında tut' },
@@ -470,12 +478,9 @@ export const EXERCISES = [
     ],
   }),
   ex(12, 'lateral-raise', 'Yana Dambıl Açış', 'Dumbbell Lateral Raise', 'Omuz', 'lateral-raise.webp', {
-    plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
+    ...sideRaiseDef(true),
     setup: 'Kamerayı tam karşına koy; kollar yandayken eller kadrajda kalmalı.',
-    startText: 'kollar yanda aşağıda', metric: raiseMetric(), tempo: raiseTempo,
-    // silkme: kalıcı vücut ölçümüne göre + daha hassas (kulak → göz → ağız → burun yedekli)
-    useProfile: true, shrugGate: 0.06,
-    rules: [...raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50], shrugOpts: { warn: 0.07, reject: 0.12, raiseAllowance: 0.06 } }), R.symmetryArm()],
+    startText: 'kollar yanda aşağıda',
   }),
   ex(13, 'front-raise', 'Öne Dambıl Kaldırış', 'Front Raise', 'Omuz', 'front-raise.webp', {
     plane: 'sagittal', view: 'side', viewAlt: ['front'], required: ['shoulder', 'elbow', 'wrist'],
@@ -520,11 +525,9 @@ export const EXERCISES = [
     ],
   }),
   ex(59, 'cable-lateral-raise', 'Kabloyla Yan Omuz Açış', 'Cable Lateral Raise', 'Omuz', 'cable-lateral-raise.png', {
-    plane: 'frontal', view: 'front', sides: 'single', required: ['shoulder', 'elbow', 'wrist'],
+    ...sideRaiseDef(false),
     setup: 'Kamerayı tam karşına koy.',
-    // silkme yana dambıl açışla aynı; tek kollu olsa da iki omuz ölçülür
-    startText: 'çalışan kol aşağıda', metric: raiseMetric(), tempo: raiseTempo, useProfile: true, shrugGate: 0.06,
-    rules: raiseRules({ elbowMin: [125, 100], elbowFixed: [30, 50], shrugOpts: { allSides: true, warn: 0.07, reject: 0.12, raiseAllowance: 0.06 } }),
+    startText: 'çalışan kol aşağıda',
   }),
   ex(60, 'rear-delt-fly', 'Öne Eğilerek Arka Omuz Açış', 'Bent Over Rear Delt Fly', 'Omuz', 'rear-delt-fly.png', {
     posture: 'hinge', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
