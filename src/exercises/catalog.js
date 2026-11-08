@@ -4,11 +4,14 @@
 // Kaynaklar ve eşiklerin gerekçesi: docs/KURALLAR.md
 import { R } from './rules.js';
 import { M } from '../core/measures.js';
+import { CAMERA } from './camera.js';
 
 const ex = (no, id, tr, en, group, img, spec) => ({
   no, id, tr, en, group, img: `assets/exercises/${img}`,
   mode: 'rep', sides: 'both', plane: 'sagittal', posture: 'upright', view: 'side',
   ...spec,
+  // omuz hareketleri hariç: açık kamera yerleşimi + kısmi görünürlük (bir uzuv görünmese de tekrar sayılır)
+  ...(group === 'Omuz' ? {} : { ...CAMERA[id], partialOk: true }),
   rules: (spec.rules || []).flat().map((r) => {
     if (!r || r.measure !== 'shrug') return r;
     if (spec.useProfile) return { ...r, measure: 'shrugP', phase: 'always', rejectConf: 0.55 }; // kalıcı vücut ölçümüne göre + set başına göre (burun yedeği de reddedebilir)
@@ -30,10 +33,10 @@ const bothViews = (r, add) => [r, offView(r, add)];
 const SHRUG_REFERENCE = ['lateral-raise', 'cable-lateral-raise'];
 
 // ---------------------------------------------------------------- ortak gruplar
-const curlRules = ({ forward = true, flare = true, sway = true, drift = [12, 20] } = {}) => [
+const curlRules = ({ forward = true, flare = true, sway = true, drift = [14, 23] } = {}) => [
   drift && bothViews(R.elbowDrift({ warn: drift[0], reject: drift[1] }), [14, 16]),
-  forward && bothViews(R.elbowForward({ warn: 18, reject: 30 }), [12, 12]),
-  flare && bothViews(R.elbowFlare({ warn: 18, reject: 30 }), [10, 10]),
+  forward && bothViews(R.elbowForward({ warn: 20, reject: 33 }), [12, 12]),
+  flare && bothViews(R.elbowFlare({ warn: 20, reject: 33 }), [10, 10]),
   sway && R.sway({ warn: 5, reject: 10, rejectConf: 0.5, text: 'Gövde geriye/öne sallandı — ağırlık bel ve kalçadan kaldırıldı' }),
   sway && R.leanDrift({ warn: 7, reject: 12, text: 'Gövde başlangıçtaki dik duruştan öne/arkaya eğildi' }),
   R.shrug({ warn: 0.1, reject: 0.17 }),
@@ -47,9 +50,9 @@ const curlMetric = (target = 70) => ({
 const curlTempo = { minOutMs: 350, outText: 'Ağırlık savrularak kaldırıldı — kontrollü kaldır', minBackMs: 600, backText: 'Ağırlık hızlı bırakıldı — en az 1 sn’de indir' };
 
 const pushdownRules = () => [
-  bothViews(R.elbowDrift({ warn: 10, reject: 18, text: 'Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı' }), [14, 16]),
-  bothViews(R.elbowForward({ warn: 20, reject: 32, text: 'Dirsekler öne kaçtı — omuz ve sırt devreye girdi' }), [12, 12]),
-  bothViews(R.elbowFlare({ warn: 20, reject: 32, text: 'Dirsekler yana açıldı — gövdene yakın tut' }), [10, 10]),
+  bothViews(R.elbowDrift({ warn: 14, reject: 24, text: 'Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı' }), [14, 16]),
+  bothViews(R.elbowForward({ warn: 25, reject: 38, text: 'Dirsekler öne kaçtı — omuz ve sırt devreye girdi' }), [12, 12]),
+  bothViews(R.elbowFlare({ warn: 25, reject: 38, text: 'Dirsekler yana açıldı — gövdene yakın tut' }), [10, 10]),
   R.leanMax({ warn: 25, reject: 40, text: 'Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı', label: 'Öne eğilme (en fazla ~20°)' }),
   R.sway({ warn: 6, reject: 11, rejectConf: 0.5, text: 'Gövdeyle bastırıldı — vücut ağırlığı kullanıldı' }),
   R.leanDrift({ warn: 8, reject: 14, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
@@ -209,6 +212,19 @@ const lungeRules = ({ leanWarn = 20, leanReject = 35 } = {}) => [
 
 const sw = (spec) => spec;
 
+// Kablo açış ana ölçümü: pec deck ile aynı mantık (yan/çapraz → bilek öne uzanması, önden → eller arası mesafe)
+function flyMetric(spreadStart, spreadTarget) {
+  return (P, ctx) => {
+    if (P.view !== 'front') {
+      const sides = P.near && P.hasSide(P.near, ['shoulder', 'wrist']) ? [P.near] : P.sidesFor(['shoulder', 'wrist']);
+      const vals = sides.map((s) => M.wristAnt(P, ctx, s)).filter((r) => r && r.conf >= 0.35);
+      if (vals.length) return { v: Math.max(...vals.map((r) => r.v)), conf: Math.max(...vals.map((r) => r.conf)), src: 'bilek öne uzanması' };
+    }
+    const w = M.wristSpread(P);
+    return w ? { v: 0.5 + (spreadStart - w.v) * (0.65 / (spreadStart - spreadTarget)), conf: w.conf, src: 'eller arası mesafe' } : null;
+  };
+}
+
 // Pec deck ana ölçümü: görüşe göre (yan/çapraz → bilek öne uzanması, önden → eller arası mesafe 2.3→0.9 aynı ölçeğe)
 function pecMetric(P, ctx) {
   if (P.view !== 'front') {
@@ -303,7 +319,7 @@ export const EXERCISES = [
     plane: 'transverse', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı karşına koy; kollar açıkken eller kadrajda kalmalı.',
     startText: 'kollar aşağıda ve yanlarda açık',
-    metric: { fn: 'wristSpread', global: true, start: 1.85, target: 0.9, label: 'Eller arası mesafe', romText: 'Eller önde birleştirilmedi', returnText: 'Kollar başlangıca kadar açılmadı' },
+    metric: { fn: flyMetric(1.85, 0.9), global: true, start: 0.5, target: 1.15, label: 'Kolların önde birleşmesi', romText: 'Eller önde birleştirilmedi', returnText: 'Kollar başlangıca kadar açılmadı' },
     tempo: { minBackMs: 650 },
     rules: [
       R.elbowAngleFixed({ warn: 28, reject: 45 }),
@@ -323,7 +339,7 @@ export const EXERCISES = [
     plane: 'transverse', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı karşına koy; kollar yukarıda açıkken eller kadrajda kalmalı.',
     startText: 'kollar yukarıda ve yanlarda açık',
-    metric: { fn: 'wristSpread', global: true, start: 1.85, target: 0.9, label: 'Eller arası mesafe', romText: 'Eller önde birleştirilmedi', returnText: 'Kollar başlangıca kadar açılmadı' },
+    metric: { fn: flyMetric(1.85, 0.9), global: true, start: 0.5, target: 1.15, label: 'Kolların önde birleşmesi', romText: 'Eller önde birleştirilmedi', returnText: 'Kollar başlangıca kadar açılmadı' },
     tempo: { minBackMs: 650 },
     rules: [
       R.elbowAngleFixed({ warn: 20, reject: 35 }),
@@ -607,28 +623,34 @@ export const EXERCISES = [
     metric: { ...curlMetric(65), start: 145 },
     tempo: curlTempo,
     rules: [
-      strict(R.elbowDrift({ warn: 10, reject: 17, text: 'Üst kol pedden kalktı / omuz öne itildi' })),
+      strict(R.elbowDrift({ warn: 12, reject: 20, text: 'Üst kol pedden kalktı / omuz öne itildi' })),
       R.sway({ warn: 8, reject: 14, text: 'Gövdeyle çekildi' }),
       R.shrug({ warn: 0.1, reject: 0.17 }),
     ],
   }),
   ex(63, 'incline-dumbbell-curl', 'Eğimli Sehpa Biceps Curl', 'Incline Dumbbell Curl', 'Biceps', 'incline-dumbbell-curl.png', {
-    posture: 'lying', required: ['shoulder', 'elbow', 'wrist', 'hip'],
-    setup: 'Kamera yanda, sehpa hizasında.',
-    startText: 'kollar aşağı sarkık, düz', metric: curlMetric(75), tempo: curlTempo,
+    // eğimli sehpa: gövde yatık, kalça sehpada/dambılın arkasında kalabilir → kalça zorunlu değil
+    posture: 'seated', required: ['shoulder', 'elbow', 'wrist'],
+    startText: 'kollar tamamen aşağı sarkık, düz',
+    // EN ÖNEMLİ KONTROL: her tekrarda kol tamamen aşağı salınmalı (dirsek ≥ ~150°)
+    metric: { ...curlMetric(78), start: 162, returnText: 'Kol altta tamamen açılmadı — her tekrarda kolu tamamen aşağı sal' },
+    tempo: curlTempo,
     rules: [
-      strict(R.elbowDrift({ warn: 10, reject: 18, text: 'Dirsek öne geldi — üst kol yere dik sarkık kalmalı' })),
-      R.sway({ warn: 7, reject: 13, text: 'Sırt sehpadan kalktı' }),
+      {
+        id: 'full-extension', measure: 'elbowAngle', op: '<', agg: 'extreme', warn: 155, reject: 145, phase: ['back'],
+        label: 'Kolun altta tamamen açılması', text: 'Kol altta tamamen açılmadı — her tekrarda kolu tamamen aşağı sal', cue: 'Kolunu tamamen aşağı sal',
+      },
+      strict(R.elbowDrift({ warn: 16, reject: 27, text: 'Dirsek öne geldi — üst kol yere dik sarkık kalmalı' })),
+      R.sway({ warn: 8, reject: 15, text: 'Sırt sehpadan kalktı' }),
       R.shrug({ warn: 0.12, reject: 0.2 }),
     ],
-  }),
-  ex(64, 'concentration-curl', 'Konsantrasyon Biceps Curl', 'Concentration Curl', 'Biceps', 'concentration-curl.png', {
+  }),  ex(64, 'concentration-curl', 'Konsantrasyon Biceps Curl', 'Concentration Curl', 'Biceps', 'concentration-curl.png', {
     useProfile: true,
     posture: 'seated', sides: 'single', allSides: true, required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamera yanda; çalışan kol kameraya yakın olsun.',
     startText: 'dirsek uylukta, kol düz', metric: curlMetric(70), tempo: curlTempo,
     rules: [
-      strict(R.elbowDrift({ warn: 8, reject: 15, text: 'Dirsek uyluktan kaydı — dirsek sabit kalmalı' })),
+      strict(R.elbowDrift({ warn: 10, reject: 18, text: 'Dirsek uyluktan kaydı — dirsek sabit kalmalı' })),
       R.sway({ warn: 8, reject: 15, text: 'Gövde kaldırılarak çekildi' }),
       R.shrug({ warn: 0.1, reject: 0.17 }),
     ],
@@ -639,7 +661,7 @@ export const EXERCISES = [
     setup: 'Kamera yanda; çalışan kol kameraya yakın olsun.',
     startText: 'kol gövdenin arkasında düz', metric: curlMetric(75), tempo: curlTempo,
     rules: [
-      strict(R.elbowDrift({ warn: 10, reject: 18, text: 'Dirsek öne geldi — kol gövdenin arkasında sabit kalmalı' })),
+      strict(R.elbowDrift({ warn: 12, reject: 21, text: 'Dirsek öne geldi — kol gövdenin arkasında sabit kalmalı' })),
       { id: 'arm-behind', measure: 'armFlex', op: '>', warn: 5, reject: 20, bestView: 'side', minMs: 200, label: 'Kol gövdenin arkasında', text: 'Üst kol gövdenin önüne geçti', cue: 'Dirseğini geride tut' },
       R.sway({ warn: 7, reject: 13 }),
       R.shrug({ warn: 0.1, reject: 0.17 }),
@@ -650,7 +672,7 @@ export const EXERCISES = [
     setup: 'Kamera yanda, sehpa hizasında.',
     startText: 'göğüs pedde, kollar aşağı sarkık', metric: curlMetric(70), tempo: curlTempo,
     rules: [
-      strict(R.elbowDrift({ warn: 10, reject: 18, text: 'Dirsek hareket etti — üst kol yere dik kalmalı' })),
+      strict(R.elbowDrift({ warn: 12, reject: 21, text: 'Dirsek hareket etti — üst kol yere dik kalmalı' })),
       R.sway({ warn: 6, reject: 12, text: 'Göğüs pedden kalktı' }),
       R.shrug({ warn: 0.12, reject: 0.2 }),
     ],
@@ -672,8 +694,8 @@ export const EXERCISES = [
     tempo: { minOutMs: 600, outText: 'Ağırlık hızlı indirildi — kontrollü indir' },
     rules: [
       { id: 'upper-arm-vertical', measure: 'armElev', op: '<', warn: 145, reject: 130, minMs: 200, label: 'Üst kol başın yanında dik', text: 'Dirsekler öne düştü — üst kol başın yanında dik kalmalı', cue: 'Dirseklerini tavana doğru tut' },
-      strict(R.elbowDrift({ warn: 10, reject: 18 })),
-      { id: 'elbow-wide', measure: 'elbowOut', op: '>', warn: 0.35, reject: 0.55, views: ['front'], minMs: 200, label: 'Dirseklerin yana açılması', text: 'Dirsekler yana açıldı — başına yakın tut', cue: 'Dirseklerini içeride tut' },
+      strict(R.elbowDrift({ warn: 14, reject: 24 })),
+      { id: 'elbow-wide', measure: 'elbowOut', op: '>', warn: 0.42, reject: 0.62, views: ['front'], minMs: 200, label: 'Dirseklerin yana açılması', text: 'Dirsekler yana açıldı — başına yakın tut', cue: 'Dirseklerini içeride tut' },
       { id: 'arch', measure: 'torsoPitch', relative: 'rep', op: '<', warn: -7, reject: -13, bestView: 'side', minMs: 150, label: 'Bel kavisi', text: 'Bel aşırı büküldü — karnını sık', cue: 'Karnını sık' },
       R.shrug({ warn: 0.12, reject: 0.2 }),
     ],
@@ -717,7 +739,7 @@ export const EXERCISES = [
     metric: { fn: 'elbowAngle', start: 160, target: 85, label: 'Dirsek açısı', romText: 'Ağırlık alna/başa kadar indirilmedi', returnText: 'Kollar yukarıda tam açılmadı' },
     tempo: { minOutMs: 600 },
     rules: [
-      strict(R.elbowDrift({ warn: 10, reject: 18, text: 'Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı' })),
+      strict(R.elbowDrift({ warn: 14, reject: 24, text: 'Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı' })),
       { id: 'elbow-toward-feet', measure: 'armElev', op: '<', warn: 65, reject: 50, minMs: 200, label: 'Üst kol açısı', text: 'Dirsekler ayaklara doğru kaydı — hareket press’e döndü', cue: 'Dirseklerini geride tut' },
       R.hipLift(),
       R.shrug({ warn: 0.12, reject: 0.2 }),
@@ -731,8 +753,8 @@ export const EXERCISES = [
     tempo: { minBackMs: 600 },
     rules: [
       { id: 'upper-arm-vertical', measure: 'armElev', op: '<', warn: 130, reject: 115, minMs: 200, label: 'Üst kol başın yanında', text: 'Dirsekler aşağı düştü — üst kol başın yanında kalmalı', cue: 'Dirseklerini yukarıda tut' },
-      strict(R.elbowDrift({ warn: 10, reject: 18 })),
-      { id: 'elbow-wide', measure: 'elbowOut', op: '>', warn: 0.35, reject: 0.55, views: ['front'], minMs: 200, label: 'Dirseklerin açılması', text: 'Dirsekler yana açıldı', cue: 'Dirseklerini içeride tut' },
+      strict(R.elbowDrift({ warn: 14, reject: 24 })),
+      { id: 'elbow-wide', measure: 'elbowOut', op: '>', warn: 0.42, reject: 0.62, views: ['front'], minMs: 200, label: 'Dirseklerin açılması', text: 'Dirsekler yana açıldı', cue: 'Dirseklerini içeride tut' },
       R.sway({ warn: 8, reject: 15 }),
       R.shrug({ warn: 0.12, reject: 0.2 }),
     ],

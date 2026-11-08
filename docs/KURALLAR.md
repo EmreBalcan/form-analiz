@@ -39,7 +39,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 1. Düz Bench Press (Bench Press)
 
-- **Kamera:** yandan — Kamerayı sehpanın yanına, sehpa yüksekliğine koy. Baştan kalçaya kadar tüm vücut görünsün.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -57,7 +57,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 2. Eğimli Dambıl Press (Incline Dumbbell Press)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında. Omuz, dirsek, bilek ve kalça görünmeli.
+- **Kamera:** yandan — Telefonu eğimli sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** dambıllar yukarıda, kollar düz
 - **Tekrar:** Bar/bilek yüksekliği: 1.3 → 0.8 · hedefe ulaşmazsa: "Dambıllar yeterince indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -75,7 +75,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 3. Göğüs Press Makinesi (Chest Press)
 
-- **Kamera:** yandan — Kamerayı makinenin yanına, omuz hizasına koy.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, göğüs/omuz hizasında, kameraya yakın kolun makine kolunun önünde kalacağı tarafa koy. Baş, omuz, kalça ve kameraya yakın kol görünsün.
 - **Başlangıç:** tutamaklar göğüs hizasında
 - **Tekrar:** Kol uzanması: 0.6 → 1.55 · hedefe ulaşmazsa: "Kollar tam uzatılmadı" · dönmezse: "Tutamaklar göğüs hizasına kadar geri gelmedi"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
@@ -93,7 +93,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 4. Pec Deck Açış (Pec Deck Fly)
 
-- **Kamera:** yandan / çapraz — Kamerayı yanına veya hafif yan çaprazına (~30°), omuz hizasına koy. Göğüs, gövde ve omuz her ikisinde de ölçülür; dirsek açısı yan çaprazdan tekrarı reddedebilir, tam yandan yalnızca uyarır (dirsek o açıda derinlikte bükülür).
+- **Kamera:** yandan / çapraz — Telefonu makinenin yanına veya hafif yan çaprazına (~30°), göğüs/omuz hizasında koy. Baş, omuz, dirsek ve kalça görünsün.
 - **Başlangıç:** kollar yanlarda açık, göğüs önde
 - **Tekrar:** Kolların önde birleşmesi: 0.5 → 1.15 · hedefe ulaşmazsa: "Kollar önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -113,7 +113,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 5. Şınav (Push-up)
 
-- **Kamera:** yandan — Kamerayı yere yakın, vücudunun yanına koy. Baştan ayağa kadar tüm vücut görünsün.
+- **Kamera:** yandan — Telefonu yere, vücudunun tam yanına, 2-3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** kollar düz, plank pozisyonu
 - **Tekrar:** Omuz yüksekliği: 1.4 → 1 · hedefe ulaşmazsa: "Yeterince inilmedi — göğsünü yere biraz daha yaklaştır" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 300 ms
@@ -130,7 +130,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 6. Lat Çekiş (Lat Pulldown)
 
-- **Kamera:** yandan / önden — Kamerayı karşına, yukarıdaki bar da görünecek şekilde koy.
+- **Kamera:** yandan / çapraz / önden — Telefonu makinenin tam yanına veya ön-arka çaprazına, omuz hizasında koy. Bar yukarıdayken eller, ayrıca omuz ve kalça görünsün (öne-arkaya eğilme yandan ölçülür).
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Bar yüksekliği: -1.5 → -0.4 · hedefe ulaşmazsa: "Bar üst göğse (çene altına) kadar çekilmedi" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -148,7 +148,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 7. Oturarak Kablo Kürek (Seated Cable Row)
 
-- **Kamera:** yandan — Kamerayı yanına, omuz hizasına koy.
+- **Kamera:** yandan — Telefonu kablo makinesinin tam yanına, oturduğun yükseklikte (bel-omuz hizası) koy. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar önde düz, gövde dik
 - **Tekrar:** Dirsek açısı: 155 → 95 · hedefe ulaşmazsa: "Ağırlık gövdeye kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
@@ -165,7 +165,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 8. Barla Eğilerek Kürek (Barbell Row)
 
-- **Kamera:** yandan — Kamera yanda, bel hizasında. Baştan dizlere kadar görünmeli.
+- **Kamera:** yandan — Telefonu tam yanına, bel hizasına, 2-3 m uzağa koy. Baştan dizlere kadar görünsün.
 - **Başlangıç:** öne eğilmiş, kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 155 → 100 · hedefe ulaşmazsa: "Ağırlık gövdeye kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -182,7 +182,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 9. Tek Kol Dambıl Kürek (One Arm Dumbbell Row)
 
-- **Kamera:** yandan — Kamera yanda; çalışan kol kameraya yakın taraf olsun.
+- **Kamera:** yandan — Telefonu çalışan kolun tarafına, tam yanına, bel hizasına koy. Baştan dizlere kadar görünsün.
 - **Başlangıç:** kol aşağıda düz
 - **Tekrar:** Dirsek açısı: 155 → 100 · hedefe ulaşmazsa: "Ağırlık gövdeye kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -199,7 +199,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 10. Destekli Barfiks (Assisted Pull-up)
 
-- **Kamera:** önden — Kamerayı karşına, bar ve eller görünecek şekilde koy.
+- **Kamera:** önden / yandan — Telefonu karşına (veya arkana), bar ve eller görünecek kadar uzağa, göğüs hizasına koy.
 - **Başlangıç:** kollar yukarıda düz asılı
 - **Tekrar:** Çene–bar: -1.8 → 0 · hedefe ulaşmazsa: "Çene barın üstüne çıkmadı" · dönmezse: "Altta kollar tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -309,38 +309,38 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 16. Dambıl Biceps Kıvırma (Dumbbell Curl)
 
-- **Kamera:** yandan / önden — En iyi: kamera yanda (dirsek ve salınım). Önden: dirseğin yana açılması ve omuz silkme.
+- **Kamera:** önden / yandan / çapraz — Telefonu tam karşına, göğüs hizasına, 2 m uzağa koy. Omuzlar, dirsekler ve eller (kollar aşağıdayken de) görünsün. Yandan da çekebilirsin.
 - **Başlangıç:** kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 150 → 70 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 20° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 26° · ret > 36° | tüm tekrar | önden/çapraz |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: yandan |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | önden/çapraz |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: önden |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 28° · ret > 40° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 23° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 39° | tüm tekrar | önden/çapraz |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: yandan |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 32° · ret > 45° | tüm tekrar | önden/çapraz |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: önden |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 30° · ret > 43° | tüm tekrar | yandan/çapraz |
 | Gövde geriye/öne sallandı — ağırlık bel ve kalçadan kaldırıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 10° | tüm tekrar | ret: yandan |
 | Gövde başlangıçtaki dik duruştan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 7° · ret > 12° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
 
 ### 17. Barla Biceps Kıvırma (Barbell Curl)
 
-- **Kamera:** yandan / önden — En iyi: kamera yanda. Önden: dirsek açılması ve simetri.
+- **Kamera:** önden / yandan / çapraz — Telefonu tam karşına, göğüs hizasına, 2 m uzağa koy. Omuzlar, dirsekler ve bar görünsün. Yandan da çekebilirsin.
 - **Başlangıç:** bar aşağıda, kollar düz
 - **Tekrar:** Dirsek açısı: 150 → 70 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 20° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 26° · ret > 36° | tüm tekrar | önden/çapraz |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: yandan |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | önden/çapraz |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: önden |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 28° · ret > 40° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 23° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 39° | tüm tekrar | önden/çapraz |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: yandan |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 32° · ret > 45° | tüm tekrar | önden/çapraz |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: önden |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 30° · ret > 43° | tüm tekrar | yandan/çapraz |
 | Gövde geriye/öne sallandı — ağırlık bel ve kalçadan kaldırıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 10° | tüm tekrar | ret: yandan |
 | Gövde başlangıçtaki dik duruştan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 7° · ret > 12° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
@@ -348,38 +348,38 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 18. Çekiç Kıvırma (Hammer Curl)
 
-- **Kamera:** yandan / önden — En iyi: kamera yanda.
+- **Kamera:** önden / yandan / çapraz — Telefonu tam karşına, göğüs hizasına, 2 m uzağa koy. Omuzlar, dirsekler ve eller görünsün. Yandan da çekebilirsin.
 - **Başlangıç:** kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 150 → 75 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 20° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 26° · ret > 36° | tüm tekrar | önden/çapraz |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: yandan |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | önden/çapraz |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: önden |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 28° · ret > 40° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 23° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 39° | tüm tekrar | önden/çapraz |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: yandan |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 32° · ret > 45° | tüm tekrar | önden/çapraz |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: önden |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 30° · ret > 43° | tüm tekrar | yandan/çapraz |
 | Gövde geriye/öne sallandı — ağırlık bel ve kalçadan kaldırıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 10° | tüm tekrar | ret: yandan |
 | Gövde başlangıçtaki dik duruştan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 7° · ret > 12° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
 
 ### 19. Kablo Biceps Kıvırma (Cable Curl)
 
-- **Kamera:** yandan / önden — Kamera yanda.
+- **Kamera:** yandan / çapraz — Kablo karşında olduğu için telefonu tam yanına veya ön-arka çaprazına (~45°), göğüs hizasına koy. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 150 → 70 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 20° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 26° · ret > 36° | tüm tekrar | önden/çapraz |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: yandan |
-| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | önden/çapraz |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 18° · ret > 30° | tüm tekrar | ret: önden |
-| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 28° · ret > 40° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 23° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 39° | tüm tekrar | önden/çapraz |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: yandan |
+| Dirsek öne kaçtı — üst kol gövdenin yanında kalmalı | **Kritik** | uyarı > 32° · ret > 45° | tüm tekrar | önden/çapraz |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 20° · ret > 33° | tüm tekrar | ret: önden |
+| Dirsek gövdeden uzaklaştı — kol vücudun yanında olmalı | **Kritik** | uyarı > 30° · ret > 43° | tüm tekrar | yandan/çapraz |
 | Gövde geriye/öne sallandı — ağırlık bel ve kalçadan kaldırıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 10° | tüm tekrar | ret: yandan |
 | Gövde başlangıçtaki dik duruştan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 7° · ret > 12° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
@@ -388,19 +388,19 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 20. Kablo Triceps İtiş (Cable Pushdown)
 
-- **Kamera:** yandan / önden — En iyi: kamera yanda (dirsek sabitliği ve gövde eğimi). Önden: dirseklerin açılması.
+- **Kamera:** çapraz / yandan — Telefonu ön-arka çaprazına (yan tarafında ~45° önünde veya arkasında), göğüs hizasına koy. Önden koyma: dirseğini göremez. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** dirsekler 90° bükülü, ön kol yere paralel
 - **Tekrar:** Dirsek açısı: 85 → 160 · hedefe ulaşmazsa: "Kollar altta tam kilitlenmedi — dirseği tamamen aç" · dönmezse: "Yukarıda ön kol yere paralel olana kadar dönülmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 24° · ret > 34° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 32° · ret > 44° | tüm tekrar | önden/çapraz |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: önden |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
@@ -408,7 +408,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 21. Baş Üstü Triceps Açış (Overhead Triceps Extension)
 
-- **Kamera:** yandan / önden — Kamera yanda; kollar yukarıdayken eller kadrajda kalmalı.
+- **Kamera:** çapraz / yandan — Telefonu ön-arka çaprazına (~45°), omuz hizasına koy. Kollar yukarıdayken eller kadrajda kalsın.
 - **Başlangıç:** kollar baş üstünde düz
 - **Tekrar:** Dirsek açısı: 160 → 90 · hedefe ulaşmazsa: "Ağırlık başın arkasına yeterince indirilmedi (dirsek ~90°)" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 600 ms
@@ -416,14 +416,14 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler öne düştü — üst kol başın yanında dik kalmalı | **Kritik** | uyarı < 145° · ret < 130° | tüm tekrar | tümü |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
-| Dirsekler yana açıldı — başına yakın tut | **Kritik** | uyarı > 0.35 (vücut ölçeği) · ret > 0.55 (vücut ölçeği) | tüm tekrar | önden |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
+| Dirsekler yana açıldı — başına yakın tut | **Kritik** | uyarı > 0.42 (vücut ölçeği) · ret > 0.62 (vücut ölçeği) | tüm tekrar | önden |
 | Bel aşırı büküldü — karnını sık | **Kritik** | tekrar başına göre değişim uyarı < -7° · ret < -13° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
 
 ### 22. Sehpa Dip (Bench Dip)
 
-- **Kamera:** yandan — Kamera yanda.
+- **Kamera:** yandan — Telefonu tam yanına, sehpa yüksekliğine koy. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar düz, eller sehpada
 - **Tekrar:** Dirsek açısı: 160 → 95 · hedefe ulaşmazsa: "Yeterince inilmedi — dirsekler 90° bükülmeli" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 500 ms
@@ -437,7 +437,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 23. Dar Tutuş Bench Press (Close Grip Bench Press)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy.
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -456,7 +456,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 24. Çömelme (Squat)
 
-- **Kamera:** yandan / önden — Kamerayı yanına, diz hizasına koy; baştan ayağa görünsün. Önden: dizlerin içe kaçması ve ayak aralığı.
+- **Kamera:** yandan / önden — Telefonu tam yanına, diz hizasına, 3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun. Önden çekersen dizlerin içe kaçması ölçülür.
 - **Başlangıç:** dik dur
 - **Tekrar:** Diz açısı: 165 → 100 · hedefe ulaşmazsa: "Yeterince derine inilmedi — uyluk yere paralel olmalı" · dönmezse: "Tam ayağa kalkılmadı — kalça ve diz kilitlenmeli"
 - **Tempo (uyarı):** hedefe gidiş ≥ 600 ms
@@ -476,7 +476,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 25. Bacak Press (Leg Press)
 
-- **Kamera:** yandan / önden — Kamerayı makinenin yanına koy; kalça, diz ve ayak görünsün.
+- **Kamera:** yandan / önden — Telefonu makinenin tam yanına, diz hizasına koy. Kalça, diz ve ayak bileği görünsün.
 - **Başlangıç:** bacaklar açık (kilitlemeden)
 - **Tekrar:** Diz açısı: 155 → 95 · hedefe ulaşmazsa: "Ağırlık yeterince indirilmedi — dizler 90°" · dönmezse: "Bacaklar tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -491,7 +491,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 26. Bacak Açma (Leg Extension)
 
-- **Kamera:** yandan — Kamera yanda, diz hizasında.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, diz hizasına koy. Kalça, diz ve ayak bileği görünsün.
 - **Başlangıç:** dizler 90° bükülü
 - **Tekrar:** Diz açısı: 95 → 160 · hedefe ulaşmazsa: "Bacak tam uzatılmadı" · dönmezse: "Ağırlık başlangıca kadar indirilmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 400 ms, dönüş ≥ 700 ms
@@ -503,7 +503,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 27. Bacak Bükme (Leg Curl)
 
-- **Kamera:** yandan — Kamera yanda, makine hizasında.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, makine hizasına koy. Kalça, diz ve ayak bileği görünsün.
 - **Başlangıç:** bacaklar düz
 - **Tekrar:** Diz açısı: 160 → 85 · hedefe ulaşmazsa: "Topuklar kalçaya yeterince yaklaşmadı" · dönmezse: "Bacaklar tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -514,7 +514,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 28. Baldır Yükseltme (Calf Raise)
 
-- **Kamera:** yandan — Kamera yanda, yere yakın; ayaklar net görünsün.
+- **Kamera:** yandan — Telefonu tam yanına, yere yakın (diz altı hizada) koy. Dizler ve ayaklar net görünsün.
 - **Başlangıç:** topuklar aşağıda
 - **Tekrar:** Topuk yüksekliği: 0.02 → 0.2 · hedefe ulaşmazsa: "Topuklar yeterince yükseltilmedi" · dönmezse: "Topuklar tam indirilmedi"
 - **Tempo (uyarı):** dönüş ≥ 500 ms, tepede bekleme ≥ 250 ms
@@ -526,7 +526,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 29. Yürüyen Hamle (Walking Lunge)
 
-- **Kamera:** yandan — Kamerayı yanına uzağa koy; yürüme alanı boyunca baştan ayağa görünsün.
+- **Kamera:** yandan — Telefonu yürüme hattının yanına, 3-4 m uzağa, diz hizasına koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** dik dur
 - **Tekrar:** Öndeki diz açısı: 160 → 100 · hedefe ulaşmazsa: "Yeterince inilmedi — öndeki diz 90° olmalı" · dönmezse: "Adım sonunda tam dikleşilmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 500 ms
@@ -543,7 +543,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 30. Mekik Kıvırma (Crunch)
 
-- **Kamera:** yandan — Kamera yanda, yere yakın.
+- **Kamera:** yandan — Telefonu yere, vücudunun tam yanına koy. Baş, omuz, kalça ve diz görünsün.
 - **Başlangıç:** sırt yerde
 - **Tekrar:** Gövde kalkışı: 85 → 62 · hedefe ulaşmazsa: "Omuzlar yerden yeterince kaldırılmadı" · dönmezse: "Sırt yere tam inmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -555,7 +555,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 31. Ön Plank (Plank)
 
-- **Kamera:** yandan — Kamera yere yakın, yanda; baştan ayağa görünsün.
+- **Kamera:** yandan — Telefonu yere, vücudunun tam yanına, 2-3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** plank pozisyonu
 - **Mod:** süre tutma (form bozulunca süre durur, olay listeye yazılır)
 
@@ -569,7 +569,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 32. Bacak Kaldırma (Leg Raise)
 
-- **Kamera:** yandan — Kamera yanda, yere yakın.
+- **Kamera:** yandan — Telefonu yere, vücudunun tam yanına, 2-3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** bacaklar yerde düz
 - **Tekrar:** Bacak-gövde açısı: 165 → 100 · hedefe ulaşmazsa: "Bacaklar yeterince kaldırılmadı (dik olmalı)" · dönmezse: "Bacaklar aşağı tam indirilmedi"
 - **Tempo (uyarı):** dönüş ≥ 800 ms
@@ -582,7 +582,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 33. Kabloyla Karın Kıvırma (Cable Crunch)
 
-- **Kamera:** yandan — Kamera yanda; dizler, kalça ve baş görünsün.
+- **Kamera:** yandan — Kablo karşında olduğu için telefonu tam yanına, diz-kalça hizasına koy. Dizler, kalça ve baş görünsün.
 - **Başlangıç:** dizler yerde, gövde dik
 - **Tekrar:** Gövde kıvrılması: 25 → 60 · hedefe ulaşmazsa: "Gövde yeterince kıvrılmadı" · dönmezse: "Başlangıca tam dönülmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -595,7 +595,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 34. Kalça İtişi (Hip Thrust)
 
-- **Kamera:** yandan — Kamera yanda, kalça hizasında.
+- **Kamera:** yandan — Telefonu tam yanına, kalça hizasına koy. Omuz, kalça ve diz görünsün.
 - **Başlangıç:** kalça aşağıda
 - **Tekrar:** Kalça açısı: 115 → 165 · hedefe ulaşmazsa: "Kalça tam kilitlenmedi — omuz-kalça-diz düz olmalı" · dönmezse: "Kalça yeterince indirilmedi"
 - **Tempo (uyarı):** dönüş ≥ 500 ms, tepede bekleme ≥ 300 ms
@@ -610,7 +610,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 35. Kalça Köprüsü (Glute Bridge)
 
-- **Kamera:** yandan — Kamera yanda, yere yakın.
+- **Kamera:** yandan — Telefonu yere, tam yanına koy. Omuz, kalça ve diz görünsün.
 - **Başlangıç:** sırt yerde, dizler bükülü
 - **Tekrar:** Kalça açısı: 125 → 162 · hedefe ulaşmazsa: "Kalça yeterince kaldırılmadı" · dönmezse: "Kalça yere indirilmedi"
 - **Tempo (uyarı):** dönüş ≥ 500 ms, tepede bekleme ≥ 300 ms
@@ -623,7 +623,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 36. Kabloyla Kalça İtişi (Cable Kickback)
 
-- **Kamera:** yandan — Kamera yanda; çalışan bacak kameraya yakın.
+- **Kamera:** yandan — Kablo karşında olduğu için telefonu tam yanına, çalışan bacak tarafına, kalça hizasına koy.
 - **Başlangıç:** bacak aşağıda
 - **Tekrar:** Bacağın geriye açılması: 0 → 25 · hedefe ulaşmazsa: "Bacak yeterince geriye itilmedi" · dönmezse: "Bacak başlangıca dönmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 500 ms
@@ -635,7 +635,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 37. Romen Deadlift (Romanian Deadlift)
 
-- **Kamera:** yandan — Kamera yanda, kalça hizasında; baştan ayağa görünsün.
+- **Kamera:** yandan — Telefonu tam yanına, kalça hizasına, 3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** dik dur, bar uyluk önünde
 - **Tekrar:** Kalça açısı: 165 → 110 · hedefe ulaşmazsa: "Yeterince eğilinmedi — kalçayı geriye it" · dönmezse: "Tam dikleşilmedi — kalçayı kilitle"
 - **Tempo (uyarı):** hedefe gidiş ≥ 700 ms
@@ -651,7 +651,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 38. Koşu Bandı (Treadmill)
 
-- **Kamera:** yandan — Kamera bandın yanında; baştan ayağa görünsün.
+- **Kamera:** yandan — Telefonu bandın tam yanına, 2-3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** yürü/koş
 - **Tekrar:** Adım: -0.3 → 0.3 (döngü sayımı, açıklık ret sebebi değil)
 
@@ -662,7 +662,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 39. Eliptik Bisiklet (Elliptical Trainer)
 
-- **Kamera:** yandan — Kamera yanda; baştan ayağa görünsün.
+- **Kamera:** yandan — Telefonu aletin tam yanına koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** pedal çevir
 - **Tekrar:** Diz açısı: 150 → 125 (döngü sayımı, açıklık ret sebebi değil)
 
@@ -672,7 +672,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 40. Kondisyon Bisikleti (Stationary Bike)
 
-- **Kamera:** yandan — Kamera bisikletin yanında; kalça, diz ve ayak görünsün.
+- **Kamera:** yandan — Telefonu bisikletin tam yanına koy. Kalça, diz ve ayak görünsün.
 - **Başlangıç:** pedal çevir
 - **Tekrar:** Diz açısı: 135 → 95 (döngü sayımı, açıklık ret sebebi değil)
 
@@ -683,7 +683,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 41. Kürek Makinesi (Rowing Machine)
 
-- **Kamera:** yandan — Kamera makinenin yanında; tüm vücut görünsün.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, 3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** dizler bükülü, kollar önde (catch)
 - **Tekrar:** Diz açısı: 75 → 155 · hedefe ulaşmazsa: "Bacaklar tam itilmedi" · dönmezse: "Başlangıç pozisyonuna (catch) dönülmedi"
 
@@ -696,7 +696,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 42. Burpee (Burpee)
 
-- **Kamera:** yandan — Kamera yanda, uzakta; ayakta ve yerde tüm vücut görünsün.
+- **Kamera:** yandan — Telefonu tam yanına, 3-4 m uzağa koy; ayakta ve yerde baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** dik dur
 - **Tekrar:** Gövde yatıklığı: 15 → 65 · hedefe ulaşmazsa: "Plank pozisyonuna inilmedi" · dönmezse: "Tam ayağa kalkılmadı"
 
@@ -707,7 +707,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 43. Aç-Kapa Sıçrama (Jumping Jack)
 
-- **Kamera:** önden — Kamerayı karşına, uzağa koy; kollar yukarıda ve bacaklar açıkken tüm vücut görünsün.
+- **Kamera:** önden — Telefonu tam karşına, 3-4 m uzağa koy; kollar yukarıda ve bacaklar açıkken baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** kollar yanda, ayaklar bitişik
 - **Tekrar:** Kol açısı: 25 → 140 · hedefe ulaşmazsa: "Kollar baş üstüne kadar kalkmadı" · dönmezse: "Kollar yanlara tam inmedi"
 
@@ -720,7 +720,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 44. Göğüs Aşağı Eğimli Bench Press (Decline Bench Press)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında. Omuzdan kalçaya kadar görünmeli.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -738,7 +738,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 45. Üst Göğüs Bar Press (Incline Barbell Press)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Bar/bilek yüksekliği: 1.3 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -756,9 +756,9 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 46. Aşağıdan Yukarı Kablo Açışı (Low to High Cable Fly)
 
-- **Kamera:** önden — Kamerayı karşına koy; kollar açıkken eller kadrajda kalmalı.
+- **Kamera:** çapraz / yandan / önden — Kablo istasyonu karşında olduğu için telefonu ön-arka çapraza (yan tarafında ~45° önünde) veya tam yanına, göğüs/omuz hizasında koy. İki kol açıkken eller kadrajda kalsın.
 - **Başlangıç:** kollar aşağıda ve yanlarda açık
-- **Tekrar:** Eller arası mesafe: 1.85 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
+- **Tekrar:** Kolların önde birleşmesi: 0.5 → 1.15 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
@@ -776,9 +776,9 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 47. Yukarıdan Aşağı Kablo Açışı (High to Low Cable Fly)
 
-- **Kamera:** önden — Kamerayı karşına koy; kollar yukarıda açıkken eller kadrajda kalmalı.
+- **Kamera:** çapraz / yandan / önden — Kablo istasyonu karşında olduğu için telefonu ön-arka çapraza (yan tarafında ~45° önünde) veya tam yanına, göğüs/omuz hizasında koy. Kollar yukarıda açıkken eller kadrajda kalsın.
 - **Başlangıç:** kollar yukarıda ve yanlarda açık
-- **Tekrar:** Eller arası mesafe: 1.85 → 0.9 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
+- **Tekrar:** Kolların önde birleşmesi: 0.5 → 1.15 · hedefe ulaşmazsa: "Eller önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
@@ -791,7 +791,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 48. Dambıl Göğüs Açışı (Dumbbell Fly)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** dambıllar göğüs üstünde
 - **Tekrar:** Dambıl yüksekliği: 1.55 → 0.45 · hedefe ulaşmazsa: "Kollar yeterince açılmadı (göğüs gerilmedi)" · dönmezse: "Dambıllar göğüs üstünde birleştirilmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 700 ms
@@ -806,7 +806,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 49. Ayak Yükseltilmiş Şınav (Decline Push-Up)
 
-- **Kamera:** yandan — Kamera yere yakın, yanda. Baştan ayağa görünmeli.
+- **Kamera:** yandan — Telefonu yere, vücudunun tam yanına, 2-3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** kollar düz, ayaklar yüksekte
 - **Tekrar:** Omuz yüksekliği: 1.35 → 0.95 · hedefe ulaşmazsa: "Yeterince inilmedi — göğsünü biraz daha indir" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 300 ms
@@ -823,19 +823,19 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 50. İple Triceps İtiş (Rope Pushdown)
 
-- **Kamera:** yandan / önden — En iyi: kamera yanda.
+- **Kamera:** çapraz / yandan — Telefonu ön-arka çaprazına (yan tarafında ~45° önünde veya arkasında), göğüs hizasına koy. Önden koyma: dirseğini göremez.
 - **Başlangıç:** dirsekler 90° bükülü
 - **Tekrar:** Dirsek açısı: 85 → 162 · hedefe ulaşmazsa: "Kollar altta tam kilitlenmedi — dirseği tamamen aç" · dönmezse: "Yukarıda ön kol yere paralel olana kadar dönülmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 24° · ret > 34° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 32° · ret > 44° | tüm tekrar | önden/çapraz |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: önden |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
@@ -843,19 +843,19 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 51. Tek Kol Kablo Triceps İtiş (Single Arm Cable Pushdown)
 
-- **Kamera:** yandan / önden — Kamera yanda; çalışan kol kameraya yakın olsun.
+- **Kamera:** çapraz / yandan — Telefonu çalışan kol tarafında, ön-arka çaprazına (~45°), göğüs hizasına koy.
 - **Başlangıç:** dirsek 90° bükülü
 - **Tekrar:** Dirsek açısı: 85 → 160 · hedefe ulaşmazsa: "Kollar altta tam kilitlenmedi — dirseği tamamen aç" · dönmezse: "Yukarıda ön kol yere paralel olana kadar dönülmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 24° · ret > 34° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 32° · ret > 44° | tüm tekrar | önden/çapraz |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 20° · ret > 32° | tüm tekrar | ret: önden |
-| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 30° · ret > 42° | tüm tekrar | yandan/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
+| Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
@@ -863,21 +863,21 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 52. Yatarak Triceps Açış (Lying Triceps Extension)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine koy. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
 - **Tekrar:** Dirsek açısı: 160 → 85 · hedefe ulaşmazsa: "Ağırlık alna/başa kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
+| Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
 | Dirsekler ayaklara doğru kaydı — hareket press’e döndü | **Kritik** | uyarı < 65° · ret < 50° | tüm tekrar | tümü |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
 
 ### 53. Baş Üstü Kablo Triceps (Overhead Cable Extension)
 
-- **Kamera:** yandan / önden — Kamera yanda.
+- **Kamera:** çapraz / yandan — Kablo arkanda olduğu için telefonu ön çaprazına (~45°) veya tam yanına, omuz hizasına koy.
 - **Başlangıç:** dirsekler bükülü, eller başın arkasında
 - **Tekrar:** Dirsek açısı: 75 → 155 · hedefe ulaşmazsa: "Kollar tam açılmadı" · dönmezse: "Eller başın arkasına kadar geri gelmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -885,14 +885,14 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler aşağı düştü — üst kol başın yanında kalmalı | **Kritik** | uyarı < 130° · ret < 115° | tüm tekrar | tümü |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
-| Dirsekler yana açıldı | **Kritik** | uyarı > 0.35 (vücut ölçeği) · ret > 0.55 (vücut ölçeği) | tüm tekrar | önden |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
+| Dirsekler yana açıldı | **Kritik** | uyarı > 0.42 (vücut ölçeği) · ret > 0.62 (vücut ölçeği) | tüm tekrar | önden |
 | Gövde ileri-geri sallandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
 
 ### 54. Paralel Bar Dip (Parallel Bar Dip)
 
-- **Kamera:** yandan — Kamera yanda; alt pozisyonda da dirsekler görünmeli.
+- **Kamera:** yandan — Telefonu tam yanına, göğüs hizasına, alt pozisyonda da dirsekler görünecek uzaklığa koy.
 - **Başlangıç:** kollar düz, vücut barların üstünde
 - **Tekrar:** Dirsek açısı: 160 → 95 · hedefe ulaşmazsa: "Yeterince inilmedi — üst kol yere paralel olmalı" · dönmezse: "Kollar yukarıda tam açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 500 ms
@@ -908,7 +908,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 55. Barfiks (Pull-Up)
 
-- **Kamera:** önden — Kamerayı karşına, bar ve eller görünecek şekilde koy.
+- **Kamera:** önden / yandan — Telefonu karşına (veya arkana), bar ve eller görünecek kadar uzağa, göğüs hizasına koy.
 - **Başlangıç:** kollar yukarıda düz asılı
 - **Tekrar:** Çene–bar: -1.8 → 0 · hedefe ulaşmazsa: "Çene barın üstüne çıkmadı" · dönmezse: "Altta kollar tam açılmadı (ölü asılma)"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -924,7 +924,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 56. Ters Tutuş Barfiks (Chin-Up)
 
-- **Kamera:** önden — Kamerayı karşına, bar ve eller görünecek şekilde koy.
+- **Kamera:** önden / yandan — Telefonu karşına (veya arkana), bar ve eller görünecek kadar uzağa, göğüs hizasına koy.
 - **Başlangıç:** kollar yukarıda düz asılı
 - **Tekrar:** Çene–bar: -1.8 → 0 · hedefe ulaşmazsa: "Çene barın üstüne çıkmadı" · dönmezse: "Altta kollar tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -940,7 +940,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 57. Göğüs Destekli Dambıl Row (Chest Supported Row)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine koy. Omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** göğüs pedde, kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 155 → 100 · hedefe ulaşmazsa: "Ağırlık gövdeye kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -955,7 +955,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 58. T-Bar Row (T-Bar Row)
 
-- **Kamera:** yandan — Kamera yanda, bel hizasında.
+- **Kamera:** yandan — Telefonu tam yanına, bel hizasına, 2-3 m uzağa koy. Baştan dizlere kadar görünsün.
 - **Başlangıç:** öne eğilmiş, kollar aşağıda düz
 - **Tekrar:** Dirsek açısı: 155 → 100 · hedefe ulaşmazsa: "Ağırlık gövdeye kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
@@ -1032,67 +1032,68 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 62. Preacher Biceps Curl (Preacher Curl)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu preacher sehpasının tam yanına, sehpa hizasına koy. Omuz, dirsek ve bilek görünsün (ped dirseği kapatmasın).
 - **Başlangıç:** kollar pedde, neredeyse düz
 - **Tekrar:** Dirsek açısı: 145 → 65 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Üst kol pedden kalktı / omuz öne itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 17° | tüm tekrar | tümü |
+| Üst kol pedden kalktı / omuz öne itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 20° | tüm tekrar | tümü |
 | Gövdeyle çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
 
 ### 63. Eğimli Sehpa Biceps Curl (Incline Dumbbell Curl)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
-- **Başlangıç:** kollar aşağı sarkık, düz
-- **Tekrar:** Dirsek açısı: 150 → 75 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
+- **Kamera:** yandan — Telefonu eğimli sehpanın tam yanına, sehpa yüksekliğine koy. Omuz, dirsek ve bilek (kol tamamen aşağı sarkarken de) görünsün.
+- **Başlangıç:** kollar tamamen aşağı sarkık, düz
+- **Tekrar:** Dirsek açısı: 162 → 78 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tamamen açılmadı — her tekrarda kolu tamamen aşağı sal"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek öne geldi — üst kol yere dik sarkık kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
-| Sırt sehpadan kalktı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 7° · ret > 13° | tüm tekrar | ret: yandan |
+| Kol altta tamamen açılmadı — her tekrarda kolu tamamen aşağı sal | **Kritik** | fazdaki en iyi değer uyarı < 155° · ret < 145° | dönüşte | tümü |
+| Dirsek öne geldi — üst kol yere dik sarkık kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 16° · ret > 27° | tüm tekrar | tümü |
+| Sırt sehpadan kalktı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
 
 ### 64. Konsantrasyon Biceps Curl (Concentration Curl)
 
-- **Kamera:** yandan — Kamera yanda; çalışan kol kameraya yakın olsun.
+- **Kamera:** önden / yandan / çapraz — Telefonu karşına veya yan çaprazına, oturduğun yükseklikte koy. Çalışan kolun omzu, dirseği ve eli görünsün.
 - **Başlangıç:** dirsek uylukta, kol düz
 - **Tekrar:** Dirsek açısı: 150 → 70 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek uyluktan kaydı — dirsek sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | tümü |
+| Dirsek uyluktan kaydı — dirsek sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
 | Gövde kaldırılarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
 
 ### 65. Arkadan Kablo Biceps Curl (Bayesian Cable Curl)
 
-- **Kamera:** yandan — Kamera yanda; çalışan kol kameraya yakın olsun.
+- **Kamera:** yandan / çapraz — Kablo arkanda olduğu için telefonu tam yanına (çalışan kol tarafına), göğüs hizasına koy.
 - **Başlangıç:** kol gövdenin arkasında düz
 - **Tekrar:** Dirsek açısı: 150 → 75 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek öne geldi — kol gövdenin arkasında sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
+| Dirsek öne geldi — kol gövdenin arkasında sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 21° | tüm tekrar | tümü |
 | Üst kol gövdenin önüne geçti | **Kritik** | uyarı > 5° · ret > 20° | tüm tekrar | ret: yandan |
 | Gövde ileri-geri sallandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 7° · ret > 13° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
 
 ### 66. Spider Biceps Curl (Spider Curl)
 
-- **Kamera:** yandan — Kamera yanda, sehpa hizasında.
+- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine koy. Omuz, dirsek ve bilek görünsün.
 - **Başlangıç:** göğüs pedde, kollar aşağı sarkık
 - **Tekrar:** Dirsek açısı: 150 → 70 · hedefe ulaşmazsa: "Ağırlık yeterince kaldırılmadı — kolu tam bük" · dönmezse: "Kol altta tam açılmadı — her tekrarda kolu uzat"
 - **Tempo (uyarı):** hedefe gidiş ≥ 350 ms, dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek hareket etti — üst kol yere dik kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
+| Dirsek hareket etti — üst kol yere dik kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 12° · ret > 21° | tüm tekrar | tümü |
 | Göğüs pedden kalktı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 12° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
 
@@ -1100,7 +1101,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 67. Goblet Squat (Goblet Squat)
 
-- **Kamera:** yandan / önden — Kamera yanda, diz hizasında; baştan ayağa görünsün.
+- **Kamera:** yandan / önden — Telefonu tam yanına, diz hizasına, 3 m uzağa koy; baştan ayağa tüm vücut kadrajda olsun.
 - **Başlangıç:** dik dur, ağırlık göğüste
 - **Tekrar:** Diz açısı: 165 → 95 · hedefe ulaşmazsa: "Yeterince derine inilmedi — uyluk yere paralel olmalı" · dönmezse: "Tam ayağa kalkılmadı — kalça ve diz kilitlenmeli"
 - **Tempo (uyarı):** hedefe gidiş ≥ 600 ms
@@ -1120,7 +1121,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 68. Bulgar Split Squat (Bulgarian Split Squat)
 
-- **Kamera:** yandan — Kamera yanda; iki bacak ve sehpa görünsün.
+- **Kamera:** yandan — Telefonu tam yanına, diz hizasına koy. İki bacak ve sehpa görünsün.
 - **Başlangıç:** arka ayak sehpada, dik dur
 - **Tekrar:** Öndeki diz açısı: 155 → 100 · hedefe ulaşmazsa: "Yeterince inilmedi — öndeki uyluk yere paralel olmalı" · dönmezse: "Tam dikleşilmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 550 ms
@@ -1135,7 +1136,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 69. Hack Squat Makinesi (Hack Squat)
 
-- **Kamera:** yandan / önden — Kamera makinenin yanında, diz hizasında.
+- **Kamera:** yandan / önden — Telefonu makinenin tam yanına, diz hizasına koy. Kalça, diz ve ayaklar görünsün.
 - **Başlangıç:** bacaklar açık (kilitlemeden)
 - **Tekrar:** Diz açısı: 165 → 95 · hedefe ulaşmazsa: "Yeterince derine inilmedi — uyluk yere paralel olmalı" · dönmezse: "Tam ayağa kalkılmadı — kalça ve diz kilitlenmeli"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
@@ -1153,7 +1154,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 70. Yatarak Bacak Kıvırma (Lying Leg Curl)
 
-- **Kamera:** yandan — Kamera yanda, makine hizasında.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, makine hizasına koy.
 - **Başlangıç:** bacaklar düz
 - **Tekrar:** Diz açısı: 160 → 85 · hedefe ulaşmazsa: "Topuklar kalçaya yeterince yaklaşmadı" · dönmezse: "Bacaklar tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -1164,7 +1165,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 71. Oturarak Bacak Kıvırma (Seated Leg Curl)
 
-- **Kamera:** yandan — Kamera yanda, diz hizasında.
+- **Kamera:** yandan — Telefonu makinenin tam yanına, diz hizasına koy.
 - **Başlangıç:** bacaklar önde düz
 - **Tekrar:** Diz açısı: 155 → 80 · hedefe ulaşmazsa: "Bacak yeterince bükülmedi" · dönmezse: "Bacaklar tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
@@ -1176,7 +1177,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 72. Sehpaya Adım Çıkma (Step-Up)
 
-- **Kamera:** yandan — Kamera yanda; sehpa ve iki bacak görünsün.
+- **Kamera:** yandan — Telefonu tam yanına, 3 m uzağa koy. Sehpa ve iki bacak görünsün.
 - **Başlangıç:** bir ayak sehpada
 - **Tekrar:** Çalışan diz açısı: 100 → 162 · hedefe ulaşmazsa: "Sehpanın üstünde tam dikleşilmedi" · dönmezse: "Aşağı tam inilmedi"
 - **Tempo (uyarı):** dönüş ≥ 600 ms

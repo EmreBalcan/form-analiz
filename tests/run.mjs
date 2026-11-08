@@ -503,6 +503,50 @@ function makeProfile(hide = []) {
   r = run('chest-press', sequence({ specAt: cp2, reps: 4, view: 'side', noise: 0.004, seed: 63 }), { profile: prof });
   check('göğüs press (önceki ayarlar): doğru formda sahte silkme yok', r.ok === 4 && !has(r, 'kulağa') && !hasW(r, 'kulağa'), desc(r));
 }
+{
+  results.push('Güncelleme 2026-11-08: kamera yerleşimi, kısmi görünürlük, biceps/triceps toleransı, eğimli curl');
+  // eğimli sehpa curl: gövde ~45° geriye yatık, kollar yere dik sarkık (gövdenin arkasında)
+  const ic = (o = {}) => (u) => ({ torsoPitch: 45, arms: { both: { flex: -45 + (o.drift ? lerp(0, o.drift, u) : 0), abd: 6, elbow: lerp(o.bottom ?? 168, 50, u), bend: 'fwd' } } });
+  let r = run('incline-dumbbell-curl', sequence({ specAt: ic(), reps: 4, view: 'side' }));
+  check('eğimli curl doğru form: 4 geçerli', r.ok === 4 && r.bad === 0, desc(r));
+  r = run('incline-dumbbell-curl', sequence({ specAt: ic(), reps: 4, view: 'side', hide: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32] }));
+  check('eğimli curl kalça sehpa arkasında görünmüyor: 4 geçerli (önceki sürüm 0/4 sayıyordu)', r.ok === 4 && r.bad === 0, desc(r));
+  r = run('incline-dumbbell-curl', sequence({ specAt: ic(), reps: 4, view: 'side', noise: 0.004, seed: 71 }));
+  check('eğimli curl gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
+  r = run('incline-dumbbell-curl', sequence({ specAt: (u, k) => ({ ...ic()(u), arms: { both: { flex: -45, abd: 6, elbow: k >= 0 ? lerp(132, 50, u) : 168, bend: 'fwd' } } }), reps: 3, view: 'side' }));
+  check('eğimli curl: kol altta tamamen açılmıyor → ret', r.bad >= 2 && has(r, 'tamamen'), desc(r));
+  r = run('incline-dumbbell-curl', sequence({ specAt: ic({ drift: 14 }), reps: 3, view: 'side' }));
+  check('eğimli curl: ağırlıkla az dirsek hareketi (14°) kabul', r.ok === 3, desc(r));
+
+  // biceps/triceps: az dirsek hareketi kabul
+  r = run('dumbbell-curl', sequence({ specAt: curl({ drift: 25 }), reps: 3, view: 'side' }));
+  check('curl: ~20° dirsek hareketi artık kabul (az tolerans)', r.ok === 3, desc(r));
+  r = run('cable-pushdown', sequence({ specAt: pushdown({ drift: 28 }), reps: 3, view: 'side' }));
+  check('triceps itiş: ~20° dirsek hareketi artık kabul', r.ok === 3, desc(r));
+  r = run('cable-pushdown', sequence({ specAt: pushdown({ drift: 55 }), reps: 3, view: 'side' }));
+  check('triceps itiş: belirgin dirsek oynaması hâlâ ret', r.bad === 3 && has(r, 'dirsek'), desc(r));
+  // triceps ön-arka çaprazdan (önerilen açı)
+  for (const yaw of [40, 50]) {
+    r = run('cable-pushdown', sequence({ specAt: pushdown(), reps: 4, view: 'front', yaw, noise: 0.003, seed: 72 }));
+    check(`triceps itiş ${yaw}° çaprazdan doğru form: 4/4`, r.ok === 4 && r.bad === 0, desc(r));
+    r = run('cable-pushdown', sequence({ specAt: (u) => ({ ...pushdown()(u), arms: { both: { flex: 8, abd: 6, elbow: lerp(85, 135, u), bend: 'fwd' } } }), reps: 3, view: 'front', yaw }));
+    check(`triceps itiş ${yaw}° çaprazdan: kol aşağıda tam açılmıyor → ret`, r.bad === 3 && has(r, 'kilitlenmedi'), desc(r));
+  }
+  // kablo açış yandan
+  const cf = (u) => { const el = lerp(25, 75, u) * Math.PI / 180, ph = lerp(80, -14, u) * Math.PI / 180; return { arms: { both: { dir: [Math.sin(el) * Math.sin(ph), Math.cos(el), Math.sin(el) * Math.cos(ph)], elbow: 160, bend: 'in' } } }; };
+  r = run('cable-fly-low-high', sequence({ specAt: cf, reps: 3, view: 'side' }));
+  check('aşağıdan yukarı kablo açış YANDAN: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+
+  // kısmi görünürlük: makine dirsekleri kapatıyor (göğüs press, yandan)
+  const cp3 = (u) => ({ arms: { both: { dir: [0.35, lerp(0.75, 0.15, u), lerp(-0.2, 1, u)], elbow: lerp(80, 170, u), bend: 'fwd' } }, legs: { both: { flex: 90, knee: 90 } }, hipY: 0.55 });
+  r = run('chest-press', sequence({ specAt: cp3, reps: 3, view: 'side', hide: [13, 14] }));
+  check('göğüs press dirsek görünmüyor: tekrar SAYILIR + görülemeyen kontrol notu', r.ok === 3 && r.reps.every((x) => x.notes?.length) && /göremedim/.test(r.reps[0].notes[0]), desc(r) + ' notlar=' + JSON.stringify(r.reps[0]?.notes));
+  check('kısmi görünürlük notu sesli değil (cue olayı yok)', !r.events.some((e) => e.type === 'cue' && /göremedim|görünmüyor/.test(e.text)));
+  r = run('seated-cable-row', sequence({ specAt: (u) => ({ arms: { both: { dir: [lerp(0.05, 0.15, u), lerp(0.1, 0.6, u), lerp(1, -0.5, u)], elbow: lerp(170, 80, u), bend: 'fwd' } }, legs: { both: { flex: 85, knee: 160 } }, hipY: 0.5 }), reps: 3, view: 'side', dim: [23, 24] }));
+  check('kablo kürek kalça makine arkasında (model tahmini): tekrar sayılır', r.ok + r.bad === 3 && r.ok >= 2, desc(r));
+  r = run('lat-pulldown', sequence({ specAt: (u) => ({ arms: { both: { dir: [lerp(0.3, 0.6, u), lerp(-0.95, 0.75, u), lerp(0.1, -0.2, u)], elbow: lerp(170, 60, u), bend: 'up' } }, legs: { both: { flex: 90, knee: 90 } }, hipY: 0.55 }), reps: 3, view: 'side', dim: [15, 16] }));
+  check('lat çekiş bilekler makine/bar arkasında (tahmin): tekrar sayılır', r.ok + r.bad === 3, desc(r));
+}
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
 {
   results.push('Yanlış alarm yok: yüksek gürültüde doğru form');

@@ -105,6 +105,7 @@ function onEngineEvent(e) {
     if (e.rep.ok) {
       if (!e.rep.hold) speaker.say(String(e.accepted), 1, 0);
       if (e.rep.warnings.length) showCue(e.rep.warnings[0], 'warning');
+      else if (e.rep.notes?.length) showCue(e.rep.notes[0], 'warning'); // görülemeyen kontroller: sessiz not
     } else {
       showCue(`Sayılmadı: ${e.rep.reasons[0]}`, 'critical');
       speaker.say(`Sayılmadı. ${ruleCue(e.rep.reasons[0])}`, 3, 0);
@@ -134,6 +135,7 @@ function addRep(rep) {
   const ul = document.createElement('ul');
   rep.reasons.forEach((r) => { const x = document.createElement('li'); x.textContent = r; ul.append(x); });
   rep.warnings.forEach((w) => { const x = document.createElement('li'); x.className = 'w'; x.textContent = `Uyarı: ${w}`; ul.append(x); });
+  (rep.notes || []).forEach((n) => { const x = document.createElement('li'); x.className = 'w'; x.textContent = `Not: ${n}`; ul.append(x); });
   if (ul.children.length) li.append(ul);
   el.reps.prepend(li);
   if (!rep.ok) {
@@ -296,7 +298,8 @@ function render(P, snap) {
   el.view.textContent = `Görüş: ${VIEW_TR[snap.view] || snap.view}${viewOk ? ' ✓' : ` — ${VIEW_TR[def.view]} önerilir`}`;
   el.view.className = `badge ${viewOk ? 'good' : 'badv'}`;
   el.state.textContent = STATE_TR[snap.state] || snap.state;
-  el.msg.textContent = snap.message || '';
+  // kısmi görünürlük notu: yalnızca yazılı (sesli değil)
+  el.msg.textContent = [snap.message, snap.partialNote].filter(Boolean).join(' · ');
   const p = Math.max(0, Math.min(1.15, snap.progress || 0));
   el.bar.style.width = `${(p / 1.15) * 100}%`;
   if (def.mode === 'hold') el.ok.textContent = String(Math.floor((snap.hold?.goodMs || 0) / 1000));

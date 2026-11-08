@@ -63,7 +63,8 @@ export class FormEngine {
   metricValue(P, ctx) {
     const m = this.def.metric;
     const fn = typeof m.fn === 'function' ? m.fn : M[m.fn];
-    const req = this.def.required || ['shoulder'];
+    // kısmi görünürlük açık hareketlerde yalnızca ana ölçümün gerçekten ihtiyaç duyduğu noktalar şart
+    const req = (this.def.partialOk && (m.parts || METRIC_PARTS[m.fn])) || this.def.required || ['shoulder'];
     const avail = P.sidesFor(req);
     if (m.global) {
       const r = fn(P, ctx, null);
@@ -142,15 +143,23 @@ export class FormEngine {
     const viewOk = !this.def.view || this.def.view === 'any' || [this.def.view, ...(this.def.viewAlt || [])].includes(P.view);
     const snap = { state: this.state, view: P.view, viewOk, missing, progress: 0, metric: null, rules: [], message: '' };
 
-    if (missing.length) {
+    // kısmi görünürlük: bir uzuv görünmese de ana ölçüm alınabiliyorsa (gerekirse tahmini noktalarla) devam et
+    let mvPartial = null;
+    if (missing.length && this.def.partialOk) {
+      mvPartial = this.metricValue(P, ctx);
+      if (!mvPartial) { P.setRelaxed(true); mvPartial = this.metricValue(P, ctx); P.setRelaxed(false); }
+      if (mvPartial) snap.partial = missing;
+    }
+    if (missing.length && !mvPartial) {
       this.state = this.calib ? 'paused' : 'waiting';
       snap.state = this.state;
-      snap.message = `${missing.join(', ')} görünmüyor — kamerayı uzaklaştır veya açısını değiştir`;
+      snap.message = `${missing.join(', ')} görünmüyor — ${this.def.cameraFix || 'kamerayı uzaklaştır veya açısını değiştir'}`;
       this.hold.lastT = null;
       return this.finishSnap(snap);
     }
 
-    const mv = this.metricValue(P, ctx);
+    let mv = mvPartial || this.metricValue(P, ctx);
+    if (!mv && this.def.partialOk) { P.setRelaxed(true); mv = this.metricValue(P, ctx); P.setRelaxed(false); }
     if (!mv) {
       snap.message = 'Ana ölçüm alınamıyor';
       return this.finishSnap(snap);
@@ -230,6 +239,10 @@ export class FormEngine {
       return { id: rule.id, text: rule.label || rule.text, level: rule.reject !== undefined ? 'critical' : 'warning', ...live };
     });
     snap.accepted = this.accepted; snap.rejected = this.rejected;
+    if (snap.partial && snap.state !== 'paused' && snap.state !== 'waiting') {
+      const blind = snap.rules.filter((r) => r.status === 'na' || r.status === 'view').length;
+      snap.partialNote = `Tekrar sayılıyor ama ${snap.partial.join(', ')} görünmüyor${blind ? ` (${blind} kontrol yapılamıyor)` : ''} — ${this.def.cameraFix || 'kameranın yerini değiştir'}`;
+    }
     snap.hold = this.def.mode === 'hold' ? { ...this.hold } : null;
     snap.calibrated = !!this.calib;
     if (!snap.message) {
@@ -308,7 +321,7 @@ export class FormEngine {
       }
     }
     const t0 = this.readyBuf.length ? this.readyBuf.filter((f) => f.p < START_P).pop()?.t ?? t : t;
-    this.rep = { t0, tPeak: t, maxP: 0, reached: false, frames: 0, base, viol: new Map(), extremes: new Map(), alerted: new Map(), range: new Map() };
+    this.rep = { t0, tPeak: t, maxP: 0, reached: false, frames: 0, base, viol: new Map(), extremes: new Map(), alerted: new Map(), range: new Map(), measured: new Set() };
     // aralık kurallarını başlangıç kareleriyle tohumla
     for (const rule of this.rules.filter((x) => x.relative === 'range')) {
       for (const f of startFrames) this.measureRule(rule, f.P, { ...ctx, calib: this.calib }, this.rep);
@@ -393,6 +406,7 @@ export class FormEngine {
         continue;
       }
       const res = this.measureRule(rule, P, ctx, rep);
+      if (res && rep) rep.measured.add(rule.id);
       if (!res) {
         this.ruleLive.set(rule.id, { status: 'na', note: 'ölçülemiyor' });
         continue;
@@ -477,7 +491,13 @@ export class FormEngine {
     if (tp.minPeakMs && r.reached && r.peakMs < tp.minPeakMs) warnings.push(tp.peakText || 'Tepe noktasında kısa bir an bekle')
     const ok = reasons.length === 0;
     if (ok) this.accepted++; else this.rejected++;
-    const rep = { n: this.reps.length + 1, ok, reasons: unique(reasons), warnings: unique(warnings), durationMs: dur, rom: Math.round(r.maxP * 100), t };
+    // görülemeyen kritik kontroller: tekrar sayılır, ekranda (sesiz) not düşülür
+    const notes = [];
+    if (this.def.partialOk) {
+      const unseen = unique(this.rules.filter((x) => x.reject !== undefined && !r.measured.has(x.id)).map((x) => x.label || x.text));
+      if (unseen.length) notes.push(`${ok ? 'Tekrar doğru görünüyor' : 'Görülebilen kısım değerlendirildi'} ama şunları göremedim: ${unseen.join(', ')}. ${this.def.cameraFix || 'Kameranın yerini değiştir.'}`);
+    }
+    const rep = { n: this.reps.length + 1, ok, reasons: unique(reasons), warnings: unique(warnings), ...(this.def.partialOk ? { notes } : {}), durationMs: dur, rom: Math.round(r.maxP * 100), t };
     this.reps.push(rep);
     this.onEvent({ type: 'rep', rep, accepted: this.accepted, rejected: this.rejected });
   }
@@ -512,6 +532,13 @@ export class FormEngine {
 }
 
 const GLOBAL_MEASURES = ['torsoPitch', 'torsoLean', 'torsoRoll', 'wristSpread', 'stanceWidth', 'kneeSpreadRatio', 'chinOverHands', 'ankleSplit', 'headHeight', 'torsoFromVertical', 'wristLevel', 'armElevDiff', 'footLevel', 'frontKnee', 'backKnee', 'frontKneeOverToe', 'stepKnee', 'sideLean', 'elbowSpread', 'torsoLenRatio'];
+
+// Ana ölçümün gerçekten ihtiyaç duyduğu noktalar (kısmi görünürlük modunda)
+const METRIC_PARTS = {
+  elbowAngle: ['shoulder', 'elbow', 'wrist'], wristAnt: ['shoulder', 'wrist'], wristDrop: ['shoulder', 'wrist'],
+  shoulderOverWrist: ['shoulder', 'wrist'], kneeAngle: ['hip', 'knee', 'ankle'], hipAngle: ['shoulder', 'hip', 'knee'],
+  armElev: ['shoulder', 'elbow'], heelRise: ['heel', 'toe'], thighExt: ['hip', 'knee'], legTorso: ['shoulder', 'hip', 'ankle'],
+};
 
 function unique(a) { return [...new Set(a)]; }
 

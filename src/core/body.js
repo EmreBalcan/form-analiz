@@ -93,6 +93,7 @@ export class Pose {
     this.posture = posture;
     this.allSides = !!tracker.allSides;
     this._cache = new Map();
+    this.visThr = VIS;
     this.updateSegmentRefs();
     this.view = this.detectView();
     this.near = this.detectNearSide();
@@ -104,12 +105,17 @@ export class Pose {
   }
 
   vis(i) { return this.pts[i]?.v ?? 0; }
-  ok(i, thr = VIS) { return this.vis(i) >= thr; }
-  pt(i, thr = VIS) { return this.ok(i, thr) ? this.pts[i] : null; }
+  ok(i, thr) { return this.vis(i) >= (thr ?? this.visThr); }
+  pt(i, thr) { return this.ok(i, thr) ? this.pts[i] : null; }
   idx(side, part) { return SIDE[side][part]; }
-  get(side, part, thr = VIS) { return this.pt(SIDE[side][part], thr); }
+  get(side, part, thr) { return this.pt(SIDE[side][part], thr); }
   sideVis(side, parts) { return Math.min(...parts.map((p) => this.vis(SIDE[side][p]))); }
-  hasSide(side, parts, thr = VIS) { return parts.every((p) => this.ok(SIDE[side][p], thr)); }
+  hasSide(side, parts, thr) { return parts.every((p) => this.ok(SIDE[side][p], thr)); }
+  /**
+   * Gevşek mod: makine/sehpa bir uzvu kapattığında MediaPipe o noktayı düşük görünürlükle TAHMİN eder.
+   * Tekrar sayımı için bu tahmin (görünürlük ≥ 0.3) kullanılabilir; form kuralları normal eşikle kalır.
+   */
+  setRelaxed(on) { this.visThr = on ? 0.3 : VIS; this._cache = new Map(); }
 
   /** Görünür taraflar; yandan çekimde yalnızca kameraya yakın taraf (uzak taraf tahmindir). */
   sidesFor(parts) {

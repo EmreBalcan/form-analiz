@@ -99,7 +99,7 @@ export function skeleton(spec = {}) {
  * Kameraya izdüşür. view: 'front' (kişi kameraya bakıyor) | 'side' (kamera kişinin solunda).
  * frame: {w,h,fw (metre olarak kadraj genişliği), cx, cy (kadraj merkezi, metre)}
  */
-export function project(sk, { view = 'front', frame = {}, rng = mulberry(1), noise = 0.0015, hide = [], farVis = 0.6, yaw = 0 } = {}) {
+export function project(sk, { view = 'front', frame = {}, rng = mulberry(1), noise = 0.0015, hide = [], dim = [], farVis = 0.6, yaw = 0 } = {}) {
   const { w = 1280, h = 720, fw = 4.2, cy = 1.05, cx = 0 } = frame;
   const fh = fw * h / w;
   const ya = yaw * Math.PI / 180;
@@ -116,6 +116,7 @@ export function project(sk, { view = 'front', frame = {}, rng = mulberry(1), noi
       if (!leftSide && i !== 0) vis = farVis;
     }
     if (hide.includes(i)) vis = 0.05;
+    if (dim.includes(i)) vis = 0.4; // makinenin kapattığı, modelin tahmin ettiği nokta
     return { x, y, z, visibility: vis, presence: 0.99 };
   });
   const world = sk.P.map((p) => ({ x: p.x, y: -(p.y - sk.hipC.y), z: -p.z }));
@@ -123,14 +124,14 @@ export function project(sk, { view = 'front', frame = {}, rng = mulberry(1), noi
 }
 
 /** Bir hareket dizisi üret: önce bekleme (kalibrasyon), sonra tekrarlar. */
-export function sequence({ specAt, reps = 3, repMs = 2200, idleMs = 1500, restMs = 400, fps = 30, view, frame, hide, noise, seed = 7, farVis, yaw }) {
+export function sequence({ specAt, reps = 3, repMs = 2200, idleMs = 1500, restMs = 400, fps = 30, view, frame, hide, dim, noise, seed = 7, farVis, yaw }) {
   const rng = mulberry(seed);
   const frames = [];
   const dt = 1000 / fps;
   let t = 1000;
   const push = (phase, k) => {
     const sk = skeleton(specAt(phase, k));
-    frames.push({ ...project(sk, { view, frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, farVis, yaw }), t });
+    frames.push({ ...project(sk, { view, frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, dim, farVis, yaw }), t });
     t += dt;
   };
   for (let i = 0; i < idleMs / dt; i++) push(0, -1);
