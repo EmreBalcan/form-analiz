@@ -225,6 +225,23 @@ function flyMetric(spreadStart, spreadTarget) {
   };
 }
 
+// Yüze kablo çekiş ana ölçümü (0 = kollar önde, 1 = ip yüzde). Yan/çapraz: bileğin omza göre öne uzaklığı
+// 1.45 → 0.65 (üst kol boyu); önden: dirsekler arası mesafe / omuz genişliği 1.3 → 2.1.
+function facePullMetric(P, ctx) {
+  if (P.view !== 'front') {
+    const sides = P.near && P.hasSide(P.near, ['shoulder', 'wrist']) ? [P.near] : P.sidesFor(['shoulder', 'wrist']);
+    const vals = sides.map((s) => M.wristAnt(P, ctx, s)).filter((r) => r && r.conf >= 0.35);
+    if (vals.length) {
+      const w = Math.min(...vals.map((r) => r.v));
+      return { v: (1.45 - w) / 0.8, conf: Math.max(...vals.map((r) => r.conf)), src: 'eller yüze (bilek öne)' };
+    }
+  }
+  const sp = M.elbowSpread(P);
+  if (sp) return { v: (sp.v - 1.3) / 0.8, conf: sp.conf, src: 'dirsekler yana açılma' };
+  const e = P.sidesFor(['shoulder', 'elbow', 'wrist']).map((s) => M.elbowAngle(P, ctx, s)).filter(Boolean);
+  return e.length ? { v: (155 - Math.min(...e.map((r) => r.v))) / 60, conf: Math.max(...e.map((r) => r.conf)), src: 'dirsek açısı' } : null;
+}
+
 // Omuz press silkmesi: kollar omuz hizasının belirgin üstündeyse ölçülmez (doğal yükselme)
 function pressShrug(P, ctx, s) {
   const a = P.arm(s);
@@ -533,8 +550,9 @@ export const EXERCISES = [
     metric: { fn: 'wristAnt', start: 1.5, target: 0.35, label: 'Kol açılması', romText: 'Kollar yanlara kadar açılmadı', returnText: 'Kollar öne tam dönmedi' },
     tempo: { minBackMs: 650 },
     rules: [
-      { id: 'arm-height-low', measure: 'elbowDrop', op: '>', warn: 0.45, reject: 0.7, minMs: 200, label: 'Kol yüksekliği (omuz hizası)', text: 'Kollar omuz hizasının altına düştü', cue: 'Kollarını omuz hizasında tut' },
-      { id: 'arm-height-high', measure: 'elbowDrop', op: '<', warn: -0.4, minMs: 200, label: 'Kol yüksekliği (fazla yukarı)', text: 'Kollar omuzun üstüne çıktı', cue: 'Kollarını omuz hizasına indir' },
+      // kol omuz hizasında olmalı: dirsek omzun ne belirgin altında ne üstünde (üst kol boyu birimi, ~0.1 ≈ 3 cm)
+      { id: 'arm-height-low', measure: 'elbowDrop', op: '>', warn: 0.22, reject: 0.35, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (aşağı düşmesin)', text: 'Kollar omuz hizasının altına düştü', cue: 'Kollarını omuz hizasına kaldır' },
+      { id: 'arm-height-high', measure: 'elbowDrop', op: '<', warn: -0.2, reject: -0.33, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (yukarı çıkmasın)', text: 'Kollar omuz hizasının üstüne çıktı', cue: 'Kollarını omuz hizasına indir' },
       R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallandı — göğsünü pedden ayırma' }),
       R.leanDrift({ warn: 8, reject: 13, text: 'Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı' }),
       R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
@@ -543,18 +561,19 @@ export const EXERCISES = [
   ex(15, 'face-pull', 'Yüze Kablo Çekiş', 'Face Pull', 'Omuz', 'face-pull.webp', {
     // vücut ölçümü kullanılmaz (kollar omuz hizasında sahte silkme veriyordu); silkme set başına göre, yana açış değerleriyle
     quickCalib: true,
-    plane: 'transverse', view: 'side', viewAlt: ['front'], required: ['shoulder', 'elbow', 'wrist'],
-    setup: 'Kamerayı yanına, omuz hizasına koy.',
+    plane: 'transverse', view: 'side', viewAlt: ['oblique', 'front'], required: ['shoulder', 'elbow', 'wrist'],
+    setup: 'Kablo karşında olduğu için telefonu tam yanına veya ön-arka çaprazına (~45°), omuz hizasına koy. Önden de çalışır.',
     startText: 'kollar önde düz, ip yüz hizasında',
-    metric: { fn: 'elbowAngle', start: 155, target: 95, label: 'Dirsek açısı', romText: 'İp yüze kadar çekilmedi', returnText: 'Kollar önde tam açılmadı' },
+    // yandan/çaprazdan: ellerin yüze gelmesi; önden: dirseklerin yana açılması (dirsek açısı yandan derinlikte bükülür, güvenilmez)
+    metric: { fn: facePullMetric, global: true, start: 0, target: 1, label: 'Çekiş (eller yüze)', romText: 'İp yüze kadar çekilmedi', returnText: 'Kollar önde tam açılmadı' },
     tempo: { minBackMs: 600 },
     rules: [
-      { id: 'elbow-high', measure: 'elbowDrop', op: '>', warn: 0.3, reject: 0.55, phase: ['peak'], minMs: 150, label: 'Dirsekler yüksekte', text: 'Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı', cue: 'Dirseklerini kaldır' },
+      { id: 'elbow-high', measure: 'elbowDrop', op: '>', warn: 0.4, reject: 0.7, phase: ['peak'], minMs: 150, label: 'Dirsekler yüksekte', text: 'Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı', cue: 'Dirseklerini kaldır' },
       { id: 'ext-rot', measure: 'wristOverElbow', op: '<', warn: 0.1, agg: 'extreme', phase: ['peak'], label: 'Eller dirseğin üstünde (dış rotasyon)', text: 'Eller kulak hizasına açılmadı — dış rotasyon eksik', cue: 'Ellerini kulaklarına doğru aç' },
-      R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
-      R.leanDrift({ warn: 8, reject: 13, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
-      { id: 'upright', measure: 'torsoLean', op: '>', abs: true, warn: 15, reject: 25, bestView: 'side', minMs: 300, label: 'Gövde dik', text: 'Gövde öne/arkaya eğik — dik dur', cue: 'Dik dur' },
-      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
+      R.sway({ warn: 9, reject: 16, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 11, reject: 18, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
+      { id: 'upright', measure: 'torsoLean', op: '>', abs: true, warn: 20, reject: 30, bestView: 'side', minMs: 300, label: 'Gövde dik', text: 'Gövde öne/arkaya eğik — dik dur', cue: 'Dik dur' },
+      R.shrug({ warn: 0.12, reject: 0.2, raiseAllowance: 0.08, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
     ],
   }),
   ex(59, 'cable-lateral-raise', 'Kabloyla Yan Omuz Açış', 'Cable Lateral Raise', 'Omuz', 'cable-lateral-raise.png', {

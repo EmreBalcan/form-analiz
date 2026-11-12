@@ -283,26 +283,26 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kollar omuz hizasının altına düştü | **Kritik** | uyarı > 0.45 (vücut ölçeği) · ret > 0.7 (vücut ölçeği) | tüm tekrar | tümü |
-| Kollar omuzun üstüne çıktı | Uyarı | uyarı < -0.4 (vücut ölçeği) | tüm tekrar | tümü |
+| Kollar omuz hizasının altına düştü | **Kritik** | uyarı > 0.22 (vücut ölçeği) · ret > 0.35 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Kollar omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.2 (vücut ölçeği) · ret < -0.33 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
 | Gövde öne-arkaya sallandı — göğsünü pedden ayırma | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
 
 ### 15. Yüze Kablo Çekiş (Face Pull)
 
-- **Kamera:** yandan / önden — Kamerayı yanına, omuz hizasına koy.
+- **Kamera:** yandan / çapraz / önden — Kablo karşında olduğu için telefonu tam yanına veya ön-arka çaprazına (~45°), omuz hizasına koy. Önden de çalışır.
 - **Başlangıç:** kollar önde düz, ip yüz hizasında
-- **Tekrar:** Dirsek açısı: 155 → 95 · hedefe ulaşmazsa: "İp yüze kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
+- **Tekrar:** Çekiş (eller yüze): 0 → 1 · hedefe ulaşmazsa: "İp yüze kadar çekilmedi" · dönmezse: "Kollar önde tam açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 600 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı | **Kritik** | uyarı > 0.3 (vücut ölçeği) · ret > 0.55 (vücut ölçeği) | tepe/dip noktası | tümü |
+| Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı | **Kritik** | uyarı > 0.4 (vücut ölçeği) · ret > 0.7 (vücut ölçeği) | tepe/dip noktası | tümü |
 | Eller kulak hizasına açılmadı — dış rotasyon eksik | Uyarı | fazdaki en iyi değer uyarı < 0.1 (vücut ölçeği) | tepe/dip noktası | tümü |
-| Gövde öne-arkaya sallanarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
-| Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
-| Gövde öne/arkaya eğik — dik dur | **Kritik** | uyarı > 15° · ret > 25° | tüm tekrar | ret: yandan |
+| Gövde öne-arkaya sallanarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 9° · ret > 16° | tüm tekrar | ret: yandan |
+| Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 11° · ret > 18° | tüm tekrar | ret: yandan |
+| Gövde öne/arkaya eğik — dik dur | **Kritik** | uyarı > 20° · ret > 30° | tüm tekrar | ret: yandan |
 | Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
 
 ## Biceps
