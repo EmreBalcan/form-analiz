@@ -287,7 +287,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kollar omuzun üstüne çıktı | Uyarı | uyarı < -0.4 (vücut ölçeği) | tüm tekrar | tümü |
 | Gövde öne-arkaya sallandı — göğsünü pedden ayırma | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | sürekli | tümü |
+| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
 
 ### 15. Yüze Kablo Çekiş (Face Pull)
 
@@ -303,7 +303,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Gövde öne-arkaya sallanarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
 | Gövde öne/arkaya eğik — dik dur | **Kritik** | uyarı > 15° · ret > 25° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | sürekli | tümü |
+| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
 
 ## Biceps
 

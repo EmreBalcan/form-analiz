@@ -37,6 +37,7 @@ export class FormEngine {
     this.lastT = null;
     this.message = '';
     this.smoothBuf = new Map();
+    this.startSince = null;
     this.gateBuf = [];
   }
 
@@ -172,8 +173,14 @@ export class FormEngine {
       this.state = 'calibrating';
       snap.state = 'calibrating';
       const startOk = this.def.mode === 'hold' ? this.holdFormOk(P, ctx) : p < START_P + 0.1;
+      // hızlı kalibrasyon (quickCalib): 0.5 sn yeter, titreşime daha toleranslı; başlangıç pozisyonunda
+      // 2.5 sn durulduysa sabitlik beklenmeden kalibre edilir; omuz kapısı en fazla 3 sn bekletir.
+      const quick = !!this.def.quickCalib;
+      if (startOk) { if (this.startSince == null) this.startSince = t; } else this.startSince = null;
+      const inStartMs = this.startSince == null ? 0 : t - this.startSince;
       // vücut ölçümü varsa: set başında omuz kalkıksa kalibrasyon ALINMAZ (kalkık omuz 'normal' sayılmasın)
-      const gate = startOk && this.def.useProfile && this.profile ? this.shrugGate(P) : null;
+      let gate = startOk && this.def.useProfile && this.profile ? this.shrugGate(P) : null;
+      if (gate && quick && inStartMs > 3000) gate = null; // shrugP vücut ölçümüne göre yine yakalar
       if (gate) {
         this.calibBuf = [];
         snap.message = gate;
@@ -184,8 +191,9 @@ export class FormEngine {
         const vals = this.calibBuf.map((c) => c.v);
         const range = Math.abs(this.def.metric.target - this.def.metric.start);
         // sabitlik: uç değerler (titreşim) hariç %10–%90 aralığı
-        const steady = percentile(vals, 0.9) - percentile(vals, 0.1) < range * 0.15;
-        if (span >= 800 && steady) this.captureCalib(ctx);
+        const steady = percentile(vals, 0.9) - percentile(vals, 0.1) < range * (quick ? 0.2 : 0.15);
+        if (span >= (quick ? 500 : 800) && steady) this.captureCalib(ctx);
+        else if (quick && inStartMs > 2500 && this.calibBuf.length >= 8) this.captureCalib(ctx);
         snap.message = steady ? 'Kalibrasyon: sabit dur…' : 'Kalibrasyon: başlangıç pozisyonunda sabit dur';
       } else {
         this.calibBuf = [];

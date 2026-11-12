@@ -11,7 +11,7 @@ const ex = (no, id, tr, en, group, img, spec) => ({
   mode: 'rep', sides: 'both', plane: 'sagittal', posture: 'upright', view: 'side',
   ...spec,
   // omuz hareketleri hariç: açık kamera yerleşimi + kısmi görünürlük (bir uzuv görünmese de tekrar sayılır)
-  ...(group === 'Omuz' ? {} : { ...CAMERA[id], partialOk: true }),
+  ...(group === 'Omuz' ? {} : { ...CAMERA[id], partialOk: true, quickCalib: true }),
   rules: (spec.rules || []).flat().map((r) => {
     if (!r || r.measure !== 'shrug') return r;
     if (spec.useProfile) return { ...r, measure: 'shrugP', phase: 'always', rejectConf: 0.55 }; // kalıcı vücut ölçümüne göre + set başına göre (burun yedeği de reddedebilir)
@@ -223,6 +223,13 @@ function flyMetric(spreadStart, spreadTarget) {
     const w = M.wristSpread(P);
     return w ? { v: 0.5 + (spreadStart - w.v) * (0.65 / (spreadStart - spreadTarget)), conf: w.conf, src: 'eller arası mesafe' } : null;
   };
+}
+
+// Omuz press silkmesi: kollar omuz hizasının belirgin üstündeyse ölçülmez (doğal yükselme)
+function pressShrug(P, ctx, s) {
+  const a = P.arm(s);
+  if (!a || a.elev > 120) return null;
+  return M.shrugX(P, ctx, s);
 }
 
 // Pec deck ana ölçümü: görüşe göre (yan/çapraz → bilek öne uzanması, önden → eller arası mesafe 2.3→0.9 aynı ölçeğe)
@@ -469,6 +476,7 @@ export const EXERCISES = [
 
   // ======================= OMUZ
   ex(11, 'shoulder-press', 'Omuz Press', 'Shoulder Press', 'Omuz', 'shoulder-press.webp', {
+    quickCalib: true,
     plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı tam karşına koy; kollar yukarıdayken eller kadrajda kalmalı.',
     startText: 'dambıllar omuz hizasında, dirsekler bükülü',
@@ -490,8 +498,9 @@ export const EXERCISES = [
       { id: 'arch', measure: 'torsoPitch', relative: 'rep', op: '<', warn: -7, reject: -13, bestView: 'side', minMs: 150, label: 'Bel kavisi / geriye yaslanma', text: 'Belini büküp geriye yaslandın', cue: 'Karnını sık, geriye yaslanma' },
       R.kneeDip({ warn: 12, reject: 22 }),
       R.swayLateral(),
-      // yana dambıl açış referansı, çok az daha toleranslı (baş üstünde doğal omuz yükselmesi için pay)
-      R.shrug({ warn: 0.13, reject: 0.22, raiseAllowance: 0.091, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — omuzları aşağıda tut' }),
+      // silkme yalnızca kollar omuz hizası civarındayken (kol-gövde ≤ 120°) ölçülür: kollar yukarı kalkınca
+      // omzun kulağa yaklaşması doğaldır (kürek kemiği yukarı döner), hata sayılmaz.
+      { ...R.shrug({ warn: 0.13, reject: 0.22, raiseAllowance: 0.091, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — omuzları aşağıda tut' }), measure: pressShrug, label: 'Omuz silkme (kollar omuz hizasındayken)' },
       // dirseklerin birbirine yaklaşması = kolların gövdenin önünden kalkması
       {
         id: 'elbows-close', measure: 'elbowSpread', op: '<', warn: 1.45, reject: 1.25, phase: ['out', 'back'], views: ['front', 'oblique'], bestView: 'front', minMs: 200,
@@ -516,7 +525,8 @@ export const EXERCISES = [
     }),
   }),
   ex(14, 'reverse-pec-deck', 'Ters Pec Deck', 'Reverse Pec Deck', 'Omuz', 'reverse-pec-deck.webp', {
-    useProfile: true,
+    // vücut ölçümü kullanılmaz: oturarak kollar öndeyken omuz doğal olarak biraz yukarıda → kalibrasyon kilitleniyordu
+    quickCalib: true,
     posture: 'seated', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı yanına, omuz hizasına koy.',
     startText: 'kollar önde, tutamaklarda',
@@ -531,7 +541,8 @@ export const EXERCISES = [
     ],
   }),
   ex(15, 'face-pull', 'Yüze Kablo Çekiş', 'Face Pull', 'Omuz', 'face-pull.webp', {
-    useProfile: true,
+    // vücut ölçümü kullanılmaz (kollar omuz hizasında sahte silkme veriyordu); silkme set başına göre, yana açış değerleriyle
+    quickCalib: true,
     plane: 'transverse', view: 'side', viewAlt: ['front'], required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı yanına, omuz hizasına koy.',
     startText: 'kollar önde düz, ip yüz hizasında',
@@ -543,7 +554,7 @@ export const EXERCISES = [
       R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
       R.leanDrift({ warn: 8, reject: 13, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
       { id: 'upright', measure: 'torsoLean', op: '>', abs: true, warn: 15, reject: 25, bestView: 'side', minMs: 300, label: 'Gövde dik', text: 'Gövde öne/arkaya eğik — dik dur', cue: 'Dik dur' },
-      R.shrug({ warn: 0.08, reject: 0.15, raiseAllowance: 0.03, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
+      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
     ],
   }),
   ex(59, 'cable-lateral-raise', 'Kabloyla Yan Omuz Açış', 'Cable Lateral Raise', 'Omuz', 'cable-lateral-raise.png', {

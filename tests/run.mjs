@@ -200,7 +200,7 @@ const press = (o = {}) => (u) => ({
   let r = run('shoulder-press', sequence({ specAt: pressFwd, reps: 3, view: 'front' }));
   check('dirsekler gövdenin önünde (kollar önde açılıyor) → ret', r.bad === 3 && (has(r, 'önüne') || has(r, 'öne doğru')), desc(r));
   r = run('shoulder-press', sequence({ specAt: (u) => ({ ...press()(u), shrug: lerp(0, 0.09, u) }), reps: 3, view: 'front' }));
-  check('press’te omuz silkme → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  check('press: kollar kalkarken omzun doğal yükselmesi artık hata değil', r.ok === 3 && !has(r, 'kulağa'), desc(r));
   r = run('shoulder-press', sequence({ specAt: (u) => ({ ...press()(u), shrug: lerp(0, 0.02, u) }), reps: 3, view: 'front' }));
   check('press’te küçük doğal omuz yükselmesi kabul', r.ok === 3, desc(r));
   r = run('shoulder-press', sequence({ specAt: press(), reps: 3, view: 'side' }));
@@ -270,7 +270,9 @@ const press = (o = {}) => (u) => ({
   let r = run('shoulder-press', sequence({ specAt: pressIn, reps: 3, view: 'front' }));
   check('press: dirsekler birbirine yaklaşıyor → ret', r.bad === 3 && has(r, 'birbirine'), desc(r));
   r = run('shoulder-press', sequence({ specAt: (u) => ({ ...press()(u), shrug: lerp(0, 0.11, u) }), reps: 3, view: 'front' }));
-  check('press: belirgin silkme → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  check('press: kollar yukarıda omzun yüze yaklaşması hata değil', r.ok === 3 && !has(r, 'kulağa'), desc(r));
+  r = run('shoulder-press', sequence({ specAt: (u, k) => ({ ...press()(u), shrug: k >= 0 ? 0.1 : 0 }), reps: 3, view: 'front' }));
+  check('press: kollar omuz hizasındayken omuz kalkık → ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
 
   // yana eğilerek açış: silkme yana açıştan bir tık katı
   const lean2 = (sh) => (u) => ({ torsoRoll: -20, shrug: lerp(0, sh, u), arms: { L: { abd: 10, elbow: 170 }, R: { abd: lerp(25, 92, u), flex: 15, elbow: 165 } } });
@@ -546,6 +548,23 @@ function makeProfile(hide = []) {
   check('kablo kürek kalça makine arkasında (model tahmini): tekrar sayılır', r.ok + r.bad === 3 && r.ok >= 2, desc(r));
   r = run('lat-pulldown', sequence({ specAt: (u) => ({ arms: { both: { dir: [lerp(0.3, 0.6, u), lerp(-0.95, 0.75, u), lerp(0.1, -0.2, u)], elbow: lerp(170, 60, u), bend: 'up' } }, legs: { both: { flex: 90, knee: 90 } }, hipY: 0.55 }), reps: 3, view: 'side', dim: [15, 16] }));
   check('lat çekiş bilekler makine/bar arkasında (tahmin): tekrar sayılır', r.ok + r.bad === 3, desc(r));
+}
+{
+  results.push('Güncelleme 2026-11-12: yüze çekiş / ters pec deck silkme ve kalibrasyon');
+  const prof = makeProfile();
+  const fp2 = (o = {}) => (u, k) => ({ shrug: (o.nat ? lerp(0, o.nat, u) : 0) + (o.held && k >= 0 ? o.held : 0), arms: { both: { dir: [lerp(0.1, 0.9, u), lerp(0, -0.05, u), lerp(1, 0.1, u)], elbow: lerp(170, 85, u), bend: 'up' } } });
+  let r = run('face-pull', sequence({ specAt: fp2({ nat: 0.03 }), reps: 3, view: 'side' }), { profile: prof });
+  check('yüze çekiş: kollar kalkarken küçük doğal omuz hareketi → sahte silkme yok', r.ok === 3 && !has(r, 'kulağa') && !hasW(r, 'kulağa'), desc(r));
+  r = run('face-pull', sequence({ specAt: fp2({ held: 0.09 }), reps: 3, view: 'side' }), { profile: prof });
+  check('yüze çekiş: gerçek silkme hâlâ ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  const rpd2 = (o = {}) => (u) => ({ shrug: o.base ?? 0, arms: { both: { dir: [lerp(0.05, 1, u), 0.05, lerp(1, -0.1, u)], elbow: 165, bend: 'in' } }, legs: { both: { flex: 90, knee: 90 } }, hipY: 0.55 });
+  r = run('reverse-pec-deck', sequence({ specAt: rpd2({ base: 0.035 }), reps: 3, view: 'side', repMs: 2600 }), { profile: prof });
+  check('ters pec deck: oturarak kollar öndeyken omuz biraz yukarıda → kalibrasyon tamamlanır, 3 geçerli', !!r.eng.calib && r.ok === 3, desc(r));
+  r = run('reverse-pec-deck', sequence({ specAt: rpd2(), reps: 3, view: 'side', repMs: 2600, noise: 0.006, seed: 81 }), { profile: prof });
+  check('ters pec deck: titrek görüntüde de kalibrasyon tamamlanır', !!r.eng.calib && r.ok + r.bad === 3, desc(r));
+  // hızlı kalibrasyon: kısa bekleme ile tamamlanmalı (0.6 sn başlangıç pozisyonu)
+  r = run('reverse-pec-deck', sequence({ specAt: rpd2(), reps: 2, view: 'side', repMs: 2600, idleMs: 650 }), { profile: prof });
+  check('ters pec deck: 0.65 sn beklemeyle kalibrasyon tamamlanır', !!r.eng.calib && r.ok === 2, desc(r));
 }
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
 {
