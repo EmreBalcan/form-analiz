@@ -38,6 +38,8 @@ export class FormEngine {
     this.message = '';
     this.smoothBuf = new Map();
     this.startSince = null;
+    this.misSince = null;
+    this.metricSmooth = [];
     this.gateBuf = [];
   }
 
@@ -165,6 +167,13 @@ export class FormEngine {
       snap.message = 'Ana ölçüm alınamıyor';
       return this.finishSnap(snap);
     }
+    // metric.smooth: ana ölçüme N karelik ortanca süzgeç (gürültülü ölçümde tekrarın bölünmesini önler; hareket bazlı)
+    if (this.def.metric.smooth) {
+      this.metricSmooth = this.metricSmooth || [];
+      this.metricSmooth.push(mv.v);
+      while (this.metricSmooth.length > this.def.metric.smooth) this.metricSmooth.shift();
+      mv = { ...mv, v: median(this.metricSmooth) };
+    }
     const p = this.progress(mv.v);
     snap.metric = mv.v; snap.progress = p; snap.side = mv.side;
 
@@ -203,6 +212,27 @@ export class FormEngine {
     }
 
     if (this.def.mode === 'hold') return this.updateHold(P, ctx, dt, snap);
+
+    // lockView: kalibrasyondaki kamera açısı/gövde dönüklüğü değişirse (kişi sağa-sola döndü) sayım durur,
+    // yarım tekrar sayılmaz; 2 sn'den uzun sürerse yeni duruşa göre yeniden kalibre edilir.
+    if (this.def.lockView) {
+      const mis = this.viewMismatch(P);
+      if (mis && this.misSince == null) this.misSince = t;
+      if (!mis) this.misSince = null;
+      // anlık görüş titremesi değil, en az 0.3 sn süren gerçek dönme
+      if (mis && t - this.misSince >= 300) {
+        this.rep = null;
+        this.readyBuf = [];
+        this.state = 'paused';
+        snap.state = 'paused';
+        snap.message = 'Duruşun / kamera açın değişti — sayım duraklatıldı. Kalibrasyondaki gibi dur.';
+        if (t - this.misSince > 2000) {
+          this.calib = null; this.calibBuf = []; this.startSince = null; this.misSince = null;
+          snap.message = 'Yeni duruşa göre yeniden kalibre ediliyor — başlangıç pozisyonunda dur';
+        }
+        return this.finishSnap(snap);
+      }
+    }
 
     // ---------------- tekrar durum makinesi
     if (!this.rep) {
@@ -271,6 +301,15 @@ export class FormEngine {
     return median(this.gateBuf) > lim ? 'Omuzların kalkık — omuzlarını indirip rahat bırak (kalibrasyon bekliyor)' : null;
   }
 
+  viewMismatch(P) {
+    const c = this.calib;
+    if (!c) return false;
+    // önden ↔ yandan geçiş = dönme (önden/yandan ↔ çapraz arası titreme sayılmaz; o durumda omuz genişliğine bakılır)
+    if ((c.view === 'front' && P.view === 'side') || (c.view === 'side' && P.view === 'front')) return true;
+    const sw = shoulderWidthRatio(P);
+    return Number.isFinite(sw) && Number.isFinite(c.swRatio) && Math.abs(sw - c.swRatio) > 0.2;
+  }
+
   captureCalib(ctx) {
     const frames = this.calibBuf;
     const calib = { hsd: {}, values: {}, t: frames[frames.length - 1].t };
@@ -302,6 +341,9 @@ export class FormEngine {
     const tl = pxAll.map((h) => h.torsoLen).filter(Number.isFinite);
     calib.torsoLen0 = tl.length >= Math.max(3, pxAll.length * 0.6) ? median(tl) : NaN;
     calib.scale0 = median(frames.map((f) => f.P.scale()).filter(Number.isFinite));
+    // duruş kilidi için: kamera açısı ve gövdenin kameraya dönüklüğü (omuz genişliği / vücut ölçeği)
+    calib.view = frames[frames.length - 1].P.view;
+    calib.swRatio = median(frames.map((f) => shoulderWidthRatio(f.P)).filter(Number.isFinite));
     this.calib = calib;
     // kalibrasyona göre ölçülen kuralların taban değerleri
     const ctx2 = { ...ctx, calib };
@@ -549,6 +591,17 @@ const METRIC_PARTS = {
 };
 
 function unique(a) { return [...new Set(a)]; }
+
+/**
+ * Ekrandaki omuz genişliği / gövde boyu (omuz–kalça): gövdenin kameraya ne kadar dönük olduğunu gösterir.
+ * Gövde boyu dönmeden etkilenmez; kol boyu kullanılmaz (kollar kameraya doğru uzanınca kısa görünür).
+ * Kalça görünmüyorsa ölçülmez (yalnızca önden↔yandan geçişe bakılır).
+ */
+function shoulderWidthRatio(P) {
+  const a = P.pts[11], b = P.pts[12], T = P.torso();
+  if (!a || !b || a.v < 0.2 || b.v < 0.2 || !T || T.src !== 'kalça' || !(T.len > 5)) return NaN;
+  return Math.hypot(a.x - b.x, a.y - b.y) / T.len;
+}
 
 function normalizeRule(r) {
   const fn = typeof r.measure === 'function' ? r.measure : M[r.measure];

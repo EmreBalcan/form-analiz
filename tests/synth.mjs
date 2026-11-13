@@ -131,7 +131,7 @@ export function sequence({ specAt, reps = 3, repMs = 2200, idleMs = 1500, restMs
   let t = 1000;
   const push = (phase, k) => {
     const sk = skeleton(specAt(phase, k));
-    frames.push({ ...project(sk, { view, frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, dim, farVis, yaw }), t });
+    frames.push({ ...project(sk, { view, frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, dim, farVis, yaw: typeof yaw === 'function' ? yaw(phase, k) : yaw }), t });
     t += dt;
   };
   for (let i = 0; i < idleMs / dt; i++) push(0, -1);

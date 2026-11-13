@@ -283,7 +283,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kollar omuz hizasının altına düştü | **Kritik** | uyarı > 0.22 (vücut ölçeği) · ret > 0.35 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Kollar omuz hizasının altına düştü | **Kritik** | uyarı > 0.27 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
 | Kollar omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.2 (vücut ölçeği) · ret < -0.33 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
 | Gövde öne-arkaya sallandı — göğsünü pedden ayırma | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 13° | tüm tekrar | ret: yandan |
@@ -301,9 +301,14 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı | **Kritik** | uyarı > 0.4 (vücut ölçeği) · ret > 0.7 (vücut ölçeği) | tepe/dip noktası | tümü |
 | Eller kulak hizasına açılmadı — dış rotasyon eksik | Uyarı | fazdaki en iyi değer uyarı < 0.1 (vücut ölçeği) | tepe/dip noktası | tümü |
 | Gövde öne-arkaya sallanarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 9° · ret > 16° | tüm tekrar | ret: yandan |
+| Gövde öne-arkaya sallanarak çekildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 7° · ret > 13° | tüm tekrar | önden/çapraz |
+| Gövde öne/arkaya eğildi — dik dur | **Kritik** | kalibrasyona göre uyarı < -0.09 (vücut ölçeği) · ret < -0.15 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Gövde yana doğru kaydı/eğildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 5° · ret > 9° | tüm tekrar | önden |
+| Dizler bükülerek yaylanıldı — bacaktan momentum alındı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 10° · ret > 18° | tüm tekrar | tümü |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 11° · ret > 18° | tüm tekrar | ret: yandan |
 | Gövde öne/arkaya eğik — dik dur | **Kritik** | uyarı > 20° · ret > 30° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | tümü |
+| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kalktı — trapez devreye girdi | **Kritik** | uyarı > değişken · ret > değişken | tüm tekrar | yandan |
 
 ## Biceps
 
