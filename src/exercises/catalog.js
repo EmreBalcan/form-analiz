@@ -225,21 +225,14 @@ function flyMetric(spreadStart, spreadTarget) {
   };
 }
 
-// Yüze kablo çekiş ana ölçümü (0 = kollar önde, 1 = ip yüzde). Yan/çapraz: bileğin omza göre öne uzaklığı
-// 1.45 → 0.65 (üst kol boyu); önden: dirsekler arası mesafe / omuz genişliği 1.3 → 2.1.
+// Yüze kablo çekiş ana ölçümü (yalnızca yandan): bileğin omza göre öne uzaklığı 1.7 (kollar tam açık) → 0.8 (eller yüzde).
 function facePullMetric(P, ctx) {
-  if (P.view !== 'front') {
-    const sides = P.near && P.hasSide(P.near, ['shoulder', 'wrist']) ? [P.near] : P.sidesFor(['shoulder', 'wrist']);
-    const vals = sides.map((s) => M.wristAnt(P, ctx, s)).filter((r) => r && r.conf >= 0.35);
-    if (vals.length) {
-      const w = Math.min(...vals.map((r) => r.v));
-      return { v: (1.45 - w) / 0.65, conf: Math.max(...vals.map((r) => r.conf)), src: 'eller yüze (bilek öne)' };
-    }
-  }
-  const sp = M.elbowSpread(P);
-  if (sp) return { v: (sp.v - 1.3) / 0.8, conf: sp.conf, src: 'dirsekler yana açılma' };
-  const e = P.sidesFor(['shoulder', 'elbow', 'wrist']).map((s) => M.elbowAngle(P, ctx, s)).filter(Boolean);
-  return e.length ? { v: (155 - Math.min(...e.map((r) => r.v))) / 60, conf: Math.max(...e.map((r) => r.conf)), src: 'dirsek açısı' } : null;
+  if (P.view === 'front') return null; // yalnızca yandan (çapraz yan da kabul)
+  const sides = P.near && P.hasSide(P.near, ['shoulder', 'wrist']) ? [P.near] : P.sidesFor(['shoulder', 'wrist']);
+  const vals = sides.map((s) => M.wristAnt(P, ctx, s)).filter((r) => r && r.conf >= 0.35);
+  if (!vals.length) return null;
+  const w = Math.min(...vals.map((r) => r.v));
+  return { v: (1.7 - w) / 0.9, conf: Math.max(...vals.map((r) => r.conf)), src: 'eller yüze (bilek öne)' };
 }
 
 // Omuz press silkmesi: kollar omuz hizasının belirgin üstündeyse ölçülmez (doğal yükselme)
@@ -551,7 +544,7 @@ export const EXERCISES = [
     tempo: { minBackMs: 650 },
     rules: [
       // kol omuz hizasında olmalı: dirsek omzun ne belirgin altında ne üstünde (üst kol boyu birimi, ~0.1 ≈ 3 cm)
-      { id: 'arm-height-low', measure: 'elbowDrop', op: '>', warn: 0.27, reject: 0.4, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (aşağı düşmesin)', text: 'Kollar omuz hizasının altına düştü', cue: 'Kollarını omuz hizasına kaldır' },
+      { id: 'arm-height-low', measure: 'elbowDrop', op: '>', warn: 0.3, reject: 0.43, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (aşağı düşmesin)', text: 'Kollar omuz hizasının altına düştü', cue: 'Kollarını omuz hizasına kaldır' },
       { id: 'arm-height-high', measure: 'elbowDrop', op: '<', warn: -0.2, reject: -0.33, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (yukarı çıkmasın)', text: 'Kollar omuz hizasının üstüne çıktı', cue: 'Kollarını omuz hizasına indir' },
       R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallandı — göğsünü pedden ayırma' }),
       R.leanDrift({ warn: 8, reject: 13, text: 'Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı' }),
@@ -559,30 +552,29 @@ export const EXERCISES = [
     ],
   }),
   ex(15, 'face-pull', 'Yüze Kablo Çekiş', 'Face Pull', 'Omuz', 'face-pull.webp', {
-    // vücut ölçümü kullanılmaz (kollar omuz hizasında sahte silkme veriyordu); silkme set başına göre, yana açış değerleriyle
+    // YALNIZCA YANDAN: kablo karşıda; önden/çaprazdan ölçüm kaldırıldı (kullanıcı isteği 2026-11-14)
     quickCalib: true,
     lockView: true, // sağa-sola dönünce sahte tekrar sayılmasın
-    plane: 'transverse', view: 'side', viewAlt: ['oblique', 'front'], required: ['shoulder', 'elbow', 'wrist'],
-    setup: 'Kablo karşında olduğu için telefonu tam yanına veya ön-arka çaprazına (~45°), omuz hizasına koy. Önden de çalışır.',
-    startText: 'kollar önde düz, ip yüz hizasında',
-    // yandan/çaprazdan: ellerin yüze gelmesi; önden: dirseklerin yana açılması (dirsek açısı yandan derinlikte bükülür, güvenilmez)
-    metric: { fn: facePullMetric, global: true, smooth: 5, start: 0, target: 1, label: 'Çekiş (eller yüze)', romText: 'İp yüze kadar çekilmedi', returnText: 'Kollar önde tam açılmadı' },
+    viewOnly: true, // yandan değilse ölçüm yapılmaz, kullanıcı uyarılır
+    plane: 'transverse', view: 'side', viewAlt: [], required: ['shoulder', 'elbow', 'wrist'],
+    setup: 'Telefonu YALNIZCA tam yanına, omuz hizasına, 2-3 m uzağa koy (önden/çaprazdan ölçülmez). Kameraya yakın kolun omzu, dirseği, eli ve kalçan görünsün.',
+    startText: 'kollar önde tamamen açık, ip yüz hizasında',
+    // ellerin geri gelmesi (bileğin omza göre öne uzaklığı): 0 = kollar önde tam açık, 1 = eller yüzde.
+    // Tekrar sonunda kollar tekrar tamamen açılmalı (bilek omzun ~1.6 üst kol boyu önüne dönmeli).
+    metric: { fn: facePullMetric, global: true, smooth: 5, start: 0, target: 1, label: 'Çekiş (eller yüze)', romText: 'İp yüze kadar çekilmedi', returnText: 'Kollar önde tamamen açılmadı — her tekrarda kolları tam aç' },
     tempo: { minBackMs: 600 },
     rules: [
+      // ip BAŞ HİZASINA çekilmeli: tepe noktasında eller omzun belirgin üstünde (karna/göğse çekme sayılmaz)
+      { id: 'hands-high', measure: 'wristDrop', op: '>', agg: 'extreme', warn: -0.45, reject: -0.3, phase: ['peak'], label: 'İp baş hizasına çekiliyor', text: 'İp baş hizasına çekilmedi — eller yüz/alın hizasına gelmeli (karna/göğse değil)', cue: 'İpi yüzüne çek' },
       { id: 'elbow-high', measure: 'elbowDrop', op: '>', warn: 0.4, reject: 0.7, phase: ['peak'], minMs: 150, label: 'Dirsekler yüksekte', text: 'Dirsekler omuz hizasının altına düştü — dirsekler yüksek olmalı', cue: 'Dirseklerini kaldır' },
       { id: 'ext-rot', measure: 'wristOverElbow', op: '<', warn: 0.1, agg: 'extreme', phase: ['peak'], label: 'Eller dirseğin üstünde (dış rotasyon)', text: 'Eller kulak hizasına açılmadı — dış rotasyon eksik', cue: 'Ellerini kulaklarına doğru aç' },
-      R.sway({ warn: 9, reject: 16, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
-      // önden çekim: gövde kontrolleri bir tık daha katı ve önden ölçülebilen yöntemlerle
-      { ...R.sway({ warn: 7, reject: 13, text: 'Gövde öne-arkaya sallanarak çekildi' }), id: 'sway-front', views: ['front', 'oblique'], bestView: undefined, rejectConf: 0.4, smooth: 5 },
-      { ...R.leanDepthFront({ warn: -0.09, reject: -0.15, text: 'Gövde öne/arkaya eğildi — dik dur' }), smooth: 5 },
-      R.swayLateral({ warn: 5, reject: 9 }),
-      R.kneeDip({ warn: 10, reject: 18 }),
-      R.leanDrift({ warn: 11, reject: 18, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
+      // vücut sabitliği (yandan doğrudan ölçülür)
+      R.sway({ warn: 8, reject: 14, rejectConf: 0.55, text: 'Gövde öne-arkaya sallanarak çekildi' }),
+      R.leanDrift({ warn: 10, reject: 16, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
       { id: 'upright', measure: 'torsoLean', op: '>', abs: true, warn: 20, reject: 30, bestView: 'side', minMs: 300, label: 'Gövde dik', text: 'Gövde öne/arkaya eğik — dik dur', cue: 'Dik dur' },
-      // omuz silkme: önden/çaprazdan (iyi çalışıyor) aynı; tam yandan omzun kürek geri çekilirken yukarı-geri kayması
-      // silkme gibi görünüyordu → yandan yalnızca belirgin silkme yakalanır
-      { ...R.shrug({ warn: 0.12, reject: 0.2, raiseAllowance: 0.08, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }), views: ['front', 'oblique'] },
-      { ...R.shrug({ warn: 0.18, reject: 0.26, raiseAllowance: 0.05, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }), id: 'shrug-side', views: ['side'] },
+      R.kneeDip({ warn: 10, reject: 18 }),
+      // omuz silkme: yandan, kürek geri çekilirken omzun doğal kayması hata sayılmaz, yalnızca belirgin silkme
+      { ...R.shrug({ warn: 0.18, reject: 0.26, raiseAllowance: 0.05, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }), id: 'shrug-side' },
     ],
   }),
   ex(59, 'cable-lateral-raise', 'Kabloyla Yan Omuz Açış', 'Cable Lateral Raise', 'Omuz', 'cable-lateral-raise.png', {

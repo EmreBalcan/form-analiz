@@ -39,6 +39,7 @@ export class FormEngine {
     this.smoothBuf = new Map();
     this.startSince = null;
     this.misSince = null;
+    this.lastMisT = null;
     this.metricSmooth = [];
     this.gateBuf = [];
   }
@@ -161,10 +162,34 @@ export class FormEngine {
       return this.finishSnap(snap);
     }
 
+    // lockView: kalibrasyondaki kamera açısı/gövde dönüklüğü değişirse (kişi sağa-sola döndü) sayım durur,
+    // yarım tekrar sayılmaz; 2 sn'den uzun sürerse yeni duruşa göre yeniden kalibre edilir.
+    if (this.def.lockView && this.calib) {
+      const mis = this.viewMismatch(P);
+      if (mis && this.misSince == null) this.misSince = t;
+      if (!mis) this.misSince = null;
+      if (mis) {
+        // dönme algılandığı anda yarım tekrar iptal; dönme bitince 0.6 sn yeni tekrar başlamaz
+        this.rep = null;
+        this.readyBuf = [];
+        this.lastMisT = t;
+        this.state = 'paused';
+        snap.state = 'paused';
+        snap.message = t - this.misSince >= 300 ? 'Duruşun / kamera açın değişti — sayım duraklatıldı. Kalibrasyondaki gibi dur.' : '';
+        if (t - this.misSince > 2000) {
+          this.calib = null; this.calibBuf = []; this.startSince = null; this.misSince = null;
+          snap.message = 'Yeni duruşa göre yeniden kalibre ediliyor — başlangıç pozisyonunda dur';
+        }
+        return this.finishSnap(snap);
+      }
+    }
     let mv = mvPartial || this.metricValue(P, ctx);
     if (!mv && this.def.partialOk) { P.setRelaxed(true); mv = this.metricValue(P, ctx); P.setRelaxed(false); }
     if (!mv) {
-      snap.message = 'Ana ölçüm alınamıyor';
+      if (this.def.lockView) { this.rep = null; this.readyBuf = []; }
+      snap.message = this.def.viewOnly && P.view !== this.def.view
+        ? `Bu hareket yalnızca ${this.def.view === 'side' ? 'YANDAN' : 'ÖNDEN'} ölçülür — telefonu ${this.def.view === 'side' ? 'tam yanına' : 'tam karşına'} koy`
+        : 'Ana ölçüm alınamıyor';
       return this.finishSnap(snap);
     }
     // metric.smooth: ana ölçüme N karelik ortanca süzgeç (gürültülü ölçümde tekrarın bölünmesini önler; hareket bazlı)
@@ -200,9 +225,13 @@ export class FormEngine {
         const vals = this.calibBuf.map((c) => c.v);
         const range = Math.abs(this.def.metric.target - this.def.metric.start);
         // sabitlik: uç değerler (titreşim) hariç %10–%90 aralığı
-        const steady = percentile(vals, 0.9) - percentile(vals, 0.1) < range * (quick ? 0.2 : 0.15);
+        let steady = percentile(vals, 0.9) - percentile(vals, 0.1) < range * (quick ? 0.2 : 0.15);
+        if (steady && this.def.lockView) {
+          const sws = this.calibBuf.map((x) => shoulderWidthRatio(x.P)).filter(Number.isFinite);
+          if (sws.length > 3 && Math.max(...sws) - Math.min(...sws) > 0.08) steady = false; // gövde hâlâ dönüyor
+        }
         if (span >= (quick ? 500 : 800) && steady) this.captureCalib(ctx);
-        else if (quick && inStartMs > 2500 && this.calibBuf.length >= 8) this.captureCalib(ctx);
+        else if (quick && !this.def.lockView && inStartMs > 2500 && this.calibBuf.length >= 8) this.captureCalib(ctx);
         snap.message = steady ? 'Kalibrasyon: sabit dur…' : 'Kalibrasyon: başlangıç pozisyonunda sabit dur';
       } else {
         this.calibBuf = [];
@@ -213,26 +242,6 @@ export class FormEngine {
 
     if (this.def.mode === 'hold') return this.updateHold(P, ctx, dt, snap);
 
-    // lockView: kalibrasyondaki kamera açısı/gövde dönüklüğü değişirse (kişi sağa-sola döndü) sayım durur,
-    // yarım tekrar sayılmaz; 2 sn'den uzun sürerse yeni duruşa göre yeniden kalibre edilir.
-    if (this.def.lockView) {
-      const mis = this.viewMismatch(P);
-      if (mis && this.misSince == null) this.misSince = t;
-      if (!mis) this.misSince = null;
-      // anlık görüş titremesi değil, en az 0.3 sn süren gerçek dönme
-      if (mis && t - this.misSince >= 300) {
-        this.rep = null;
-        this.readyBuf = [];
-        this.state = 'paused';
-        snap.state = 'paused';
-        snap.message = 'Duruşun / kamera açın değişti — sayım duraklatıldı. Kalibrasyondaki gibi dur.';
-        if (t - this.misSince > 2000) {
-          this.calib = null; this.calibBuf = []; this.startSince = null; this.misSince = null;
-          snap.message = 'Yeni duruşa göre yeniden kalibre ediliyor — başlangıç pozisyonunda dur';
-        }
-        return this.finishSnap(snap);
-      }
-    }
 
     // ---------------- tekrar durum makinesi
     if (!this.rep) {
@@ -240,7 +249,8 @@ export class FormEngine {
       this.readyBuf.push({ P, t, p });
       while (this.readyBuf.length > 8) this.readyBuf.shift();
       this.evalRules(P, ctx, dt, 'idle', snap);
-      if (p > ENTER_P) {
+      const settling = this.def.lockView && this.lastMisT != null && t - this.lastMisT < 600;
+      if (p > ENTER_P && !settling) {
         this.startRep(ctx, t);
         this.state = 'active';
       }

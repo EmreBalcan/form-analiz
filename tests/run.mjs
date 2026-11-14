@@ -570,9 +570,13 @@ function makeProfile(hide = []) {
   results.push('Güncelleme 2026-11-12b: yüze çekiş sayımı (her açı), ters pec deck kol hizası');
   // gerçekçi yüze çekiş: başta kollar önde, sonda dirsekler yanda omuz hizasında, eller kulak yanında (dış rotasyon)
   const fpr = (o = {}) => (u) => ({ arms: { both: { dir: [lerp(0.1, 0.95, u), lerp(0.05, -0.02, u), lerp(1, 0.15, u)], elbow: lerp(168, o.end ?? 80, u), bend: 'up' } } });
-  for (const [view, yaw] of [['side', 0], ['front', 0], ['front', 40], ['side', 25]]) {
+  for (const [view, yaw] of [['side', 0], ['side', 25]]) {
     let r = run('face-pull', sequence({ specAt: fpr(), reps: 4, view, yaw, noise: 0.003, seed: 91 }));
     check(`yüze çekiş ${view}${yaw ? ' ' + yaw + '°' : ''}: doğru form 4/4 sayılır`, r.ok === 4 && r.bad === 0, desc(r));
+  }
+  {
+    const r = run('face-pull', sequence({ specAt: fpr(), reps: 3, view: 'front' }));
+    check('yüze çekiş ÖNDEN: ölçülmez, “yalnızca yandan” uyarısı', r.reps.length === 0 && /YANDAN/.test(r.last.message), desc(r));
   }
   let r = run('face-pull', sequence({ specAt: (u) => ({ arms: { both: { dir: [lerp(0.1, 0.7, u), 0.03, lerp(1, 0.55, u)], elbow: lerp(168, 110, u), bend: 'up' } } }), reps: 3, view: 'side' }));
   check('yüze çekiş: ip yüze kadar çekilmiyor → ret', r.bad >= 2 && has(r, 'yüze'), desc(r));
@@ -600,10 +604,12 @@ function makeProfile(hide = []) {
   check('yüze çekiş yandan: kürek geri çekilirken omzun doğal kayması hata değil', r.ok === 3 && !has(r, 'kulağa'), desc(r));
   r = run('face-pull', sequence({ specAt: (u, k) => ({ ...fpr()(u, k), shrug: k >= 0 ? 0.13 : 0 }), reps: 3, view: 'side' }));
   check('yüze çekiş yandan: belirgin silkme hâlâ ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
-  r = run('face-pull', sequence({ specAt: fpr({ lean: 25 }), reps: 3, view: 'front' }));
-  check('yüze çekiş önden: geriye yaslanarak çalışma → ret (önden gövde kontrolü)', r.bad >= 2 && has(r, 'eğildi'), desc(r));
-  r = run('face-pull', sequence({ specAt: fpr(), reps: 4, view: 'front', noise: 0.004, seed: 93 }));
-  check('yüze çekiş önden gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
+  r = run('face-pull', sequence({ specAt: fpr({ lean: 25 }), reps: 3, view: 'side' }));
+  check('yüze çekiş yandan: geriye yaslanarak çalışma → ret (vücut sabitliği)', r.bad === 3 && (has(r, 'eğil') || has(r, 'sallan')), desc(r));
+  r = run('face-pull', sequence({ specAt: (u) => ({ arms: { both: { dir: [lerp(0.1, 0.35, u), lerp(0.05, 0.85, u), lerp(1, -0.35, u)], elbow: lerp(168, 75, u), bend: 'fwd' } } }), reps: 3, view: 'side' }));
+  check('yüze çekiş: ipi karna çekmek → ret (baş hizası)', r.bad === 3 && has(r, 'baş hizasına'), desc(r));
+  r = run('face-pull', sequence({ specAt: (u, k) => ({ arms: { both: { dir: [lerp(0.4, 0.95, u), lerp(0.05, -0.02, u), lerp(0.85, 0.15, u)], elbow: lerp(k >= 0 ? 125 : 168, 80, u), bend: 'up' } } }), reps: 3, view: 'side' }));
+  check('yüze çekiş: kollar önde tamamen açılmıyor → ret', r.bad >= 2 && has(r, 'tamamen açılmadı'), desc(r));
   r = run('face-pull', sequence({ specAt: fpr(), reps: 4, view: 'side', noise: 0.004, seed: 94 }));
   check('yüze çekiş yandan gürültülü doğru form: 4/4', r.ok === 4 && r.bad === 0, desc(r));
   // ters pec deck: kol omuz hizasının ~9 cm altı → yalnız uyarı, ~14 cm altı → ret
