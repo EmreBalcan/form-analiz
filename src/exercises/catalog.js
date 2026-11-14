@@ -548,7 +548,7 @@ export const EXERCISES = [
       { id: 'arm-height-high', measure: 'elbowDrop', op: '<', warn: -0.2, reject: -0.33, phase: ['out', 'peak', 'back'], minMs: 200, label: 'Kol omuz hizasında (yukarı çıkmasın)', text: 'Kollar omuz hizasının üstüne çıktı', cue: 'Kollarını omuz hizasına indir' },
       R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallandı — göğsünü pedden ayırma' }),
       R.leanDrift({ warn: 8, reject: 13, text: 'Gövde öne eğildi / geriye yattı — göğüs pedde sabit kalmalı' }),
-      R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.07, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }),
+      R.shrug({ warn: 0.12, reject: 0.2, raiseAllowance: 0.08, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — trapez devreye girdi' }), // ~%20 daha toleranslı
     ],
   }),
   ex(15, 'face-pull', 'Yüze Kablo Çekiş', 'Face Pull', 'Omuz', 'face-pull.webp', {
