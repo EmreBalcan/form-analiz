@@ -618,6 +618,39 @@ function makeProfile(hide = []) {
   check('ters pec deck kol ~9 cm aşağıda → sayılır + uyarı', r.ok === 3 && hasW(r, 'altına'), desc(r));
 }
 
+{
+  results.push('Güncelleme 2026-11-16: tek kolla sayım (biceps/baş üstü triceps), triceps yandan silkme ve dirsek toleransı');
+  const one = (o = {}) => (u) => ({ arms: { L: { elbow: lerp(165, o.top ?? 45, u), flex: lerp(4, 10, u), abd: 8, bend: 'fwd' }, R: { elbow: 165, flex: 4, abd: 8 } } });
+  for (const id of ['dumbbell-curl', 'hammer-curl']) for (const view of ['front', 'side']) {
+    const r = run(id, sequence({ specAt: one(), reps: 3, view }));
+    check(`${id} ${view}: TEK KOL ile 3 tekrar sayılır`, r.ok === 3 && r.bad === 0, desc(r));
+  }
+  let r = run('dumbbell-curl', sequence({ specAt: one({ top: 105 }), reps: 3, view: 'front' }));
+  check('dambıl curl tek kol yarım tekrar → ret', r.bad === 3 && has(r, 'yeterince'), desc(r));
+  r = run('dumbbell-curl', sequence({ specAt: curl(), reps: 3, view: 'front' }));
+  check('dambıl curl iki kol birlikte hâlâ sayılır', r.ok === 3, desc(r));
+  r = run('barbell-curl', sequence({ specAt: one(), reps: 3, view: 'front' }));
+  check('barla curl: tek kol SAYILMAZ (iki kol zorunlu)', r.ok === 0, desc(r));
+  r = run('incline-dumbbell-curl', sequence({ specAt: (u) => ({ torsoPitch: 45, arms: { L: { flex: -45, abd: 6, elbow: lerp(168, 50, u), bend: 'fwd' }, R: { flex: -45, abd: 6, elbow: 168 } } }), reps: 3, view: 'side' }));
+  check('eğimli curl tek kol: 3 sayılır', r.ok === 3, desc(r));
+  // baş üstü triceps tek kol
+  const ohe1 = (u) => ({ arms: { L: { flex: 172, abd: 8, elbow: lerp(165, 75, u), bend: 'back' }, R: { flex: 0, abd: 8, elbow: 170 } } });
+  for (const view of ['side', 'front']) {
+    r = run('overhead-triceps-extension', sequence({ specAt: ohe1, reps: 3, view }));
+    check(`baş üstü triceps ${view}: tek kol 3 sayılır`, r.ok === 3, desc(r));
+  }
+  // triceps yandan: ağırlığı bastırırken omzun küçük doğal hareketi sahte silkme değil
+  const pdn = (o = {}) => (u, k) => ({ torsoPitch: 12, shrug: (o.nat ? lerp(0, o.nat, u) : 0) + (o.held && k >= 0 ? o.held : 0), arms: { both: { flex: 8, abd: 6, elbow: lerp(85, 170, u), bend: 'fwd' } } });
+  for (const id of ['cable-pushdown', 'rope-pushdown', 'single-arm-cable-pushdown']) {
+    r = run(id, sequence({ specAt: pdn({ nat: 0.04 }), reps: 3, view: 'side' }));
+    check(`${id} yandan: küçük doğal omuz hareketi hata değil`, r.ok === 3 && !has(r, 'kulağa'), desc(r));
+  }
+  r = run('cable-pushdown', sequence({ specAt: pdn({ held: 0.12 }), reps: 3, view: 'side' }));
+  check('triceps itiş yandan: belirgin silkme hâlâ ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
+  r = run('cable-pushdown', sequence({ specAt: pushdown({ drift: 30 }), reps: 3, view: 'side' }));
+  check('triceps itiş: ~25° dirsek hareketi artık kabul (bir tık toleranslı)', r.ok === 3, desc(r));
+}
+
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
 {
   results.push('Yanlış alarm yok: yüksek gürültüde doğru form');

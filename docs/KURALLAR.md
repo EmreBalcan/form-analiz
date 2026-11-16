@@ -397,16 +397,17 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 31° · ret > 44° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 28° · ret > 42° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 40° · ret > 54° | tüm tekrar | önden/çapraz |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.26 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 21. Baş Üstü Triceps Açış (Overhead Triceps Extension)
 
@@ -418,10 +419,11 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler öne düştü — üst kol başın yanında dik kalmalı | **Kritik** | uyarı < 145° · ret < 130° | tüm tekrar | tümü |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | tümü |
 | Dirsekler yana açıldı — başına yakın tut | **Kritik** | uyarı > 0.42 (vücut ölçeği) · ret > 0.62 (vücut ölçeği) | tüm tekrar | önden |
 | Bel aşırı büküldü — karnını sık | **Kritik** | tekrar başına göre değişim uyarı < -7° · ret < -13° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.26 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 22. Sehpa Dip (Bench Dip)
 
@@ -832,16 +834,17 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 31° · ret > 44° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 28° · ret > 42° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 40° · ret > 54° | tüm tekrar | önden/çapraz |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.26 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 51. Tek Kol Kablo Triceps İtiş (Single Arm Cable Pushdown)
 
@@ -852,16 +855,17 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | ret: yandan |
-| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 40° | tüm tekrar | önden/çapraz |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: yandan |
-| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 37° · ret > 50° | tüm tekrar | önden/çapraz |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | ret: yandan |
+| Dirsek sabit kalmadı — üst kol gövdenin yanında kilitli olmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 31° · ret > 44° | tüm tekrar | önden/çapraz |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 28° · ret > 42° | tüm tekrar | ret: yandan |
+| Dirsekler öne kaçtı — omuz ve sırt devreye girdi | **Kritik** | uyarı > 40° · ret > 54° | tüm tekrar | önden/çapraz |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 25° · ret > 38° | tüm tekrar | ret: önden |
 | Dirsekler yana açıldı — gövdene yakın tut | **Kritik** | uyarı > 35° · ret > 48° | tüm tekrar | yandan/çapraz |
 | Öne fazla eğildin — gövde en fazla hafif (10-20°) eğik olmalı | **Kritik** | uyarı > 25° · ret > 40° | tüm tekrar | ret: yandan |
 | Gövdeyle bastırıldı — vücut ağırlığı kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 6° · ret > 11° | tüm tekrar | ret: yandan |
 | Gövde başlangıç duruşundan öne/arkaya eğildi | **Kritik** | kalibrasyona göre uyarı > 8° · ret > 14° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | sürekli | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.26 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 52. Yatarak Triceps Açış (Lying Triceps Extension)
 
@@ -872,7 +876,7 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
+| Üst kol hareket etti — dirsekler tavana bakarak sabit kalmalı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | tümü |
 | Dirsekler ayaklara doğru kaydı — hareket press’e döndü | **Kritik** | uyarı < 65° · ret < 50° | tüm tekrar | tümü |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
 | Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
@@ -887,10 +891,11 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler aşağı düştü — üst kol başın yanında kalmalı | **Kritik** | uyarı < 130° · ret < 115° | tüm tekrar | tümü |
-| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 14° · ret > 24° | tüm tekrar | tümü |
+| Dirsek sabit kalmadı — üst kol öne/arkaya hareket etti | **Kritik** | tekrar içindeki hareket aralığı uyarı > 17° · ret > 28° | tüm tekrar | tümü |
 | Dirsekler yana açıldı | **Kritik** | uyarı > 0.42 (vücut ölçeği) · ret > 0.62 (vücut ölçeği) | tüm tekrar | önden |
 | Gövde ileri-geri sallandı — momentum kullanıldı | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.12 (vücut ölçeği) · ret > 0.2 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.26 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 54. Paralel Bar Dip (Parallel Bar Dip)
 

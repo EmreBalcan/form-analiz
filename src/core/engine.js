@@ -90,6 +90,8 @@ export class FormEngine {
       // iki kol birden istenir ama tekrar en yükseğe kalkan kola göre sayılır (geride kalan kol ayrıca uyarılır)
       const prog = (x) => (x - m.start) / (m.target - m.start);
       const s = keys.reduce((a, k) => (prog(perSide[k]) > prog(perSide[a]) ? k : a), keys[0]);
+      // workingArmRules: tek kolla da yapılabilen harekette kol kuralları yalnızca ÇALIŞAN kola uygulanır
+      this.frameWorking = m.workingArmRules ? keys.filter((k) => prog(perSide[k]) >= 0.35) : null;
       // kollar aşağıdayken iki kolun ortalaması (titreşim azalır, kalibrasyon sabit); bir kol kalkınca en yüksek kol
       if (prog(perSide[s]) < 0.35) {
         const avg = keys.reduce((a, k) => a + perSide[k], 0) / keys.length;
@@ -258,6 +260,7 @@ export class FormEngine {
     if (this.rep) {
       const r = this.rep;
       r.frames++;
+      if (this.frameWorking) { r.working = r.working || new Set(); this.frameWorking.forEach((s) => r.working.add(s)); }
       if (p > r.maxP) { r.maxP = p; r.tPeak = t; r.localMin = null; }
       if (p >= 1 && !r.reached) { r.reached = true; r.tReach = t; }
       if (p >= PEAK_P) r.peakMs += dt;
@@ -395,12 +398,19 @@ export class FormEngine {
     });
   }
 
+  /** Tek kolla da yapılabilen hareketlerde tekrar içinde yalnızca çalışan kol(lar). */
+  workingFilter(sides, rep) {
+    if (!this.def.metric.workingArmRules || !rep || !rep.working || !rep.working.size) return sides;
+    const f = sides.filter((s) => rep.working.has(s));
+    return f.length ? f : sides;
+  }
+
   /** Bir kuralı ölç: tüm taraflar için en kötü değeri döndür. */
   measureRule(rule, P, ctx, rep) {
     // sides 'all': tek kollu harekette bile görünen tüm omuzlar (ör. silkme iki omuzda da ölçülür)
     const sides = rule.global ? [null]
       : rule.sides === 'all' ? P.sidesFor(['shoulder'])
-        : rule.sides === 'active' ? this.sides(P).slice(0, 1) : this.sides(P);
+        : rule.sides === 'active' ? this.sides(P).slice(0, 1) : this.workingFilter(this.sides(P), rep);
     let worst = null;
     for (const s of sides) {
       const r = rule.fn(P, ctx, s);
