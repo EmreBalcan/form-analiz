@@ -508,7 +508,7 @@ function makeProfile(hide = []) {
 {
   results.push('Güncelleme 2026-11-08: kamera yerleşimi, kısmi görünürlük, biceps/triceps toleransı, eğimli curl');
   // eğimli sehpa curl: gövde ~45° geriye yatık, kollar yere dik sarkık (gövdenin arkasında)
-  const ic = (o = {}) => (u) => ({ torsoPitch: 45, arms: { both: { flex: -45 + (o.drift ? lerp(0, o.drift, u) : 0), abd: 6, elbow: lerp(o.bottom ?? 168, 50, u), bend: 'fwd' } } });
+  const ic = (o = {}) => (u) => ({ torsoPitch: 45, hipY: 0.55, legs: { both: { flex: 90, knee: 90 } }, arms: { both: { flex: -45 + (o.drift ? lerp(0, o.drift, u) : 0), abd: 6, elbow: lerp(o.bottom ?? 168, 50, u), bend: 'fwd' } } });
   let r = run('incline-dumbbell-curl', sequence({ specAt: ic(), reps: 4, view: 'side' }));
   check('eğimli curl doğru form: 4 geçerli', r.ok === 4 && r.bad === 0, desc(r));
   r = run('incline-dumbbell-curl', sequence({ specAt: ic(), reps: 4, view: 'side', hide: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32] }));
@@ -631,7 +631,7 @@ function makeProfile(hide = []) {
   check('dambıl curl iki kol birlikte hâlâ sayılır', r.ok === 3, desc(r));
   r = run('barbell-curl', sequence({ specAt: one(), reps: 3, view: 'front' }));
   check('barla curl: tek kol SAYILMAZ (iki kol zorunlu)', r.ok === 0, desc(r));
-  r = run('incline-dumbbell-curl', sequence({ specAt: (u) => ({ torsoPitch: 45, arms: { L: { flex: -45, abd: 6, elbow: lerp(168, 50, u), bend: 'fwd' }, R: { flex: -45, abd: 6, elbow: 168 } } }), reps: 3, view: 'side' }));
+  r = run('incline-dumbbell-curl', sequence({ specAt: (u) => ({ torsoPitch: 45, hipY: 0.55, legs: { both: { flex: 90, knee: 90 } }, arms: { L: { flex: -45, abd: 6, elbow: lerp(168, 50, u), bend: 'fwd' }, R: { flex: -45, abd: 6, elbow: 168 } } }), reps: 3, view: 'side' }));
   check('eğimli curl tek kol: 3 sayılır', r.ok === 3, desc(r));
   // baş üstü triceps tek kol
   const ohe1 = (u) => ({ arms: { L: { flex: 172, abd: 8, elbow: lerp(165, 75, u), bend: 'back' }, R: { flex: 0, abd: 8, elbow: 170 } } });
@@ -649,6 +649,42 @@ function makeProfile(hide = []) {
   check('triceps itiş yandan: belirgin silkme hâlâ ret', r.bad === 3 && has(r, 'kulağa'), desc(r));
   r = run('cable-pushdown', sequence({ specAt: pushdown({ drift: 30 }), reps: 3, view: 'side' }));
   check('triceps itiş: ~25° dirsek hareketi artık kabul (bir tık toleranslı)', r.ok === 3, desc(r));
+}
+
+{
+  results.push('Güncelleme 2026-11-18: biceps vücut konumu, itişler = tek kol itiş');
+  // synth: torsoPitch + = geriye, − = öne
+  const SEAT = { hipY: 0.55, legs: { both: { flex: 90, knee: 90 } } };
+  // konsantrasyon: oturarak, gövde öne ~35°, çalışan kol yere dik sarkık
+  const conc = (seated) => (u) => ({ ...(seated ? SEAT : {}), torsoPitch: -35, arms: { L: { flex: 35, abd: 6, elbow: lerp(155, 50, u), bend: 'fwd' }, R: { flex: 10, abd: 10, elbow: 165 } } });
+  let r = run('concentration-curl', sequence({ specAt: conc(true), reps: 3, view: 'side' }));
+  check('konsantrasyon curl oturarak: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('concentration-curl', sequence({ specAt: conc(false), reps: 3, view: 'side' }));
+  check('konsantrasyon curl AYAKTA → ret', r.bad === 3 && has(r, 'oturarak'), desc(r));
+  r = run('concentration-curl', sequence({ specAt: (u) => ({ ...conc(true)(u), torsoPitch: 0, arms: { L: { flex: 0, abd: 6, elbow: lerp(155, 50, u), bend: 'fwd' }, R: { flex: 0, abd: 8, elbow: 165 } } }), reps: 3, view: 'side' }));
+  check('konsantrasyon curl gövde dik (öne eğik değil) → ret', r.bad === 3 && has(r, 'öne eğ'), desc(r));
+  // preacher: oturarak, üst kol öne ~45° pedde
+  const pre = (seated, flex = 45) => (u) => ({ ...(seated ? SEAT : {}), arms: { both: { flex, abd: 8, elbow: lerp(148, 55, u), bend: 'fwd' } } });
+  r = run('preacher-curl', sequence({ specAt: pre(true), reps: 3, view: 'side' }));
+  check('preacher oturarak, kol pedde: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('preacher-curl', sequence({ specAt: pre(false), reps: 3, view: 'side' }));
+  check('preacher AYAKTA → ret', r.bad === 3 && has(r, 'oturarak'), desc(r));
+  r = run('preacher-curl', sequence({ specAt: pre(true, 5), reps: 3, view: 'side' }));
+  check('preacher üst kol pedde değil (yanda) → ret', r.bad === 3 && has(r, 'pedinde'), desc(r));
+  // spider: göğüs eğimli sehpada, gövde öne ~45°, kollar yere dik
+  const spi = (lean) => (u) => ({ torsoPitch: -lean, arms: { both: { flex: lean, abd: 6, elbow: lerp(160, 50, u), bend: 'fwd' } } });
+  r = run('spider-curl', sequence({ specAt: spi(45), reps: 3, view: 'side' }));
+  check('spider göğüs sehpada: 3 geçerli', r.ok === 3 && r.bad === 0, desc(r));
+  r = run('spider-curl', sequence({ specAt: spi(0), reps: 3, view: 'side' }));
+  check('spider DİK durarak → ret', r.bad === 3 && has(r, 'sehpaya daya'), desc(r));
+  // eğimli sehpa: oturarak ama sırt sehpaya yaslı değil (dik)
+  r = run('incline-dumbbell-curl', sequence({ specAt: (u) => ({ ...SEAT, torsoPitch: 0, arms: { both: { flex: 0, abd: 6, elbow: lerp(168, 50, u), bend: 'fwd' } } }), reps: 3, view: 'side' }));
+  check('eğimli curl sırt sehpada değil (dik oturuyor) → ret', r.bad === 3 && has(r, 'yasla'), desc(r));
+  // kablo itiş iki kolla da tek kol itiş gibi ölçülür
+  for (const id of ['cable-pushdown', 'rope-pushdown']) {
+    r = run(id, sequence({ specAt: pushdown(), reps: 4, view: 'side', noise: 0.004, seed: 101 }));
+    check(`${id} yandan gürültülü doğru form: 4/4`, r.ok === 4 && r.bad === 0, desc(r));
+  }
 }
 
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
