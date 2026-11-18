@@ -70,7 +70,7 @@ const pushdownMetric = (target = 160) => ({
   returnText: 'Yukarıda ön kol yere paralel olana kadar dönülmedi',
 });
 
-const benchRules = ({ flare = [75, 85], tuck = 20, lowBar = [0.1, 1.25] } = {}) => [
+const benchRules = ({ flare = [75, 85], tuck = 20, lowBar = [0.1, 1.25], lowBarReject } = {}) => [
   {
     id: 'bench-flare', measure: 'armElev', op: '>', warn: flare[0], reject: flare[1], phase: ['peak'], bestView: 'side', minMs: 150,
     label: 'Dirsek açısı (gövdeyle 45-75°)', text: 'Dirsekler gövdeye 90° açıldı — 45-75° arasında tut (omuz sıkışır)', cue: 'Dirseklerini biraz içeri al',
@@ -85,11 +85,11 @@ const benchRules = ({ flare = [75, 85], tuck = 20, lowBar = [0.1, 1.25] } = {}) 
   },
   // bar/dambıl GÖĞÜS HİZASINA inmeli: karna veya boyuna inince tekrar sayılmaz
   {
-    id: 'bar-high', measure: 'wristDrop', op: '<', warn: lowBar[0], reject: lowBar[0] - 0.15, phase: ['peak'], views: ['side'], minMs: 200,
+    id: 'bar-high', measure: 'wristDrop', op: '<', warn: lowBar[0], reject: lowBar[0] - 0.15, phase: ['peak'], views: ['side', 'oblique'], minMs: 150,
     label: 'Barın indiği nokta (göğüs hizası, boyna değil)', text: 'Bar boyuna/üst göğse iniyor — göğüs hizasına indir', cue: 'Barı göğsün ortasına indir',
   },
   {
-    id: 'bar-low', measure: 'wristDrop', op: '>', warn: lowBar[1], reject: lowBar[1] + 0.15, phase: ['peak'], views: ['side'], minMs: 200,
+    id: 'bar-low', measure: 'wristDrop', op: '>', warn: lowBar[1], reject: lowBarReject ?? lowBar[1] + 0.15, phase: ['peak'], views: ['side', 'oblique'], minMs: 150,
     label: 'Barın indiği nokta (göğüs hizası, karna değil)', text: 'Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır', cue: 'Barı göğsüne indir',
   },
   R.hipLift(),
@@ -300,24 +300,26 @@ export const EXERCISES = [
   ex(1, 'bench-press', 'Düz Bench Press', 'Bench Press', 'Göğüs', 'bench-press.webp', {
     posture: 'lying', plane: 'transverse', view: 'side', required: ['shoulder', 'elbow', 'wrist', 'hip'],
     setup: 'Kamerayı sehpanın yanına, sehpa yüksekliğine koy. Baştan kalçaya kadar tüm vücut görünsün.',
-    startText: 'kollar yukarıda düz', metric: benchMetric(0.6), tempo: benchTempo, rules: benchRules({ lowBar: [0.1, 0.95] }),
+    startText: 'kollar yukarıda düz', metric: benchMetric(0.55), tempo: benchTempo, rules: benchRules({ lowBar: [0.15, 0.74], lowBarReject: 0.82 }),
   }),
   ex(2, 'incline-dumbbell-press', 'Eğimli Dambıl Press', 'Incline Dumbbell Press', 'Göğüs', 'incline-dumbbell-press.webp', {
     posture: 'lying', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
     setup: 'Kamera yanda, sehpa hizasında. Omuz, dirsek, bilek ve kalça görünmeli.',
     startText: 'dambıllar yukarıda, kollar düz',
-    metric: { ...benchMetric(0.8), start: 1.3, romText: 'Dambıllar yeterince indirilmedi' },
+    // tekrar dirsek açısıyla sayılır (160° → 95°): ellerin öne uzaklığı bu harekette dar aralıklıydı, titreşim tekrarı bölüyordu
+    metric: { fn: 'elbowAngle', smooth: 5, start: 160, target: 95, label: 'Dirsek açısı', romText: 'Dambıllar yeterince indirilmedi', returnText: 'Kollar yukarıda tam açılmadı' },
     tempo: { minOutMs: 800, outText: 'Dambıllar hızlı indirildi / düşürüldü — kontrollü indir' },
     rules: [
       // bilek kuralı bu harekette gevşek ve açık: ön kol yere dik olmalı (dambıl dirseğin tam üstünde)
       // ön kol kuralı burada yalnız UYARI (eğimli presste ön kol yere veya sehpaya dik tutulabilir)
-      ...benchRules({ lowBar: [0.05, 1.2] }).map((r) => {
+      ...benchRules({ lowBar: [0.05, 1.0] }).map((r) => {
         if (r.id !== 'forearm-vertical') return r;
         const { reject, ...rest } = r;
         return { ...rest, warn: 40, label: 'Ön kol yaklaşık dik', text: 'Ön kolların çok eğik — dambıl dirseğinin üstüne yakın olmalı', cue: 'Dambılı dirseğinin üstünde tut' };
       }),
       // eğimli presste dambıllar YERE DİK yukarı itilir (göğüs press gibi öne doğru değil)
-      { id: 'press-up', measure: inclineLockTilt, op: '>', agg: 'extreme', warn: 22, reject: 32, phase: ['out', 'back'], views: ['side'],
+      // 'start': tekrar başlamadan önceki kilitli duruş da değerlendirilir (dambıllar yukarıdayken kol yere dik mi)
+      { id: 'press-up', measure: inclineLockTilt, op: '>', agg: 'extreme', warn: 20, reject: 28, phase: ['start', 'out', 'back'], views: ['side', 'oblique'],
         label: 'Dambıllar yukarı (yere dik) itiliyor', text: 'Dambıllar öne doğru itildi — eğimli presste yukarıya, omuzlarının üstüne it', cue: 'Yukarı it, öne değil' },
       // kolların aşağı düşmesi: dirsekler göğüs hizasının çok altına inmesin
       { id: 'too-deep', measure: 'elbowAnt', op: '<', warn: -0.45, reject: -0.65, phase: ['peak'], views: ['side'], minMs: 150,
@@ -395,7 +397,7 @@ export const EXERCISES = [
     tempo: { minBackMs: 650 },
     rules: [
       R.elbowAngleFixed({ warn: 28, reject: 45 }),
-      { id: 'finish-height', measure: 'wristDrop', op: '>', agg: 'extreme', warn: 0.75, reject: 0.95, phase: ['peak'], label: 'Eller göğüs hizasında birleşiyor', text: 'Eller göğüs hizasında birleşmedi (göbek hizasında kaldı) — ellerini göğüs hizasına kaldır', cue: 'Ellerini göğüs hizasına getir' },
+      { id: 'finish-height', measure: 'wristDrop', op: '>', agg: 'extreme', warn: 0.55, reject: 0.65, phase: ['peak'], label: 'Eller göğüs hizasında birleşiyor', text: 'Eller göğüs hizasında birleşmedi (göbek hizasında kaldı) — ellerini göğüs hizasına kaldır', cue: 'Ellerini göğüs hizasına getir' },
       R.shrug({ warn: 0.1, reject: 0.17, raiseAllowance: 0.06 }),
       R.sway({ warn: 6, reject: 11, rejectConf: 0.55, text: 'Gövde öne-arkaya sallandı — momentum kullanıldı' }),
       R.leanDrift({ warn: 8, reject: 14, text: 'Gövde başlangıç duruşundan öne/arkaya eğildi' }),
@@ -927,6 +929,7 @@ export const EXERCISES = [
     ],
   }),
   ex(29, 'walking-lunge', 'Yürüyen Hamle', 'Walking Lunge', 'Bacak', 'walking-lunge.webp', {
+    motionGuard: false, // hareketin kendisi yer değiştirme içeriyor
     allSides: true, required: ['hip', 'knee', 'ankle'],
     setup: 'Kamerayı yanına uzağa koy; yürüme alanı boyunca baştan ayağa görünsün.',
     startText: 'dik dur',
@@ -972,6 +975,7 @@ export const EXERCISES = [
     ],
   }),
   ex(72, 'step-up', 'Sehpaya Adım Çıkma', 'Step-Up', 'Bacak', 'step-up.png', {
+    motionGuard: false, // hareketin kendisi yer değiştirme içeriyor
     allSides: true, required: ['hip', 'knee', 'ankle'],
     setup: 'Kamera yanda; sehpa ve iki bacak görünsün.',
     startText: 'bir ayak sehpada',
@@ -1082,6 +1086,7 @@ export const EXERCISES = [
 
   // ======================= KARDİYO
   ex(38, 'treadmill', 'Koşu Bandı', 'Treadmill', 'Kardiyo', 'treadmill.webp', {
+    motionGuard: false, // hareketin kendisi yer değiştirme içeriyor
     allSides: true, required: ['hip', 'knee', 'ankle'], counterLabel: 'Adım döngüsü',
     setup: 'Kamera bandın yanında; baştan ayağa görünsün.',
     startText: 'yürü/koş',
@@ -1121,6 +1126,7 @@ export const EXERCISES = [
 
   // ======================= TÜM VÜCUT
   ex(42, 'burpee', 'Burpee', 'Burpee', 'Tüm vücut', 'burpee.webp', {
+    motionGuard: false, // hareketin kendisi yer değiştirme içeriyor
     required: ['shoulder', 'hip', 'knee'], posture: 'any',
     setup: 'Kamera yanda, uzakta; ayakta ve yerde tüm vücut görünsün.',
     startText: 'dik dur',
@@ -1128,6 +1134,7 @@ export const EXERCISES = [
     rules: [...R.bodyLine({ sagWarn: 12, sagReject: 22, pikeWarn: 25, pikeReject: 40, phase: ['peak'] })],
   }),
   ex(43, 'jumping-jack', 'Aç-Kapa Sıçrama', 'Jumping Jack', 'Tüm vücut', 'jumping-jack.webp', {
+    motionGuard: false, // hareketin kendisi yer değiştirme içeriyor
     plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı karşına, uzağa koy; kollar yukarıda ve bacaklar açıkken tüm vücut görünsün.',
     startText: 'kollar yanda, ayaklar bitişik',

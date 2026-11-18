@@ -734,6 +734,66 @@ function makeProfile(hide = []) {
   }
 }
 
+{
+  results.push('Güncelleme 2026-11-18c: GERÇEKÇİ göğüs testleri + yürüme/kameraya gidip gelme');
+  // gerçekçi: kollar tam kilitlenmiyor (dirsek ~160°), tekrar hızları değişken, titreşim, hafif çapraz kamera
+  const speeds = [2000, 2600, 1700, 3000, 2300];
+  const multi = (specAt, view, extra = {}) => {
+    const frames = [];
+    let t = 0;
+    for (let i = 0; i < speeds.length; i++) {
+      const seq = sequence({ specAt, reps: 1, repMs: speeds[i], idleMs: i === 0 ? 1500 : 0, restMs: 500, view, noise: 0.004, seed: 200 + i, ...extra });
+      for (const f of seq) frames.push({ ...f, t: (t += 33) });
+    }
+    return frames;
+  };
+  // eğimli dambıl press (45° sehpa): doğru = yere dik yukarı; yanlış = öne (göğüs press gibi)
+  const incR = (fwd) => (u) => {
+    const deg = 45, tt = (fwd ? deg - 90 : deg) * Math.PI / 180;
+    const up = [0, -Math.sin(tt), Math.cos(tt)];
+    const a = 50 * Math.PI / 180, b = [Math.sin(a) * 0.94, Math.cos(a) * 0.94, -0.35];
+    return { rootPitch: -90 + deg, arms: { both: { dir: [lerp(up[0], b[0], u), lerp(up[1], b[1], u), lerp(up[2], b[2], u)], elbow: lerp(162, 72, u), bend: 'fwd' } }, legs: { both: { flex: 80, knee: 95 } } };
+  };
+  for (const yaw of [0, 20]) {
+    let r = run('incline-dumbbell-press', multi(incR(false), 'side', { yaw }));
+    check(`eğimli dambıl press ${yaw}°: 5 tekrar = tam 5 sayım (çift sayım yok)`, r.reps.length === 5, desc(r));
+    check(`eğimli dambıl press ${yaw}°: doğru yönde ‘öne itildi’ yok`, !has(r, 'öne doğru'), desc(r));
+    r = run('incline-dumbbell-press', multi(incR(true), 'side', { yaw }));
+    check(`eğimli dambıl press ${yaw}°: ÖNE itince her tekrar ret`, r.reps.length >= 4 && r.reps.every((x) => !x.ok) && has(r, 'öne doğru'), desc(r));
+  }
+  // düz bench: alt göğüs/üst karın/karın
+  const benchR = (bottom, bend = 'fwd') => (u) => ({ rootPitch: -90, arms: { both: { dir: [lerp(0, bottom[0], u), lerp(0, bottom[1], u), lerp(1, bottom[2], u)], elbow: lerp(165, 70, u), bend } }, legs: { both: { flex: 80, knee: 95 } } });
+  let r = run('bench-press', multi(benchR([0.72, 0.6, -0.35]), 'side'));
+  check('bench göğse indirme (gerçekçi): 5 sayım, karın/boyun reddi yok', r.reps.length === 5 && !has(r, 'karına') && !has(r, 'boyuna'), desc(r));
+  r = run('bench-press', multi(benchR([0.5, 0.85, -0.25]), 'side'));
+  check('bench ÜST KARNA indirme → ret', r.reps.filter((x) => !x.ok).length >= 4 && (has(r, 'karına') || has(r, 'göğse')), desc(r));
+  r = run('bench-press', multi(benchR([0.5, 0.85, -0.25]), 'side', { yaw: 20 }));
+  check('bench üst karna indirme, kamera hafif çapraz → ret', r.reps.filter((x) => !x.ok).length >= 4 && (has(r, 'karına') || has(r, 'göğse')), desc(r));
+  // aşağıdan yukarı kablo açış: eksik kaldırma
+  const lhR = (endEl) => (u) => { const el = lerp(25, endEl, u) * Math.PI / 180, ph = lerp(80, -14, u) * Math.PI / 180; return { arms: { both: { dir: [Math.sin(el) * Math.sin(ph), Math.cos(el), Math.sin(el) * Math.cos(ph)], elbow: 160, bend: 'in' } } }; };
+  r = run('cable-fly-low-high', multi(lhR(75), 'front'));
+  check('aşağıdan yukarı göğüs hizasına (gerçekçi): 5 sayım, yükseklik reddi yok', r.reps.length === 5 && !has(r, 'göğüs hizasında birleşmedi'), desc(r));
+  r = run('cable-fly-low-high', multi(lhR(62), 'front'));
+  check('aşağıdan yukarı TAM KALDIRMADAN → ret', r.reps.filter((x) => !x.ok).length >= 4 && has(r, 'göğüs hizasında birleşmedi'), desc(r));
+
+  // yürüme / kameraya gidip gelme: 2 doğru tekrardan sonra kişi yürüyor → yeni sayım (doğru/yanlış) OLMAMALI
+  const walkAfter = (exId, spec, view, how) => {
+    const base = sequence({ specAt: spec, reps: 2, view, noise: 0.003 });
+    const last = base[base.length - 1].t;
+    const walk = sequence({ specAt: (u, kk) => ({ ...spec((Math.sin(u * 7) + 1) / 2), ...(how === 'yan' ? { hipZ: lerp(0, 2.2, Math.min(1, (kk + u) / 1)) } : {}) }), reps: 3, idleMs: 0, view, noise: 0.003,
+      frame: how === 'yaklaş' ? (ph, kk) => ({ fw: lerp(4.2, 1.9, Math.min(1, (kk + ph) / 1)), cy: 1.15 }) : undefined, yaw: how === 'dön' ? (ph, kk) => lerp(0, 60, (kk + ph) / 3) : 0 })
+      .map((f) => ({ ...f, t: f.t + last }));
+    const r1 = run(exId, base), r2 = run(exId, [...base, ...walk]);
+    return { before: r1.reps.length, after: r2.reps.length, r: r2 };
+  };
+  for (const [exId, spec, view] of [['dumbbell-curl', curl(), 'side'], ['dumbbell-curl', curl(), 'front'], ['cable-pushdown', pushdown(), 'side'], ['lateral-raise', lat(), 'front'], ['squat', squat(), 'side']]) {
+    for (const how of view === 'side' ? ['yan'] : ['yaklaş']) {
+      const w = walkAfter(exId, spec, view, how);
+      check(`${exId} ${view}: kişi ${how === 'yan' ? 'yürüyüp' : 'kameraya yaklaşıp'} gidince sayaç artmıyor (${w.before} → ${w.after})`, w.after === w.before, desc(w.r));
+    }
+  }
+}
+
 // ---------------------------------------------------------------- YANLIŞ ALARM (gürültülü veri, doğru form)
 {
   results.push('Yanlış alarm yok: yüksek gürültüde doğru form');

@@ -40,6 +40,10 @@ export class FormEngine {
     this.startSince = null;
     this.misSince = null;
     this.lastMisT = null;
+    this.motionHist = [];
+    this.moveUntil = null;
+    this.needSettle = false;
+    this.restStart = null;
     this.metricSmooth = [];
     this.gateBuf = [];
   }
@@ -157,6 +161,9 @@ export class FormEngine {
       if (mvPartial) snap.partial = missing;
     }
     if (missing.length && !mvPartial) {
+      // görünmeyen uzuvla yarım kalan tekrar SAYILMAZ (kameraya gidip gelirken hatalı sayaç artmasın)
+      if (this.rep) { this.rep = null; this.readyBuf = []; }
+      this.restSeen = false;
       this.state = this.calib ? 'paused' : 'waiting';
       snap.state = this.state;
       snap.message = `${missing.join(', ')} görünmüyor — ${this.def.cameraFix || 'kamerayı uzaklaştır veya açısını değiştir'}`;
@@ -203,6 +210,26 @@ export class FormEngine {
     }
     const p = this.progress(mv.v);
     snap.metric = mv.v; snap.progress = p; snap.side = mv.side;
+
+    // son 1.5 sn'nin kareleri ('start' fazlı kurallar için; yalnızca bu tür kural varsa tutulur)
+    if (this.hasStartRules ?? (this.hasStartRules = this.rules.some((x) => [].concat(x.phase).includes('start')))) {
+      this.recent = this.recent || [];
+      this.recent.push({ P, t, p });
+      while (this.recent.length && t - this.recent[0].t > 1500) this.recent.shift();
+    }
+
+    // ---------------- yürüme / kameraya gidip gelme koruması (tüm hareketler; yürüyerek yapılanlar hariç)
+    if (this.def.motionGuard !== false && this.calib) {
+      const moving = this.bodyMoving(P, t);
+      if (moving) { this.moveUntil = t + 900; this.needSettle = true; this.restStart = null; }
+      if (moving || (this.moveUntil != null && t < this.moveUntil)) {
+        this.rep = null; this.readyBuf = []; this.calibBuf = []; this.restSeen = false;
+        this.state = this.calib ? 'paused' : 'waiting';
+        snap.state = this.state;
+        snap.message = 'Hareket halindesin (yürüme / kameraya yaklaşma) — sayım duraklatıldı, yerine geçip başlangıç pozisyonunda dur';
+        return this.finishSnap(snap);
+      }
+    }
 
     // ---------------- kalibrasyon
     if (!this.calib) {
@@ -257,7 +284,14 @@ export class FormEngine {
       while (this.readyBuf.length > 8) this.readyBuf.shift();
       this.evalRules(P, ctx, dt, 'idle', snap);
       const settling = this.def.lockView && this.lastMisT != null && t - this.lastMisT < 600;
-      if (p > ENTER_P && !settling) {
+      // yeni tekrar ancak başlangıç pozisyonu görüldükten sonra başlar (rastgele hareket tekrar sayılmasın)
+      if (p < START_P) {
+        this.restSeen = true;
+        // yer değiştirmeden sonra: başlangıç pozisyonunda ≥0.7 sn sabit durulmadan sayım başlamaz
+        if (this.needSettle) { if (this.restStart == null) this.restStart = t; if (t - this.restStart >= 700) this.needSettle = false; }
+      } else this.restStart = null;
+      const fromRest = this.restSeen && !this.needSettle;
+      if (p > ENTER_P && !settling && fromRest) {
         this.startRep(ctx, t);
         this.state = 'active';
       }
@@ -319,6 +353,48 @@ export class FormEngine {
     return median(this.gateBuf) > lim ? 'Omuzların kalkık — omuzlarını indirip rahat bırak (kalibrasyon bekliyor)' : null;
   }
 
+  /**
+   * Kişi yer değiştiriyor mu (yürüme, kameraya yaklaşma/uzaklaşma)? Ayak bileği (yoksa kalça/omuz) yatay
+   * kayması ve vücut boyutunun (gövde boyu / omuz genişliği) değişimi, son 0.8 sn içinde.
+   */
+  bodyMoving(P, t) {
+    const pts = P.pts;
+    const ok = (i) => pts[i] && pts[i].v > 0.4;
+    const midOf = (a, b) => (ok(a) && ok(b) ? { x: (pts[a].x + pts[b].x) / 2, y: (pts[a].y + pts[b].y) / 2 } : null);
+    const sh = midOf(11, 12) || (ok(11) ? pts[11] : ok(12) ? pts[12] : null);
+    const hp = midOf(23, 24);
+    if (!sh) return false;
+    const sw = ok(11) && ok(12) ? Math.hypot(pts[11].x - pts[12].x, pts[11].y - pts[12].y) : 0;
+    const tl = hp ? Math.hypot(sh.x - hp.x, sh.y - hp.y) : 0;
+    // yandan omuz genişliği ~0 olur, kalça görünmeyebilir → kol boyu (kayan maksimum) da hesaba katılır
+    const ua = P.scale();
+    const size = Math.max(sw, tl, Number.isFinite(ua) ? ua * 1.2 : 0);
+    if (!(size > 5)) return false;
+    const feet = midOf(27, 28);
+    const anchor = feet || hp || sh;
+    this.motionHist = this.motionHist || [];
+    // kameraya yaklaşma (büyüme) yalnızca silkme/eğilmeden etkilenmeyen ölçüyle: önden omuz genişliği,
+    // yandan bacak boyu (kalça–ayak bileği). Yandan omuz genişliği ~0 olduğu için kullanılmaz.
+    // bacak boyu = uyluk + baldır (diz bükülünce değişmez; kalça–ayak bileği düz mesafesi squatta kısalır)
+    const seg = (a, b) => Math.hypot(pts[a].x - pts[b].x, pts[a].y - pts[b].y);
+    const leg = (side) => { const [h, kn, an] = side ? [23, 25, 27] : [24, 26, 28]; return ok(h) && ok(kn) && ok(an) ? seg(h, kn) + seg(kn, an) : 0; };
+    let body = P.view === 'side' ? Math.max(leg(true), leg(false)) : sw;
+    if (Number.isFinite(ua) && body < 0.6 * ua) body = 0;
+    this.motionHist.push({ t, x: anchor.x, size, body });
+    while (this.motionHist.length && t - this.motionHist[0].t > 1000) this.motionHist.shift();
+    if (this.motionHist.length < 6) return false;
+    // titreşim değil EĞİLİM: pencerenin ilk ve son beşte birinin ortalaması karşılaştırılır
+    const H = this.motionHist, n5 = Math.max(2, Math.floor(H.length / 5));
+    const avg = (arr) => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const ss = H.map((m) => m.size);
+    const shift = Math.abs(avg(H.slice(-n5).map((m) => m.x)) - avg(H.slice(0, n5).map((m) => m.x))) / median(ss);
+    const bs = H.map((m) => m.body);
+    const b0 = bs.slice(0, n5).filter((b) => b > 5), b1 = bs.slice(-n5).filter((b) => b > 5);
+    const grow = b0.length && b1.length ? Math.max(avg(b1) / avg(b0), avg(b0) / avg(b1)) : 1;
+    // ayaklar görünüyorsa küçük adım bile yer değiştirmedir (bu hareketlerde ayaklar sabit); yoksa kalça/omuz
+    return shift > (feet ? 0.4 : 0.8) || grow > 1.12;
+  }
+
   viewMismatch(P) {
     const c = this.calib;
     if (!c) return false;
@@ -363,6 +439,9 @@ export class FormEngine {
     calib.view = frames[frames.length - 1].P.view;
     calib.swRatio = median(frames.map((f) => shoulderWidthRatio(f.P)).filter(Number.isFinite));
     this.calib = calib;
+    this.restSeen = true;
+    // kalibrasyon kareleri (başlangıç pozisyonu) ilk tekrarın 'start' kontrollerine de girsin
+    this.readyBuf = frames.slice(-8).map((fr) => ({ P: fr.P, t: fr.t, p: this.progress(fr.v) })); // kalibrasyon başlangıç pozisyonunda alınır
     // kalibrasyona göre ölçülen kuralların taban değerleri
     const ctx2 = { ...ctx, calib };
     for (const rule of this.rules.filter((r) => r.relative === 'calib')) {
@@ -390,6 +469,18 @@ export class FormEngine {
     }
     const t0 = this.readyBuf.length ? this.readyBuf.filter((f) => f.p < START_P).pop()?.t ?? t : t;
     this.rep = { t0, tPeak: t, maxP: 0, reached: false, frames: 0, base, viol: new Map(), extremes: new Map(), alerted: new Map(), range: new Map(), measured: new Set() };
+    // 'start' kuralları: son 1.5 sn'nin kareleri (önceki tekrarın kilit anı dahil) + başlangıç pozisyonu kareleri
+    const startPool = [...(this.recent || []), ...this.readyBuf];
+    for (const rule of this.rules.filter((x) => x.agg === 'extreme' && [].concat(x.phase).includes('start'))) {
+      for (const fr of startPool) {
+        const res = this.measureRule(rule, fr.P, { ...ctx, calib: this.calib }, this.rep);
+        if (!res) continue;
+        const e = this.rep.extremes.get(rule.id);
+        const better = rule.op === '<' ? (e === undefined || res.v > e.v) : (e === undefined || res.v < e.v);
+        if (better) this.rep.extremes.set(rule.id, { v: res.v, conf: res.conf, canRejectCtx: res.conf >= (rule.rejectConf ?? REJECT_CONF), src: res.src });
+        this.rep.measured.add(rule.id);
+      }
+    }
     // aralık kurallarını başlangıç kareleriyle tohumla
     for (const rule of this.rules.filter((x) => x.relative === 'range')) {
       for (const f of startFrames) this.measureRule(rule, f.P, { ...ctx, calib: this.calib }, this.rep);

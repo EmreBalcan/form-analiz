@@ -22,7 +22,7 @@ export function mulberry(seed = 1) { return () => { seed |= 0; seed = (seed + 0x
  */
 export function skeleton(spec = {}) {
   const P = new Array(33);
-  const hipC = v(0, spec.hipY ?? 1.0, spec.hipZ ?? 0);
+  const hipC = v(spec.hipX ?? 0, spec.hipY ?? 1.0, spec.hipZ ?? 0);
   const tp = (spec.torsoPitch || 0) * RAD, tr = (spec.torsoRoll || 0) * RAD;
   // gövde eksenleri
   const T = (p) => rotZ(rotX(p, -tp), -tr); // öne eğilme: yukarı vektör +z'ye doğru
@@ -74,7 +74,7 @@ export function skeleton(spec = {}) {
     const fl = (g.flex || 0) * RAD;
     const thighDir = v(0, -Math.cos(fl), Math.sin(fl));
     const side = s === 'L' ? 1 : -1;
-    const Hh = v(hp[s].x * 0 + (s === 'L' ? 0.1 : -0.1), hipC.y, hipC.z);
+    const Hh = v(hipC.x + (s === 'L' ? 0.1 : -0.1), hipC.y, hipC.z);
     let K = add(Hh, mul(thighDir, 0.45));
     K = add(K, v(-side * (g.valgus || 0) + side * (g.spread || 0), 0, 0));
     const kn = (180 - (g.knee ?? 178)) * RAD;
@@ -133,7 +133,7 @@ export function sequence({ specAt, reps = 3, repMs = 2200, idleMs = 1500, restMs
   let t = 1000;
   const push = (phase, k) => {
     const sk = skeleton(specAt(phase, k));
-    frames.push({ ...project(sk, { view, frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, dim, farVis, yaw: typeof yaw === 'function' ? yaw(phase, k) : yaw }), t });
+    frames.push({ ...project(sk, { view, frame: typeof frame === 'function' ? frame(phase, k) : frame, rng, noise, hide: typeof hide === 'function' ? hide(phase, k) : hide, dim, farVis, yaw: typeof yaw === 'function' ? yaw(phase, k) : yaw }), t });
     t += dt;
   };
   for (let i = 0; i < idleMs / dt; i++) push(0, -1);
