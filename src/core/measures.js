@@ -464,6 +464,15 @@ Object.assign(M, {
   },
 });
 
+Object.assign(M, {
+  /** Kolun (omuz → bilek) dikeyden sapması (derece): eğimli presste dambıllar yere dik yukarı itilmeli. */
+  armVertTilt: (P, ctx, s) => {
+    const S = P.get(s, 'shoulder'), W = P.get(s, 'wrist');
+    if (!S || !W) return null;
+    return { v: angle2(sub(W, S), { x: 0, y: -1 }), conf: Math.min(S.v, W.v), src: 'omuz-bilek dikeyliği' };
+  },
+});
+
 /** Ölçüm açıklamaları (UI hata ayıklama paneli için). */
 export const MEASURE_UNITS = {
   elbowAngle: '°', kneeAngle: '°', hipAngle: '°', armElev: '°', armFlex: '°', armAbd: '°', armPlane: '°',

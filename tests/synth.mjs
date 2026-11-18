@@ -30,6 +30,8 @@ export function skeleton(spec = {}) {
   const shC = add(hipC, mul(up, 0.5));
   const shrug = spec.shrug || 0;
   const sh = { L: add(add(shC, mul(left, 0.18)), mul(up, shrug + (spec.shrugL || 0))), R: add(add(shC, mul(left, -0.18)), mul(up, shrug + (spec.shrugR || 0))) };
+  // protract: omuzların öne yuvarlanması (kamburluk), metre
+  if (spec.protract) { sh.L = add(sh.L, mul(fwd, spec.protract)); sh.R = add(sh.R, mul(fwd, spec.protract)); }
   const hp = { L: add(hipC, mul(left, 0.1)), R: add(hipC, mul(left, -0.1)) };
   // baş (gövdeyle birlikte döner; omuz silkince yerinde kalır)
   const neck = add(shC, mul(up, 0.2));

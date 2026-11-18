@@ -212,7 +212,10 @@ export class FormEngine {
       // hızlı kalibrasyon (quickCalib): 0.5 sn yeter, titreşime daha toleranslı; başlangıç pozisyonunda
       // 2.5 sn durulduysa sabitlik beklenmeden kalibre edilir; omuz kapısı en fazla 3 sn bekletir.
       const quick = !!this.def.quickCalib;
-      if (startOk) { if (this.startSince == null) this.startSince = t; } else this.startSince = null;
+      // hızlı kalibrasyonda kısa (≤0.3 sn) titremeler bekleme sayacını sıfırlamaz
+      if (startOk) { if (this.startSince == null) this.startSince = t; this.notStartSince = null; }
+      else if (!quick) this.startSince = null;
+      else { if (this.notStartSince == null) this.notStartSince = t; if (t - this.notStartSince > 300) this.startSince = null; }
       const inStartMs = this.startSince == null ? 0 : t - this.startSince;
       // vücut ölçümü varsa: set başında omuz kalkıksa kalibrasyon ALINMAZ (kalkık omuz 'normal' sayılmasın)
       let gate = startOk && this.def.useProfile && this.profile ? this.shrugGate(P) : null;
@@ -224,7 +227,9 @@ export class FormEngine {
         this.calibBuf.push({ t, P, v: mv.v });
         while (this.calibBuf.length && t - this.calibBuf[0].t > 1000) this.calibBuf.shift();
         const span = this.calibBuf.length ? t - this.calibBuf[0].t : 0;
-        const vals = this.calibBuf.map((c) => c.v);
+        let vals = this.calibBuf.map((c) => c.v);
+        // hızlı kalibrasyon: sabitliğe 5 karelik ortanca süzgeçten sonra bakılır (görüntü titreşimi sayılmaz)
+        if (quick && vals.length >= 5) vals = vals.map((_, i) => median(vals.slice(Math.max(0, i - 2), i + 3)));
         const range = Math.abs(this.def.metric.target - this.def.metric.start);
         // sabitlik: uç değerler (titreşim) hariç %10–%90 aralığı
         let steady = percentile(vals, 0.9) - percentile(vals, 0.1) < range * (quick ? 0.2 : 0.15);
@@ -236,7 +241,7 @@ export class FormEngine {
         else if (quick && !this.def.lockView && inStartMs > 2500 && this.calibBuf.length >= 8) this.captureCalib(ctx);
         snap.message = steady ? 'Kalibrasyon: sabit dur…' : 'Kalibrasyon: başlangıç pozisyonunda sabit dur';
       } else {
-        this.calibBuf = [];
+        if (!quick || this.startSince == null) this.calibBuf = [];
         snap.message = `Başlangıç pozisyonuna geç: ${this.def.startText || ''}`;
       }
       return this.finishSnap(snap);
