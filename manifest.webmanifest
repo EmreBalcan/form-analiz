@@ -1,0 +1,17 @@
+{
+  "name": "Form Analiz",
+  "short_name": "Form Analiz",
+  "description": "Spor salonu hareketlerinin formunu kamerayla analiz eder, hataları yazılı ve sesli bildirir.",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1512",
+  "theme_color": "#0f1512",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

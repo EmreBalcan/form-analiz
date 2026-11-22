@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Form Analiz</string>
+    <string name="title_activity_main">Form Analiz</string>
+    <string name="package_name">com.emrebalcan.formanaliz</string>
+    <string name="custom_url_scheme">com.emrebalcan.formanaliz</string>
+</resources>

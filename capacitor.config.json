@@ -1,0 +1,8 @@
+{
+  "appId": "com.emrebalcan.formanaliz",
+  "appName": "Form Analiz",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0f1512"
+  }
+}

@@ -1,0 +1,74 @@
+# main dalına her gönderimde imzalı Android APK derler ve GitHub Releases'e "latest" olarak koyar.
+# Sabit indirme linki: https://github.com/EmreBalcan/form-analiz/releases/latest/download/FormAnaliz.apk
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '**.md', 'tests/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Bağımlılıklar
+        run: npm ci
+
+      - name: Testler
+        run: npm test
+
+      - name: Web dosyalarını hazırla ve Android projesine kopyala
+        env:
+          APP_VERSION: ${{ github.sha }}
+        run: |
+          node tools/build-www.mjs
+          npx cap sync android
+
+      - name: İmza anahtarını hazırla
+        env:
+          KS: ${{ secrets.FA_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS" ]; then echo "::error::FA_KEYSTORE_B64 gizli değişkeni eklenmemiş"; exit 1; fi
+          echo "$KS" | base64 -d > $RUNNER_TEMP/formanaliz.p12
+
+      - name: APK derle
+        working-directory: android
+        env:
+          FA_KEYSTORE: ${{ runner.temp }}/formanaliz.p12
+          FA_KEYSTORE_PASSWORD: ${{ secrets.FA_KEYSTORE_PASSWORD }}
+          FA_VERSION_CODE: ${{ github.run_number }}
+          FA_VERSION_NAME: 1.0.${{ github.run_number }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk $RUNNER_TEMP/FormAnaliz.apk
+
+      - name: Sürümü yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest "$RUNNER_TEMP/FormAnaliz.apk" \
+            --title "Form Analiz 1.0.${{ github.run_number }}" \
+            --notes "Otomatik derleme: ${{ github.sha }}. Telefonda FormAnaliz.apk dosyasını indirip kur (bilinmeyen kaynaklara izin ver). Hareket analizi modeli ilk açılışta internetten indirilir." \
+            --latest

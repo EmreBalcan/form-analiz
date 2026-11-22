@@ -66,3 +66,18 @@ indir; bu dosya `tests/` altına eklenip gerçek veri testi olarak kullanılabil
   baş-boyun hizası kullanılır.
 - Bilek bükülmesi, tutuş genişliği ve el rotasyonu (ör. çekiç tutuş) ölçülmez.
 - Makine/sehpa vücudu kapatırsa ilgili kurallar "ölçülemiyor" durumuna geçer (yanlış ret vermez).
+
+## Telefona kurulum
+
+- **Android (APK):** https://github.com/EmreBalcan/form-analiz/releases/latest/download/FormAnaliz.apk
+  linkini telefonda aç, indir ve kur ("bilinmeyen kaynaklardan yükleme"ye izin ver). Kamera izni istendiğinde izin ver.
+  APK her güncellemede GitHub Actions ile otomatik derlenir (`.github/workflows/android.yml`); imza anahtarı
+  repo dışında (`C:\Users\EMRE\Projects\form-analiz-imza-anahtari`) ve GitHub gizli değişkenlerinde
+  (`FA_KEYSTORE_B64`, `FA_KEYSTORE_PASSWORD`). Anahtar kaybolursa güncellemeler eskisinin üstüne kurulamaz.
+- **Ana ekrana ekleme (Android ve iPhone):** https://emrebalcan.github.io/form-analiz/ adresini telefonda aç →
+  tarayıcı menüsü → "Ana ekrana ekle" (iPhone'da Safari → Paylaş → "Ana Ekrana Ekle").
+- Hareket analizi modeli (MediaPipe) ilk açılışta internetten indirilir; görüntü cihazdan çıkmaz.
+- APK'da sesli uyarılar telefonun Türkçe ses motoruyla okunur; set sırasında ekran kapanmaz.
+
+Geliştirme: `node tools/build-www.mjs && npx cap sync android` (Android projesine kopyalar),
+`node tools/make-icons.mjs` (simgeleri `assets/icon.svg`'den üretir).

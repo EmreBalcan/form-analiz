@@ -27,7 +27,7 @@ jobs:
       - run: |
           V=${GITHUB_SHA::8}
           mkdir -p _site/v/$V
-          cp -r index.html assets docs _site/
+          cp -r index.html assets docs manifest.webmanifest sw.js _site/
           cp -r src styles.css _site/v/$V/
           sed -i "s#href=\"styles.css\"#href=\"v/$V/styles.css\"#; s#src=\"src/app.js\"#src=\"v/$V/src/app.js\"#; s#content=\"dev\"#content=\"$V\"#" _site/index.html
           grep -q "v/$V/src/app.js" _site/index.html

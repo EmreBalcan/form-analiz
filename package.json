@@ -7,5 +7,14 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node tests/run.mjs"
+  },
+  "dependencies": {
+    "@capacitor-community/keep-awake": "^5.0.1",
+    "@capacitor-community/text-to-speech": "^4.1.1",
+    "@capacitor/android": "^6.2.3",
+    "@capacitor/core": "^6.2.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.3"
   }
 }

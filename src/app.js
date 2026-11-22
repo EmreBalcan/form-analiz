@@ -2,7 +2,7 @@ import { EXERCISES, GROUPS, byId } from './exercises/catalog.js';
 import { BodyTracker } from './core/body.js';
 import { FormEngine } from './core/engine.js';
 import { createDetector } from './ui/detector.js';
-import { Speaker } from './ui/speech.js';
+import { Speaker, keepScreenOn, isNativeApp } from './ui/speech.js';
 import { drawPose } from './ui/overlay.js';
 import { ProfileCapture, loadProfile, saveProfile } from './core/profile.js';
 
@@ -218,6 +218,7 @@ async function startFile(file) {
 
 function begin() {
   running = true;
+  keepScreenOn(true); // set sırasında ekran kapanmasın
   if (!profile) startProfile();
   el.view.textContent = 'Kamera açık';
   el.empty.classList.add('hidden');
@@ -232,6 +233,7 @@ function stopStream() {
 }
 function stop() {
   running = false;
+  keepScreenOn(false);
   stopStream();
   el.video.pause();
   el.empty.classList.remove('hidden');
@@ -360,6 +362,12 @@ function renderProfileStatus() {
 }
 $('profileBtn').onclick = () => { if (running) startProfile(); else { profile = null; renderProfileStatus(); } };
 renderProfileStatus();
+// Ana ekrana eklenen uygulama (PWA) için hizmet çalışanı — Android uygulamasında (APK) gerekmez
+if (!isNativeApp() && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+// sekme/uygulama arka plandan dönünce ekran kilidini yeniden al
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && running) keepScreenOn(true); });
 $('appVersion').textContent = `sürüm ${document.querySelector('meta[name="app-version"]')?.content || 'dev'}`;
 applyMirror();
 selectExercise(def.id);

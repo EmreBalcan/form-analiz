@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0f1512"/>
+  <circle cx="256" cy="256" r="196" fill="#18201c"/>
+  <!-- dambıl -->
+  <g fill="#eef3ef">
+    <rect x="96" y="196" width="44" height="120" rx="14"/>
+    <rect x="140" y="214" width="30" height="84" rx="10"/>
+    <rect x="372" y="196" width="44" height="120" rx="14"/>
+    <rect x="342" y="214" width="30" height="84" rx="10"/>
+    <rect x="166" y="243" width="180" height="26" rx="8"/>
+  </g>
+  <!-- onay işareti (doğru form) -->
+  <path d="M190 352 l46 44 l92 -100" fill="none" stroke="#4fd18b" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
