@@ -1,5 +1,5 @@
 // Vücut çizimi: kişinin üzerine 3 boyutlu görünen bir "beden" kaplaması çizer.
-// Kollar/bacaklar ışıklandırılmış silindir (kapsül), gövde gölgeli yüzey, baş ve eklemler küre.
+// Yalnız KENAR ÇİZGİLERİ (içi boş): kollar/bacaklar kesit halkalı silindir, gövde kontur, baş ve eklemler küre.
 // Kameraya yakın uzuvlar öne çizilir. Hatalı kuralların ilgili bölgeleri kırmızı/turuncu yanar.
 // NOT: yalnızca GÖRÜNÜM — analiz ve ölçüm kodu bu dosyayı kullanmaz.
 import { SIDE } from '../core/landmarks.js';
@@ -18,13 +18,8 @@ const MEASURE_PARTS = {
   armVertTilt: ['shoulder', 'wrist'],
 };
 
-// renkler: [açık, orta, koyu] — silindir gölgelemesi için
-const PALETTE = {
-  ok: ['#9ff0c0', '#30c26a', '#0d5a32'],
-  warn: ['#ffd89a', '#ff9f0a', '#7a4300'],
-  bad: ['#ffb1aa', '#ff3b30', '#7a0d07'],
-};
-const ALPHA = 0.62;
+// renkler (yalnız kenar çizgisi; içi boş — vücut görünür kalır)
+const COLOR = { ok: '#3ee07f', warn: '#ff9f0a', bad: '#ff3b30' };
 
 // uzuvlar: [başlangıç, bitiş, başlangıç yarıçapı, bitiş yarıçapı] (yarıçap üst kol boyunun oranı)
 const LIMBS = [
@@ -65,12 +60,14 @@ export function drawPose(ctx, pose, snap, def) {
     ua = ok(a) && ok(b) ? Math.hypot(a.x - b.x, a.y - b.y) * 0.8 : canvas.width / 12;
   }
 
+  const lw = Math.max(1.5, Math.min(3, ua * 0.025)); // çizgi kalınlığı
+
   // çizilecek parçalar (derinliğe göre sıralanır: uzak → yakın)
   const items = [];
   for (const [a, b, ra, rb] of LIMBS) {
     const A = pts[a], B = pts[b];
     if (!ok(A) || !ok(B)) continue;
-    items.push({ z: (A.z + B.z) / 2, draw: () => capsule(ctx, A, B, ra * ua, rb * ua, stateOf(a, b)) });
+    items.push({ z: (A.z + B.z) / 2, draw: () => capsule(ctx, A, B, ra * ua, rb * ua, stateOf(a, b), lw) });
   }
   // gövde: kalça hatalıysa ya da iki omuz birden hatalıysa (ör. salınım, silkme) yanar; tek kol hatası gövdeyi boyamaz
   const both = (a, b) => (hot.get(a) && hot.get(b) ? (hot.get(a) === 'bad' || hot.get(b) === 'bad' ? 'bad' : 'warn') : 'ok');
@@ -79,7 +76,7 @@ export function drawPose(ctx, pose, snap, def) {
   const ls = pts[11], rs = pts[12], lh = pts[23], rh = pts[24];
   if (ok(ls) && ok(rs)) {
     const hips = ok(lh) && ok(rh) ? [lh, rh] : null;
-    items.push({ z: (ls.z + rs.z) / 2 + ua * 0.4, draw: () => torso(ctx, ls, rs, hips, ua, torsoState) });
+    items.push({ z: (ls.z + rs.z) / 2 + ua * 0.4, draw: () => torso(ctx, ls, rs, hips, ua, torsoState, lw) });
   }
   // baş + boyun
   const head = headCenter(pts, ua);
@@ -87,121 +84,98 @@ export function drawPose(ctx, pose, snap, def) {
     const neck = { x: (ls.x + rs.x) / 2, y: (ls.y + rs.y) / 2, z: (ls.z + rs.z) / 2 };
     items.push({ z: head.z - 1, draw: () => {
       const st = stateOf(7, 8);
-      capsule(ctx, neck, { x: head.x, y: head.y + head.r * 0.6, z: head.z }, ua * 0.16, ua * 0.14, st);
-      sphere(ctx, head.x, head.y, head.r, st, 1);
+      capsule(ctx, neck, { x: head.x, y: head.y + head.r * 0.85, z: head.z }, ua * 0.16, ua * 0.14, st, lw);
+      sphere(ctx, head.x, head.y, head.r, st, lw);
     } });
   }
   items.sort((p, q) => q.z - p.z); // MediaPipe: küçük z = kameraya yakın → büyük z önce (arkada) çizilir
   for (const it of items) it.draw();
 
-  // eklem küreleri (hatalı olanlar parlak ve büyük)
+  // eklem halkaları (hatalı olanlar kalın ve büyük)
   for (const i of [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]) {
     const p = pts[i];
     if (!ok(p)) continue;
     const st = hot.get(i) || 'ok';
-    const r = ua * (st === 'ok' ? 0.13 : 0.19) * (i >= 23 ? 1.15 : 1);
-    if (st !== 'ok') glow(ctx, p.x, p.y, r * 2.2, st);
-    sphere(ctx, p.x, p.y, r, st, 0.9);
+    const r = ua * (st === 'ok' ? 0.1 : 0.15) * (i >= 23 ? 1.15 : 1);
+    sphere(ctx, p.x, p.y, r, st, lw * 0.8, false);
   }
 }
 
-/** İki uç yarıçaplı kapsül (konik silindir), eksene dik gradyanla gölgelenir. */
-function capsule(ctx, A, B, ra, rb, st) {
+/** Yalnız kenar çizgisi: önce koyu gölge (her arka planda okunsun), üstüne renkli ince çizgi. İçi boş. */
+function outline(ctx, st, w, hotK = 1) {
+  ctx.save();
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(0,0,0,0.45)';
+  ctx.lineWidth = w * hotK + 2;
+  ctx.stroke();
+  ctx.strokeStyle = COLOR[st];
+  ctx.lineWidth = w * hotK;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Konik silindir (kapsül) kenarı + iki uçta kesit halkası (3B hissi). */
+function capsule(ctx, A, B, ra, rb, st, w) {
   const dx = B.x - A.x, dy = B.y - A.y;
   const L = Math.hypot(dx, dy);
-  const [hi, mid, lo] = PALETTE[st];
-  ctx.save();
-  ctx.globalAlpha = ALPHA;
-  if (L < 1) { sphere(ctx, A.x, A.y, ra, st, 1); ctx.restore(); return; }
-  const nx = -dy / L, ny = dx / L; // dik yön
+  const hk = st === 'ok' ? 1 : 1.6;
+  if (L < 1) { ctx.beginPath(); ctx.arc(A.x, A.y, ra, 0, Math.PI * 2); outline(ctx, st, w, hk); return; }
   const ang = Math.atan2(dy, dx);
   ctx.beginPath();
   ctx.arc(A.x, A.y, ra, ang + Math.PI / 2, ang - Math.PI / 2);
   ctx.arc(B.x, B.y, rb, ang - Math.PI / 2, ang + Math.PI / 2);
   ctx.closePath();
-  const rm = Math.max(ra, rb);
-  const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
-  const g = ctx.createLinearGradient(mx - nx * rm, my - ny * rm, mx + nx * rm, my + ny * rm);
-  g.addColorStop(0, lo);
-  g.addColorStop(0.3, mid);
-  g.addColorStop(0.45, hi);
-  g.addColorStop(0.7, mid);
-  g.addColorStop(1, lo);
-  ctx.fillStyle = g;
-  ctx.fill();
-  ctx.globalAlpha = ALPHA * 0.8;
-  ctx.lineWidth = Math.max(1, rm * 0.08);
-  ctx.strokeStyle = lo;
-  ctx.stroke();
-  ctx.restore();
+  outline(ctx, st, w, hk);
+  // kesit halkaları: uzuv ekseni boyunca basık elipsler (yalnız ön yarısı)
+  if (L > (ra + rb) * 1.2) {
+    for (const u of [0.25, 0.7]) {
+      const cx = A.x + dx * u, cy = A.y + dy * u, r = ra + (rb - ra) * u;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, r * 0.28, r, ang, -Math.PI / 2, Math.PI / 2);
+      outline(ctx, st, w * 0.55, hk);
+    }
+  }
 }
 
-/** Gövde: omuz ve kalçalardan genişletilmiş yuvarlak hatlı yüzey, ışıklı merkez. */
-function torso(ctx, ls, rs, hips, ua, st) {
-  const [hi, mid, lo] = PALETTE[st];
+/** Gövde: omuz ve kalçalardan yuvarlak hatlı kontur. */
+function torso(ctx, ls, rs, hips, ua, st, w) {
   const sx = (ls.x + rs.x) / 2, sy = (ls.y + rs.y) / 2;
   let lh, rh;
   if (hips) [lh, rh] = hips;
   else {
-    // kalça görünmüyorsa: omuzlardan aşağı tahmini gövde (dik varsayım)
     const down = ua * 1.6;
     lh = { x: ls.x * 0.85 + sx * 0.15, y: ls.y + down }; rh = { x: rs.x * 0.85 + sx * 0.15, y: rs.y + down };
   }
   const hx = (lh.x + rh.x) / 2, hy = (lh.y + rh.y) / 2;
-  // gövde ekseni ve genişlik (yandan bakışta omuz genişliği küçülür → en az bir gövde kalınlığı)
   const ax = hx - sx, ay = hy - sy, aL = Math.hypot(ax, ay) || 1;
   const px = -ay / aL, py = ax / aL;
   const halfS = Math.max(Math.hypot(ls.x - rs.x, ls.y - rs.y) / 2 + ua * 0.15, ua * 0.45);
   const halfH = Math.max(Math.hypot(lh.x - rh.x, lh.y - rh.y) / 2 + ua * 0.15, ua * 0.4);
-  const P = (cx, cy, h, k = 1) => [cx + px * h * k, cy + py * h * k];
+  const P = (cx, cy, h) => [cx + px * h, cy + py * h];
   const s1 = P(sx, sy, halfS), s2 = P(sx, sy, -halfS), h1 = P(hx, hy, halfH), h2 = P(hx, hy, -halfH);
-  const w1 = P(sx + ax * 0.55, sy + ay * 0.55, (halfS + halfH) / 2 * 0.9), w2 = P(sx + ax * 0.55, sy + ay * 0.55, -(halfS + halfH) / 2 * 0.9);
-  ctx.save();
-  ctx.globalAlpha = ALPHA * 0.9;
+  const wm = (halfS + halfH) / 2 * 0.9;
+  const w1 = P(sx + ax * 0.55, sy + ay * 0.55, wm), w2 = P(sx + ax * 0.55, sy + ay * 0.55, -wm);
+  const hk = st === 'ok' ? 1 : 1.6;
   ctx.beginPath();
   ctx.moveTo(...s1);
-  ctx.quadraticCurveTo(sx - ax * 0.12, sy - ay * 0.12, ...s2); // omuz hattı (hafif kavisli)
+  ctx.quadraticCurveTo(sx - ax * 0.12, sy - ay * 0.12, ...s2);
   ctx.quadraticCurveTo(...w2, ...h2);
   ctx.quadraticCurveTo(hx + ax * 0.1, hy + ay * 0.1, ...h1);
   ctx.quadraticCurveTo(...w1, ...s1);
   ctx.closePath();
-  const g = ctx.createRadialGradient(sx + ax * 0.35, sy + ay * 0.35, ua * 0.1, sx + ax * 0.45, sy + ay * 0.45, Math.max(aL, halfS * 1.6) * 0.9);
-  g.addColorStop(0, hi);
-  g.addColorStop(0.45, mid);
-  g.addColorStop(1, lo);
-  ctx.fillStyle = g;
-  ctx.fill();
-  ctx.lineWidth = Math.max(1, ua * 0.03);
-  ctx.strokeStyle = lo;
-  ctx.stroke();
-  ctx.restore();
+  outline(ctx, st, w, hk);
+  // bel kesiti (3B hissi)
+  ctx.beginPath();
+  ctx.ellipse(sx + ax * 0.55, sy + ay * 0.55, wm, wm * 0.22, Math.atan2(py, px), 0, Math.PI);
+  outline(ctx, st, w * 0.55, hk);
 }
 
-/** Işık sol üstten gelen küre. */
-function sphere(ctx, x, y, r, st, alphaK = 1) {
-  const [hi, mid, lo] = PALETTE[st];
-  ctx.save();
-  ctx.globalAlpha = Math.min(1, ALPHA * 1.25 * alphaK);
-  const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
-  g.addColorStop(0, '#ffffff');
-  g.addColorStop(0.25, hi);
-  g.addColorStop(0.65, mid);
-  g.addColorStop(1, lo);
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
-}
-
-/** Hatalı bölge için dışa doğru parlama. */
-function glow(ctx, x, y, r, st) {
-  const c = st === 'bad' ? '255,59,48' : '255,159,10';
-  ctx.save();
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, `rgba(${c},0.55)`);
-  g.addColorStop(1, `rgba(${c},0)`);
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-  ctx.restore();
+/** Küre kenarı + ekvator halkası. */
+function sphere(ctx, x, y, r, st, w, ring = true) {
+  const hk = st === 'ok' ? 1 : 1.6;
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+  outline(ctx, st, w, hk);
+  if (ring) { ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.3, 0, 0, Math.PI); outline(ctx, st, w * 0.55, hk); }
 }
 
 /** Baş merkezi ve yarıçapı: kulaklar → gözler → burun yedekli. */
