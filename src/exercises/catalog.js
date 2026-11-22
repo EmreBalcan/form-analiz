@@ -65,7 +65,7 @@ const pushdownRules = () => [
   ...tricepsShrug(),
 ];
 const pushdownMetric = (target = 160) => ({
-  fn: 'elbowAngle', start: 85, target, label: 'Dirsek açısı',
+  fn: 'elbowAngle', reach: 0.9, start: 85, target, label: 'Dirsek açısı', // %90 açılma yeterli
   romText: 'Kollar altta tam kilitlenmedi — dirseği tamamen aç',
   returnText: 'Yukarıda ön kol yere paralel olana kadar dönülmedi',
 });
@@ -242,25 +242,51 @@ function facePullMetric(P, ctx) {
   return { v: (1.7 - w) / 0.9, conf: Math.max(...vals.map((r) => r.conf)), src: 'eller yüze (bilek öne)' };
 }
 
-// Eğimli press: kollar neredeyse düzken (dirsek > 150°) kolun yere dikliği — itiş yönü yukarı mı öne mi
+// Eğimli press: kollar neredeyse düzken (dirsek > 140°) kolun yere dikliği — itiş yönü yukarı mı öne mi
 function inclineLockTilt(P, ctx, s) {
   const e = M.elbowAngle(P, ctx, s);
-  if (!e || e.v < 150) return null;
+  if (!e || e.v < 140) return null; // %90 kilit kabul edildiği için 140°'den itibaren
   return M.armVertTilt(P, ctx, s);
 }
+
+// Göğüs hareketlerinde silkme: önden/çaprazdan normal; tam yandan presslerde kürek kemiği öne kayarken omuz
+// noktası yukarı kayıyor → yandan yalnızca belirgin silkme yakalanır (triceps ile aynı mantık)
+const chestShrug = (front = [0.11, 0.18], text) => [
+  { ...R.shrug({ warn: front[0], reject: front[1], ...(text ? { text } : {}) }), views: ['front', 'oblique'] },
+  { ...R.shrug({ warn: 0.18, reject: 0.27, ...(text ? { text } : {}) }), id: 'shrug-side', views: ['side'] },
+];
+// bench ailesi kuralları (düz bench HARİÇ kullanılır): silkme yan-yumuşak, ön kol kuralı yalnız uyarı
+const benchRulesSoft = (opts) => benchRules(opts).flatMap((r) => {
+  if (r.measure === 'shrug') return chestShrug([0.11, 0.18], r.text);
+  if (r.id === 'forearm-vertical') { const { reject, ...rest } = r; return [{ ...rest, warn: 40, label: 'Ön kol yaklaşık dik', text: 'Ön kolların çok eğik — bar/dambıl dirseğinin üstüne yakın olmalı', cue: 'Bileğini dirseğinin üstünde tut' }]; }
+  return [r];
+});
+// Bench ailesi (eğimli/decline) sayımı her açıda: dirsek açısı 155° → 95° (önden de ölçülür; %90 kilit yeterli)
+const pressMetric = (target = 95, romText = 'Bar/dambıllar yeterince indirilmedi') => ({ fn: 'elbowAngle', smooth: 5, start: 155, target, label: 'Dirsek açısı', romText, returnText: 'Kollar yukarıda yeterince açılmadı' });
 
 // Göğüs makineleri oturma şekli: kambur durma (omuzlar öne yuvarlanmasın, göğüs önde) + sırt pedde (sallanma yok).
 // Not: "dik tut" = kamburluk/göğüs; gövdenin hafif eğimi hata sayılmaz.
 const chestSeatRules = () => [
-  { ...R.shoulderRoll({ warn: 0.1 }), reject: 0.18, phase: 'active', views: ['side', 'oblique'], label: 'Göğüs önde (kambur değil)',
+  { ...R.shoulderRoll({ warn: 0.14 }), reject: 0.24, phase: 'active', views: ['side', 'oblique'], label: 'Göğüs önde (kambur değil)',
     text: 'Kambur durdun — omuzlar öne yuvarlandı, göğsünü öne çıkar', cue: 'Göğsünü öne çıkar' },
   R.sway({ warn: 8, reject: 15, rejectConf: 0.5, text: 'Sırt pedden ayrıldı — gövdeyle itildi' }),
 ];
 // Kollar/eller göğüs hizasında çalışmalı (göğüs press, pec deck): bilek omzun ~0.05–0.95 üst kol boyu altında
 const chestHeightRules = () => [
-  { id: 'hands-low', measure: 'wristDrop', op: '>', warn: 0.95, reject: 1.15, phase: ['out', 'peak', 'back'], minMs: 250, label: 'Eller göğüs hizasında (aşağı değil)', text: 'Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat', cue: 'Kollarını göğüs hizasına kaldır' },
-  { id: 'hands-high', measure: 'wristDrop', op: '<', warn: 0.05, reject: -0.15, phase: ['out', 'peak', 'back'], minMs: 250, label: 'Eller göğüs hizasında (yukarı değil)', text: 'Kollar göğüs hizasının üstünde — göğüs hizasına indir', cue: 'Kollarını göğüs hizasına indir' },
+  { id: 'hands-low', measure: 'wristDrop', op: '>', warn: 1.05, reject: 1.3, phase: ['out', 'peak', 'back'], minMs: 250, label: 'Eller göğüs hizasında (aşağı değil)', text: 'Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat', cue: 'Kollarını göğüs hizasına kaldır' },
+  { id: 'hands-high', measure: 'wristDrop', op: '<', warn: -0.05, reject: -0.25, phase: ['out', 'peak', 'back'], minMs: 250, label: 'Eller göğüs hizasında (yukarı değil)', text: 'Kollar göğüs hizasının üstünde — göğüs hizasına indir', cue: 'Kollarını göğüs hizasına indir' },
 ];
+// Dambıl göğüs açışı ana ölçümü: yan/çapraz → dambılın göğüs üstü yüksekliği; önden → eller arası (1.0 kapalı → 2.6 açık)
+function dbFlyMetric(P, ctx) {
+  if (P.view !== 'front') {
+    const sides = P.near && P.hasSide(P.near, ['shoulder', 'wrist']) ? [P.near] : P.sidesFor(['shoulder', 'wrist']);
+    const vals = sides.map((s) => M.wristAnt(P, ctx, s)).filter((r) => r && r.conf >= 0.35);
+    if (vals.length) return { v: Math.max(...vals.map((r) => r.v)), conf: Math.max(...vals.map((r) => r.conf)), src: 'dambıl yüksekliği' };
+  }
+  const w = M.wristSpread(P);
+  return w ? { v: 1.55 - (w.v - 1.0) * (1.1 / 1.6), conf: w.conf, src: 'eller arası mesafe (önden)' } : null;
+}
+
 // Göğüs press ana ölçümü: yan/çapraz → bilek öne uzanması; önden → dirsek açısı 95°→160° (önden okunan; gerçek ~80°→165°) aynı ölçeğe (0.6→1.55)
 function chestPressMetric(P, ctx) {
   if (P.view !== 'front') {
@@ -304,25 +330,20 @@ export const EXERCISES = [
   }),
   ex(2, 'incline-dumbbell-press', 'Eğimli Dambıl Press', 'Incline Dumbbell Press', 'Göğüs', 'incline-dumbbell-press.webp', {
     posture: 'lying', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
-    setup: 'Kamera yanda, sehpa hizasında. Omuz, dirsek, bilek ve kalça görünmeli.',
+    setup: 'Kamera yanda (en iyi) veya karşıda, sehpa hizasında. Omuz, dirsek ve bilek görünmeli.',
     startText: 'dambıllar yukarıda, kollar düz',
     // tekrar dirsek açısıyla sayılır (160° → 95°): ellerin öne uzaklığı bu harekette dar aralıklıydı, titreşim tekrarı bölüyordu
-    metric: { fn: 'elbowAngle', smooth: 5, start: 160, target: 95, label: 'Dirsek açısı', romText: 'Dambıllar yeterince indirilmedi', returnText: 'Kollar yukarıda tam açılmadı' },
+    metric: pressMetric(95, 'Dambıllar yeterince indirilmedi'),
     tempo: { minOutMs: 800, outText: 'Dambıllar hızlı indirildi / düşürüldü — kontrollü indir' },
     rules: [
       // bilek kuralı bu harekette gevşek ve açık: ön kol yere dik olmalı (dambıl dirseğin tam üstünde)
-      // ön kol kuralı burada yalnız UYARI (eğimli presste ön kol yere veya sehpaya dik tutulabilir)
-      ...benchRules({ lowBar: [0.05, 1.0] }).map((r) => {
-        if (r.id !== 'forearm-vertical') return r;
-        const { reject, ...rest } = r;
-        return { ...rest, warn: 40, label: 'Ön kol yaklaşık dik', text: 'Ön kolların çok eğik — dambıl dirseğinin üstüne yakın olmalı', cue: 'Dambılı dirseğinin üstünde tut' };
-      }),
+      ...benchRulesSoft({ lowBar: [-0.05, 1.1], lowBarReject: 1.3 }),
       // eğimli presste dambıllar YERE DİK yukarı itilir (göğüs press gibi öne doğru değil)
       // 'start': tekrar başlamadan önceki kilitli duruş da değerlendirilir (dambıllar yukarıdayken kol yere dik mi)
-      { id: 'press-up', measure: inclineLockTilt, op: '>', agg: 'extreme', warn: 20, reject: 28, phase: ['start', 'out', 'back'], views: ['side', 'oblique'],
+      { id: 'press-up', measure: inclineLockTilt, op: '>', agg: 'extreme', warn: 25, reject: 35, rejectConf: 0.5, phase: ['start', 'out', 'back'], views: ['side', 'oblique'],
         label: 'Dambıllar yukarı (yere dik) itiliyor', text: 'Dambıllar öne doğru itildi — eğimli presste yukarıya, omuzlarının üstüne it', cue: 'Yukarı it, öne değil' },
       // kolların aşağı düşmesi: dirsekler göğüs hizasının çok altına inmesin
-      { id: 'too-deep', measure: 'elbowAnt', op: '<', warn: -0.45, reject: -0.65, phase: ['peak'], views: ['side'], minMs: 150,
+      { id: 'too-deep', measure: 'elbowAnt', op: '<', warn: -0.55, reject: -0.8, phase: ['peak'], views: ['side'], minMs: 150,
         label: 'Kolların aşırı aşağı düşmemesi', text: 'Dirsekler çok aşağı düştü — omuz zorlanır, göğüs hizasında dur', cue: 'Bu kadar inme' },
     ],
   }),
@@ -330,20 +351,19 @@ export const EXERCISES = [
     posture: 'seated', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist'],
     startText: 'tutamaklar göğüs hizasında, göğüs önde',
     // yandan/çaprazdan: bileğin öne uzanması; önden: dirsek açısı (aynı ölçeğe çevrilir)
-    metric: { fn: chestPressMetric, global: true, smooth: 3, start: 0.6, target: 1.55, label: 'Kol uzanması', romText: 'Kollar tam açılmadı — kolları tamamen uzat', returnText: 'Tutamaklar göğüs hizasına kadar geri gelmedi' },
+    metric: { fn: chestPressMetric, global: true, smooth: 3, reach: 0.9, start: 0.6, target: 1.55, label: 'Kol uzanması', romText: 'Kollar tam açılmadı — kolları tamamen uzat', returnText: 'Tutamaklar göğüs hizasına kadar geri gelmedi' },
     tempo: { minBackMs: 650, backText: 'Ağırlık hızlı bırakıldı — kontrollü geri gel' },
     rules: [
       ...chestSeatRules(),
       ...chestHeightRules(),
-      { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.15, reject: -0.35, minMs: 200, label: 'Dirsek yüksekliği', text: 'Dirsekler omuz hizasının üstüne çıktı', cue: 'Dirseklerini omuzun biraz altında tut' },
-      R.shrug({ warn: 0.07, reject: 0.12, text: 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut' }),
+      { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.25, reject: -0.45, minMs: 200, label: 'Dirsek yüksekliği', text: 'Dirsekler omuz hizasının üstüne çıktı', cue: 'Dirseklerini omuzun biraz altında tut' },
+      ...chestShrug([0.1, 0.17], 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut'),
       { id: 'forearm-line', measure: 'forearmTilt', op: '<', warn: 55, phase: ['out', 'back'], views: ['side'], minMs: 300, label: 'Ön kol itiş yönünde', text: 'Ön kollar itiş yönünde değil — bilek dirsekle aynı hizada olmalı', cue: 'Bileklerini dirsek hizasında tut' },
     ],
   }),
   ex(4, 'pec-deck-fly', 'Pec Deck Açış', 'Pec Deck Fly', 'Göğüs', 'pec-deck-fly.webp', {
-    useProfile: true,
-    posture: 'seated', plane: 'transverse', view: 'side', viewAlt: ['oblique'], required: ['shoulder', 'elbow', 'wrist'],
-    setup: 'Kamerayı yanına veya hafif yan çaprazına (~30°), omuz hizasına koy. Göğüs, gövde ve omuz her ikisinde de ölçülür; dirsek açısı yan çaprazdan tekrarı reddedebilir, tam yandan yalnızca uyarır (dirsek o açıda derinlikte bükülür).',
+    posture: 'seated', plane: 'transverse', view: 'side', viewAlt: ['oblique', 'front'], required: ['shoulder', 'elbow', 'wrist'],
+    setup: 'Kamerayı yanına, hafif yan çaprazına (~30°) veya karşına, omuz hizasına koy. Göğüs, gövde ve omuz her ikisinde de ölçülür; dirsek açısı yan çaprazdan tekrarı reddedebilir, tam yandan yalnızca uyarır (dirsek o açıda derinlikte bükülür).',
     startText: 'kollar yanlarda açık, göğüs önde',
     // yandan/çaprazdan: bileğin öne uzanması; önden görülürse: eller arası mesafe aynı ölçeğe çevrilir
     metric: { fn: pecMetric, global: true, start: 0.5, target: 1.15, label: 'Kolların önde birleşmesi', romText: 'Kollar önde birleştirilmedi', returnText: 'Kollar başlangıca kadar açılmadı' },
@@ -352,17 +372,17 @@ export const EXERCISES = [
       // kollar yandayken kameraya dönük (açı güvenilmez) → değişim kuralı yalnız güvenilir karelerde reddeder;
       // bükülme kolların önde birleştiği noktada (kol kamera düzleminde, ölçüm kesin) ayrıca kontrol edilir
       // tam yandan dirsek yatay düzlemde (derinlikte) bükülür → güvenilmez; yan çaprazdan (~45°) ret, tam yandan yalnız uyarı
-      { ...R.elbowAngleFixed({ warn: 25, reject: 40, text: 'Dirsek açısı değişti — hareket press’e döndü' }), rangeMinConf: 0.65, bestView: 'oblique', smooth: 5 },
-      { id: 'elbow-bent', measure: 'elbowAngle', op: '<', warn: 125, reject: 110, phase: ['peak'], minMs: 150, label: 'Dirsek hafif bükük (önde birleşirken)', text: 'Dirsekler fazla büküldü — hareket press’e döndü', cue: 'Kollarını hafif bükük sabit tut' },
-      { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.15, reject: -0.3, minMs: 200, label: 'Kol hizası (dirsek omuz üstüne çıkmasın)', text: 'Dirsekler omuz seviyesinin üstüne çıktı', cue: 'Dirseklerini göğüs-omuz hizasında tut' },
-      { id: 'elbow-low', measure: 'elbowDrop', op: '>', warn: 0.4, reject: 0.6, minMs: 250, label: 'Kol hizası (dirsek göğüs altına düşmesin)', text: 'Dirsekler göğüs hizasının altına düştü', cue: 'Dirseklerini kaldır' },
+      { ...R.elbowAngleFixed({ warn: 30, reject: 48, text: 'Dirsek açısı değişti — hareket press’e döndü' }), rangeMinConf: 0.65, bestView: 'oblique', smooth: 5 },
+      { id: 'elbow-bent', measure: 'elbowAngle', op: '<', warn: 115, reject: 100, phase: ['peak'], minMs: 150, label: 'Dirsek hafif bükük (önde birleşirken)', text: 'Dirsekler fazla büküldü — hareket press’e döndü', cue: 'Kollarını hafif bükük sabit tut' },
+      { id: 'elbow-high', measure: 'elbowDrop', op: '<', warn: -0.25, reject: -0.42, minMs: 200, label: 'Kol hizası (dirsek omuz üstüne çıkmasın)', text: 'Dirsekler omuz seviyesinin üstüne çıktı', cue: 'Dirseklerini göğüs-omuz hizasında tut' },
+      { id: 'elbow-low', measure: 'elbowDrop', op: '>', warn: 0.5, reject: 0.75, minMs: 250, label: 'Kol hizası (dirsek göğüs altına düşmesin)', text: 'Dirsekler göğüs hizasının altına düştü', cue: 'Dirseklerini kaldır' },
       // oturma şekli göğüs press ile aynı: kambur durma (göğüs önde), sırt pedde
       ...chestSeatRules(),
       // kollar göğüs hizasında kapanmalı
       ...chestHeightRules(),
       // kollar dümdüz olmamalı: hafif bükük göğüs sıkıştırılır (tam yandan dirsek derinlikte büküldüğü için çaprazdan ölçülür)
-      { id: 'arms-straight', measure: 'elbowAngle', op: '>', warn: 170, reject: 176, phase: ['peak'], views: ['oblique', 'front'], minMs: 200, label: 'Kollar hafif bükük (dümdüz değil)', text: 'Kollar dümdüz — dirsekleri hafif bük', cue: 'Dirseklerini hafif bük' },
-      R.shrug({ warn: 0.08, reject: 0.14, raiseAllowance: 0.05, allowanceCap: 1, text: 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut' }),
+      { id: 'arms-straight', measure: 'elbowAngle', op: '>', warn: 173, reject: 178, phase: ['peak'], views: ['oblique', 'front'], minMs: 200, label: 'Kollar hafif bükük (dümdüz değil)', text: 'Kollar dümdüz — dirsekleri hafif bük', cue: 'Dirseklerini hafif bük' },
+      ...chestShrug([0.1, 0.17], 'Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut'),
     ],
   }),
   ex(5, 'push-up', 'Şınav', 'Push-up', 'Göğüs', 'push-up.webp', {
@@ -381,12 +401,12 @@ export const EXERCISES = [
   ex(44, 'decline-bench-press', 'Göğüs Aşağı Eğimli Bench Press', 'Decline Bench Press', 'Göğüs', 'decline-bench-press.png', {
     posture: 'lying', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
     setup: 'Kamera yanda, sehpa hizasında. Omuzdan kalçaya kadar görünmeli.',
-    startText: 'kollar yukarıda düz', metric: benchMetric(0.6), tempo: benchTempo, rules: benchRules({ lowBar: [0.25, 1.35] }),
+    startText: 'kollar yukarıda düz', metric: pressMetric(95, 'Bar göğse kadar indirilmedi'), tempo: benchTempo, rules: benchRulesSoft({ lowBar: [0.2, 1.35], lowBarReject: 1.55 }),
   }),
   ex(45, 'incline-barbell-press', 'Üst Göğüs Bar Press', 'Incline Barbell Press', 'Göğüs', 'incline-barbell-press.png', {
     posture: 'lying', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
     setup: 'Kamera yanda, sehpa hizasında.',
-    startText: 'kollar yukarıda düz', metric: { ...benchMetric(0.6), start: 1.3 }, tempo: benchTempo, rules: benchRules({ lowBar: [0.0, 1.0] }),
+    startText: 'kollar yukarıda düz', metric: pressMetric(95, 'Bar göğse kadar indirilmedi'), tempo: benchTempo, rules: benchRulesSoft({ lowBar: [-0.05, 1.1], lowBarReject: 1.3 }),
   }),
   ex(46, 'cable-fly-low-high', 'Aşağıdan Yukarı Kablo Açışı', 'Low to High Cable Fly', 'Göğüs', 'cable-fly-low-high.png', {
     useProfile: true,
@@ -427,16 +447,16 @@ export const EXERCISES = [
     posture: 'lying', plane: 'transverse', required: ['shoulder', 'elbow', 'wrist', 'hip'],
     setup: 'Kamera yanda, sehpa hizasında.',
     startText: 'dambıllar göğüs üstünde',
-    metric: { fn: 'wristAnt', start: 1.55, target: 0.45, label: 'Dambıl yüksekliği', romText: 'Kollar yeterince açılmadı (göğüs gerilmedi)', returnText: 'Dambıllar göğüs üstünde birleştirilmedi' },
+    metric: { fn: dbFlyMetric, global: true, smooth: 3, start: 1.55, target: 0.45, label: 'Dambıl yüksekliği', romText: 'Kollar yeterince açılmadı (göğüs gerilmedi)', returnText: 'Dambıllar göğüs üstünde birleştirilmedi' },
     tempo: { minOutMs: 700, outText: 'Dambıllar hızlı indirildi — kontrollü aç' },
     rules: [
-      R.elbowAngleFixed({ warn: 20, reject: 35, text: 'Dirsekler büküldü — hareket press’e döndü' }),
-      { id: 'elbow-min', measure: 'elbowAngle', op: '<', warn: 125, reject: 105, minMs: 200, label: 'Dirsek hafif bükük', text: 'Dirsekler fazla bükük', cue: 'Kollarını biraz aç' },
-      { id: 'overstretch', measure: 'wristAnt', op: '<', warn: -0.15, reject: -0.4, phase: ['peak'], minMs: 150, label: 'Aşırı gerilme', text: 'Dambıllar omuz seviyesinin altına indi — omuz zorlanır', cue: 'Bu kadar aşağı inme' },
-      { id: 'over-chest', measure: 'wristDrop', op: '>', warn: 0.95, reject: 1.15, phase: ['out', 'back'], views: ['side'], minMs: 250, label: 'Dambıllar göğüs hizasında', text: 'Dambıllar göğüs hizasında değil (karına doğru) — göğsünün üstünde birleştir', cue: 'Dambılları göğsünün üstüne getir' },
-      { id: 'over-chest-high', measure: 'wristDrop', op: '<', warn: 0.0, reject: -0.2, phase: ['out', 'back'], views: ['side'], minMs: 250, label: 'Dambıllar göğüs hizasında (yüze doğru değil)', text: 'Dambıllar yüzüne doğru kaydı — göğsünün üstünde birleştir', cue: 'Dambılları göğsünün üstüne getir' },
+      R.elbowAngleFixed({ warn: 28, reject: 45, text: 'Dirsekler büküldü — hareket press’e döndü' }),
+      { id: 'elbow-min', measure: 'elbowAngle', op: '<', warn: 115, reject: 95, minMs: 200, label: 'Dirsek hafif bükük', text: 'Dirsekler fazla bükük', cue: 'Kollarını biraz aç' },
+      { id: 'overstretch', measure: 'wristAnt', op: '<', warn: -0.3, reject: -0.6, phase: ['peak'], minMs: 150, label: 'Aşırı gerilme', text: 'Dambıllar omuz seviyesinin altına indi — omuz zorlanır', cue: 'Bu kadar aşağı inme' },
+      { id: 'over-chest', measure: 'wristDrop', op: '>', warn: 1.05, reject: 1.3, phase: ['out', 'back'], views: ['side'], minMs: 250, label: 'Dambıllar göğüs hizasında', text: 'Dambıllar göğüs hizasında değil (karına doğru) — göğsünün üstünde birleştir', cue: 'Dambılları göğsünün üstüne getir' },
+      { id: 'over-chest-high', measure: 'wristDrop', op: '<', warn: -0.1, reject: -0.3, phase: ['out', 'back'], views: ['side'], minMs: 250, label: 'Dambıllar göğüs hizasında (yüze doğru değil)', text: 'Dambıllar yüzüne doğru kaydı — göğsünün üstünde birleştir', cue: 'Dambılları göğsünün üstüne getir' },
       R.hipLift(),
-      R.shrug({ warn: 0.11, reject: 0.18 }),
+      ...chestShrug([0.11, 0.18]),
     ],
   }),
   ex(49, 'decline-push-up', 'Ayak Yükseltilmiş Şınav', 'Decline Push-Up', 'Göğüs', 'decline-push-up.png', {
@@ -549,7 +569,7 @@ export const EXERCISES = [
     plane: 'frontal', view: 'front', required: ['shoulder', 'elbow', 'wrist'],
     setup: 'Kamerayı tam karşına koy; kollar yukarıdayken eller kadrajda kalmalı.',
     startText: 'dambıllar omuz hizasında, dirsekler bükülü',
-    metric: { fn: 'elbowAngle', start: 90, target: 155, label: 'Dirsek açısı', romText: 'Kollar yukarıda tam açılmadı', returnText: 'Ağırlık omuz hizasına kadar indirilmedi' },
+    metric: { fn: 'elbowAngle', reach: 0.9, start: 90, target: 155, label: 'Dirsek açısı', romText: 'Kollar yukarıda tam açılmadı', returnText: 'Ağırlık omuz hizasına kadar indirilmedi' }, // %90 açılma yeterli
     tempo: { minBackMs: 600, backText: 'Ağırlık hızlı indirildi — kontrollü indir' },
     rules: [
       R.symmetryWrist({ warn: 0.35, reject: 0.6 }),
@@ -852,7 +872,7 @@ export const EXERCISES = [
     setup: 'Kamera yanda.',
     startText: 'dirsekler bükülü, eller başın arkasında',
     // tek kolla da yapılabilir
-    metric: { fn: 'elbowAngle', agg: 'maxProgress', workingArmRules: true, smooth: 5, start: 78, target: 150, label: 'Dirsek açısı', romText: 'Kollar tam açılmadı', returnText: 'Eller başın arkasına kadar geri gelmedi' },
+    metric: { fn: 'elbowAngle', agg: 'maxProgress', workingArmRules: true, smooth: 5, reach: 0.9, start: 78, target: 150, label: 'Dirsek açısı', romText: 'Kollar tam açılmadı', returnText: 'Eller başın arkasına kadar geri gelmedi' },
     tempo: { minBackMs: 600 },
     rules: [
       { id: 'upper-arm-vertical', measure: 'armElev', op: '<', warn: 130, reject: 115, minMs: 200, label: 'Üst kol başın yanında', text: 'Dirsekler aşağı düştü — üst kol başın yanında kalmalı', cue: 'Dirseklerini yukarıda tut' },

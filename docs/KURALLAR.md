@@ -57,23 +57,24 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 2. Eğimli Dambıl Press (Incline Dumbbell Press)
 
-- **Kamera:** yandan — Telefonu eğimli sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
+- **Kamera:** yandan / çapraz / önden — Önden de olur (karşına, sehpa hizasında). Telefonu eğimli sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** dambıllar yukarıda, kollar düz
-- **Tekrar:** Dirsek açısı: 160 → 95 · hedefe ulaşmazsa: "Dambıllar yeterince indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı"
+- **Tekrar:** Dirsek açısı: 155 → 95 · hedefe ulaşmazsa: "Dambıllar yeterince indirilmedi" · dönmezse: "Kollar yukarıda yeterince açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 800 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler gövdeye 90° açıldı — 45-75° arasında tut (omuz sıkışır) | **Kritik** | uyarı > 75° · ret > 85° | tepe/dip noktası | ret: yandan |
 | Dirsekler gövdeye fazla yapışık | Uyarı | uyarı < 20° | tepe/dip noktası | ret: yandan |
-| Ön kolların çok eğik — dambıl dirseğinin üstüne yakın olmalı | Uyarı | uyarı > 40° | tepe/dip noktası, dönüşte | yandan |
-| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < 0.05 (vücut ölçeği) · ret < -0.09999999999999999 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
-| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1 (vücut ölçeği) · ret > 1.15 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Ön kolların çok eğik — bar/dambıl dirseğinin üstüne yakın olmalı | Uyarı | uyarı > 40° | tepe/dip noktası, dönüşte | yandan |
+| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < -0.05 (vücut ölçeği) · ret < -0.2 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1.1 (vücut ölçeği) · ret > 1.3 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 | Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | Uyarı | kalibrasyona göre uyarı > 0.18 (vücut ölçeği) | tüm tekrar | yandan |
-| Dambıllar öne doğru itildi — eğimli presste yukarıya, omuzlarının üstüne it | **Kritik** | fazdaki en iyi değer uyarı > 20 (vücut ölçeği) · ret > 28 (vücut ölçeği) | start, hedefe giderken, dönüşte | yandan/çapraz |
-| Dirsekler çok aşağı düştü — omuz zorlanır, göğüs hizasında dur | **Kritik** | uyarı < -0.45 (vücut ölçeği) · ret < -0.65 (vücut ölçeği) | tepe/dip noktası | yandan |
+| Dambıllar öne doğru itildi — eğimli presste yukarıya, omuzlarının üstüne it | **Kritik** | fazdaki en iyi değer uyarı > 25 (vücut ölçeği) · ret > 35 (vücut ölçeği) | start, hedefe giderken, dönüşte | yandan/çapraz |
+| Dirsekler çok aşağı düştü — omuz zorlanır, göğüs hizasında dur | **Kritik** | uyarı < -0.55 (vücut ölçeği) · ret < -0.8 (vücut ölçeği) | tepe/dip noktası | yandan |
 
 ### 3. Göğüs Press Makinesi (Chest Press)
 
@@ -84,33 +85,35 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Kambur durdun — omuzlar öne yuvarlandı, göğsünü öne çıkar | **Kritik** | kalibrasyona göre uyarı > 0.1 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | yandan/çapraz |
+| Kambur durdun — omuzlar öne yuvarlandı, göğsünü öne çıkar | **Kritik** | kalibrasyona göre uyarı > 0.14 (vücut ölçeği) · ret > 0.24 (vücut ölçeği) | tüm tekrar | yandan/çapraz |
 | Sırt pedden ayrıldı — gövdeyle itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat | **Kritik** | uyarı > 0.95 (vücut ölçeği) · ret > 1.15 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
-| Kollar göğüs hizasının üstünde — göğüs hizasına indir | **Kritik** | uyarı < 0.05 (vücut ölçeği) · ret < -0.15 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
-| Dirsekler omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.15 (vücut ölçeği) · ret < -0.35 (vücut ölçeği) | tüm tekrar | tümü |
-| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.07 (vücut ölçeği) · ret > 0.12 (vücut ölçeği) | tüm tekrar | tümü |
+| Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat | **Kritik** | uyarı > 1.05 (vücut ölçeği) · ret > 1.3 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Kollar göğüs hizasının üstünde — göğüs hizasına indir | **Kritik** | uyarı < -0.05 (vücut ölçeği) · ret < -0.25 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Dirsekler omuz hizasının üstüne çıktı | **Kritik** | uyarı < -0.25 (vücut ölçeği) · ret < -0.45 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 | Ön kollar itiş yönünde değil — bilek dirsekle aynı hizada olmalı | Uyarı | uyarı < 55° | hedefe giderken, dönüşte | yandan |
 
 ### 4. Pec Deck Açış (Pec Deck Fly)
 
-- **Kamera:** yandan / çapraz — Telefonu makinenin yanına veya hafif yan çaprazına (~30°), göğüs/omuz hizasında koy. Baş, omuz, dirsek ve kalça görünsün.
+- **Kamera:** yandan / çapraz / önden — Önden de olur. Telefonu makinenin yanına veya hafif yan çaprazına (~30°), göğüs/omuz hizasında koy. Baş, omuz, dirsek ve kalça görünsün.
 - **Başlangıç:** kollar yanlarda açık, göğüs önde
 - **Tekrar:** Kolların önde birleşmesi: 0.5 → 1.15 · hedefe ulaşmazsa: "Kollar önde birleştirilmedi" · dönmezse: "Kollar başlangıca kadar açılmadı"
 - **Tempo (uyarı):** dönüş ≥ 700 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsek açısı değişti — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 25° · ret > 40° | tüm tekrar | ret: çapraz |
-| Dirsekler fazla büküldü — hareket press’e döndü | **Kritik** | uyarı < 125° · ret < 110° | tepe/dip noktası | tümü |
-| Dirsekler omuz seviyesinin üstüne çıktı | **Kritik** | uyarı < -0.15 (vücut ölçeği) · ret < -0.3 (vücut ölçeği) | tüm tekrar | tümü |
-| Dirsekler göğüs hizasının altına düştü | **Kritik** | uyarı > 0.4 (vücut ölçeği) · ret > 0.6 (vücut ölçeği) | tüm tekrar | tümü |
-| Kambur durdun — omuzlar öne yuvarlandı, göğsünü öne çıkar | **Kritik** | kalibrasyona göre uyarı > 0.1 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | yandan/çapraz |
+| Dirsek açısı değişti — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 30° · ret > 48° | tüm tekrar | ret: çapraz |
+| Dirsekler fazla büküldü — hareket press’e döndü | **Kritik** | uyarı < 115° · ret < 100° | tepe/dip noktası | tümü |
+| Dirsekler omuz seviyesinin üstüne çıktı | **Kritik** | uyarı < -0.25 (vücut ölçeği) · ret < -0.42 (vücut ölçeği) | tüm tekrar | tümü |
+| Dirsekler göğüs hizasının altına düştü | **Kritik** | uyarı > 0.5 (vücut ölçeği) · ret > 0.75 (vücut ölçeği) | tüm tekrar | tümü |
+| Kambur durdun — omuzlar öne yuvarlandı, göğsünü öne çıkar | **Kritik** | kalibrasyona göre uyarı > 0.14 (vücut ölçeği) · ret > 0.24 (vücut ölçeği) | tüm tekrar | yandan/çapraz |
 | Sırt pedden ayrıldı — gövdeyle itildi | **Kritik** | tekrar içindeki hareket aralığı uyarı > 8° · ret > 15° | tüm tekrar | ret: yandan |
-| Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat | **Kritik** | uyarı > 0.95 (vücut ölçeği) · ret > 1.15 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
-| Kollar göğüs hizasının üstünde — göğüs hizasına indir | **Kritik** | uyarı < 0.05 (vücut ölçeği) · ret < -0.15 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
-| Kollar dümdüz — dirsekleri hafif bük | **Kritik** | uyarı > 170° · ret > 176° | tepe/dip noktası | çapraz/önden |
-| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > değişken · ret > değişken | sürekli | tümü |
+| Kollar göğüs hizasının altında — tutamakları göğüs hizasında it/kapat | **Kritik** | uyarı > 1.05 (vücut ölçeği) · ret > 1.3 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Kollar göğüs hizasının üstünde — göğüs hizasına indir | **Kritik** | uyarı < -0.05 (vücut ölçeği) · ret < -0.25 (vücut ölçeği) | hedefe giderken, tepe/dip noktası, dönüşte | tümü |
+| Kollar dümdüz — dirsekleri hafif bük | **Kritik** | uyarı > 173° · ret > 178° | tepe/dip noktası | çapraz/önden |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.1 (vücut ölçeği) · ret > 0.17 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kalktı — omuzları aşağıda ve geride tut | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 5. Şınav (Push-up)
 
@@ -725,38 +728,40 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 44. Göğüs Aşağı Eğimli Bench Press (Decline Bench Press)
 
-- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
+- **Kamera:** yandan / çapraz / önden — Önden de olur. Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
-- **Tekrar:** Bar/bilek yüksekliği: 1.6 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
+- **Tekrar:** Dirsek açısı: 155 → 95 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda yeterince açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler gövdeye 90° açıldı — 45-75° arasında tut (omuz sıkışır) | **Kritik** | uyarı > 75° · ret > 85° | tepe/dip noktası | ret: yandan |
 | Dirsekler gövdeye fazla yapışık | Uyarı | uyarı < 20° | tepe/dip noktası | ret: yandan |
-| Bilekler dirseklerin üstünde değil — ön kol dik olmalı | **Kritik** | uyarı > 20° · ret > 35° | tepe/dip noktası, dönüşte | yandan |
-| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < 0.25 (vücut ölçeği) · ret < 0.1 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
-| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1.35 (vücut ölçeği) · ret > 1.5 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Ön kolların çok eğik — bar/dambıl dirseğinin üstüne yakın olmalı | Uyarı | uyarı > 40° | tepe/dip noktası, dönüşte | yandan |
+| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < 0.2 (vücut ölçeği) · ret < 0.05000000000000002 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1.35 (vücut ölçeği) · ret > 1.55 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 | Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | Uyarı | kalibrasyona göre uyarı > 0.18 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 45. Üst Göğüs Bar Press (Incline Barbell Press)
 
-- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
+- **Kamera:** yandan / çapraz / önden — Önden de olur. Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** kollar yukarıda düz
-- **Tekrar:** Bar/bilek yüksekliği: 1.3 → 0.6 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda tam açılmadı (kilitlenmedi)"
+- **Tekrar:** Dirsek açısı: 155 → 95 · hedefe ulaşmazsa: "Bar göğse kadar indirilmedi" · dönmezse: "Kollar yukarıda yeterince açılmadı"
 - **Tempo (uyarı):** hedefe gidiş ≥ 650 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
 | Dirsekler gövdeye 90° açıldı — 45-75° arasında tut (omuz sıkışır) | **Kritik** | uyarı > 75° · ret > 85° | tepe/dip noktası | ret: yandan |
 | Dirsekler gövdeye fazla yapışık | Uyarı | uyarı < 20° | tepe/dip noktası | ret: yandan |
-| Bilekler dirseklerin üstünde değil — ön kol dik olmalı | **Kritik** | uyarı > 20° · ret > 35° | tepe/dip noktası, dönüşte | yandan |
-| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < 0 (vücut ölçeği) · ret < -0.15 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
-| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1 (vücut ölçeği) · ret > 1.15 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Ön kolların çok eğik — bar/dambıl dirseğinin üstüne yakın olmalı | Uyarı | uyarı > 40° | tepe/dip noktası, dönüşte | yandan |
+| Bar boyuna/üst göğse iniyor — göğüs hizasına indir | **Kritik** | uyarı < -0.05 (vücut ölçeği) · ret < -0.2 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
+| Bar karına doğru iniyor — göğüs hizasına indir ve göğüs hizasından kaldır | **Kritik** | uyarı > 1.1 (vücut ölçeği) · ret > 1.3 (vücut ölçeği) | tepe/dip noktası | yandan/çapraz |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
-| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa kaydı — kürek kemiklerini geri ve aşağı sabitle | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 | Omuzlar öne yuvarlandı — göğsünü öne çıkar, kürek kemiklerini geri al | Uyarı | kalibrasyona göre uyarı > 0.18 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 46. Aşağıdan Yukarı Kablo Açışı (Low to High Cable Fly)
@@ -796,20 +801,21 @@ videolarıyla kalibre edilmeleri gerekir (bkz. README: "Kayıt verisini indir").
 
 ### 48. Dambıl Göğüs Açışı (Dumbbell Fly)
 
-- **Kamera:** yandan — Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
+- **Kamera:** yandan / çapraz / önden — Önden de olur (ayak ucundan). Telefonu sehpanın tam yanına, sehpa yüksekliğine, 2-3 m uzağa koy. Baş, omuz, dirsek, bilek ve kalça görünsün.
 - **Başlangıç:** dambıllar göğüs üstünde
 - **Tekrar:** Dambıl yüksekliği: 1.55 → 0.45 · hedefe ulaşmazsa: "Kollar yeterince açılmadı (göğüs gerilmedi)" · dönmezse: "Dambıllar göğüs üstünde birleştirilmedi"
 - **Tempo (uyarı):** hedefe gidiş ≥ 700 ms
 
 | Kural | Tür | Eşik | Ne zaman | Açı |
 |---|---|---|---|---|
-| Dirsekler büküldü — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 20° · ret > 35° | tüm tekrar | tümü |
-| Dirsekler fazla bükük | **Kritik** | uyarı < 125° · ret < 105° | tüm tekrar | tümü |
-| Dambıllar omuz seviyesinin altına indi — omuz zorlanır | **Kritik** | uyarı < -0.15 (vücut ölçeği) · ret < -0.4 (vücut ölçeği) | tepe/dip noktası | tümü |
-| Dambıllar göğüs hizasında değil (karına doğru) — göğsünün üstünde birleştir | **Kritik** | uyarı > 0.95 (vücut ölçeği) · ret > 1.15 (vücut ölçeği) | hedefe giderken, dönüşte | yandan |
-| Dambıllar yüzüne doğru kaydı — göğsünün üstünde birleştir | **Kritik** | uyarı < 0 (vücut ölçeği) · ret < -0.2 (vücut ölçeği) | hedefe giderken, dönüşte | yandan |
+| Dirsekler büküldü — hareket press’e döndü | **Kritik** | tekrar içindeki hareket aralığı uyarı > 28° · ret > 45° | tüm tekrar | tümü |
+| Dirsekler fazla bükük | **Kritik** | uyarı < 115° · ret < 95° | tüm tekrar | tümü |
+| Dambıllar omuz seviyesinin altına indi — omuz zorlanır | **Kritik** | uyarı < -0.3 (vücut ölçeği) · ret < -0.6 (vücut ölçeği) | tepe/dip noktası | tümü |
+| Dambıllar göğüs hizasında değil (karına doğru) — göğsünün üstünde birleştir | **Kritik** | uyarı > 1.05 (vücut ölçeği) · ret > 1.3 (vücut ölçeği) | hedefe giderken, dönüşte | yandan |
+| Dambıllar yüzüne doğru kaydı — göğsünün üstünde birleştir | **Kritik** | uyarı < -0.1 (vücut ölçeği) · ret < -0.3 (vücut ölçeği) | hedefe giderken, dönüşte | yandan |
 | Kalça sehpadan kalktı | **Kritik** | tekrar başına göre değişim uyarı > 0.25 (vücut ölçeği) · ret > 0.4 (vücut ölçeği) | tüm tekrar | ret: yandan |
-| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | tümü |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.11 (vücut ölçeği) · ret > 0.18 (vücut ölçeği) | tüm tekrar | önden/çapraz |
+| Omuzlar kulağa doğru kalktı (omuz silkme) | **Kritik** | uyarı > 0.18 (vücut ölçeği) · ret > 0.27 (vücut ölçeği) | tüm tekrar | yandan |
 
 ### 49. Ayak Yükseltilmiş Şınav (Decline Push-Up)
 

@@ -301,7 +301,8 @@ export class FormEngine {
       r.frames++;
       if (this.frameWorking) { r.working = r.working || new Set(); this.frameWorking.forEach((s) => r.working.add(s)); }
       if (p > r.maxP) { r.maxP = p; r.tPeak = t; r.localMin = null; }
-      if (p >= 1 && !r.reached) { r.reached = true; r.tReach = t; }
+      // metric.reach: hedefin bu oranına ulaşmak yeterli (ör. 0.9 = kolun %90 açılması)
+      if (p >= (this.def.metric.reach ?? 1) && !r.reached) { r.reached = true; r.tReach = t; }
       if (p >= PEAK_P) r.peakMs += dt;
       const phase = p >= PEAK_P ? 'peak' : (r.maxP >= PEAK_P ? 'back' : 'out');
       this.evalRules(P, ctx, dt, phase, snap);
