@@ -870,6 +870,53 @@ function makeProfile(hide = []) {
   check('her harekette en az bir form kuralı var', noRules.length === 0, noRules.join(','));
 }
 
+
+// ---------------------------------------------------------------- PROGRAM ÜRETİCİ
+{
+  const { generateProgram, evolveLevel, suggestGoal, dayKey, GOALS } = await import('../src/program/generator.js');
+  const now = Date.now();
+  const st = (level, extra = {}) => ({ level, levelSince: now, createdAt: now, ...extra });
+  // örnek: 180 cm, 50 kg, 21 yaş erkek, amaç seçmemiş → kas + kilo
+  const thin = { sex: 'm', age: 21, height: 180, weight: 50, experience: 'none', goal: 'auto', seed: 1 };
+  check('PROGRAM: 180/50/21 erkek, amaç yok → kas + kilo kazanımı', suggestGoal(thin).goal === 'kaskilo');
+  check('PROGRAM: VKİ ≥ 30 → yağ yakımı', suggestGoal({ ...thin, weight: 100 }).goal === 'yag');
+  // tüm şablonlar: 5 amaç × 6 seviye × 2 cinsiyet geçerli program üretir
+  const bad = []; const templates = new Set(); const sigs = new Set();
+  for (const goal of Object.keys(GOALS)) for (let L = 1; L <= 6; L++) for (const sex of ['m', 'f']) {
+    const p = generateProgram({ ...thin, sex, goal, weight: 72 }, st(L));
+    templates.add(p.template);
+    sigs.add(JSON.stringify(p.days.map((d) => d.items.map((i) => [i.id, i.sets, i.reps, i.minutes]))));
+    for (const d of p.days) {
+      if (!d.items.length) bad.push(`${p.template} boş gün`);
+      for (const it of d.items) {
+        if (!byId(it.id)) bad.push(`${p.template} bilinmeyen ${it.id}`);
+        if (!it.minutes && !(it.sets >= 1)) bad.push(`${p.template} ${it.id} set yok`);
+        if (!it.minutes && !it.hold && !(it.reps >= 5 && it.reps <= 40)) bad.push(`${p.template} ${it.id} tekrar ${it.reps}`);
+      }
+      if (new Set(d.items.map((i) => i.id)).size !== d.items.length) bad.push(`${p.template} aynı gün tekrar eden hareket`);
+    }
+  }
+  check(`PROGRAM: 60 şablonun hepsi geçerli (${templates.size})`, templates.size === 60 && !bad.length, bad.slice(0, 5).join('; '));
+  check(`PROGRAM: şablonlar birbirinden farklı (${sigs.size}/60)`, sigs.size >= 55);
+  // seviye arttıkça hacim artar
+  const vol = (L) => generateProgram({ ...thin, goal: 'kas', weight: 72 }, st(L)).days.reduce((a, d) => a + d.items.reduce((b, i) => b + (i.sets || 0), 0), 0);
+  check('PROGRAM: haftalık set sayısı seviyeyle artar (1→6)', vol(1) < vol(3) && vol(3) < vol(6), `${vol(1)} ${vol(3)} ${vol(6)}`);
+  // 1 ay düzenli antrenman → seviye atlar; düzensiz → atlamaz
+  const hist = (n) => Array.from({ length: n }, (_, i) => { const t = now - (29 - i * (28 / n)) * 86400000; return { date: dayKey(t), t, exerciseId: 'squat', sets: [{ accepted: 8, rejected: 0 }] }; });
+  const s0 = { level: 1, levelSince: now - 30 * 86400000 };
+  check('PROGRAM: 1 ay düzenli (12 gün) → seviye 2', evolveLevel(thin, s0, hist(12), now).level === 2);
+  check('PROGRAM: 1 ayda 3 gün → seviye atlamaz', evolveLevel(thin, s0, hist(3), now).level === 1);
+  // aynı amaç, farklı blok (ay) → farklı hareket varyantları
+  const p1 = generateProgram({ ...thin, goal: 'kas', weight: 72 }, st(4));
+  const p2 = generateProgram({ ...thin, goal: 'kas', weight: 72 }, st(4, { createdAt: now - 60 * 86400000, levelSince: now }));
+  check('PROGRAM: sonraki blokta hareket varyantları değişir', JSON.stringify(p1.days.map((d) => d.items.map((i) => i.id))) !== JSON.stringify(p2.days.map((d) => d.items.map((i) => i.id))));
+  // formu sürekli bozulan hareket daha kolay varyantla değişir
+  const base = generateProgram({ ...thin, goal: 'kas', weight: 72 }, st(3));
+  const victim = base.days[0].items[0].id;
+  const tH = [{ date: dayKey(now), t: now, exerciseId: victim, sets: [{ accepted: 2, rejected: 6 }] }];
+  const sw = generateProgram({ ...thin, goal: 'kas', weight: 72 }, st(3), tH);
+  check('PROGRAM: tekrarların çoğu sayılmayan hareket değiştirilir', sw.days[0].items[0].id !== victim && sw.notes.some((n) => n.includes('daha kolay varyant')));
+}
 console.log(results.join('\n'));
 console.log(`\n${passed} geçti, ${failed} başarısız`);
 process.exit(failed ? 1 : 0);

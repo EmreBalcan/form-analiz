@@ -5,6 +5,8 @@ import { createDetector } from './ui/detector.js';
 import { Speaker, keepScreenOn, isNativeApp } from './ui/speech.js';
 import { drawPose } from './ui/overlay.js';
 import { ProfileCapture, loadProfile, saveProfile } from './core/profile.js';
+import { initProfilePage, refreshProfilePage, rxText } from './ui/profile-page.js';
+import { logSet, markDayDone } from './program/store.js';
 
 // Kalıcı vücut ölçümü: omuz silkme her harekette kişinin RAHAT duruşuna göre ölçülür.
 let profile = loadProfile();
@@ -32,6 +34,7 @@ let lastVideoTime = -1;
 let lastPose = null;
 let lastSnap = null;
 let cueTimer = null;
+let run = null; // günlük program akışı (aşağıda)
 const recording = [];
 
 function localStorage_get(k) { try { return localStorage.getItem(`fa.${k}`); } catch { return null; } }
@@ -56,7 +59,15 @@ function selectExercise(id) {
   renderRules(null);
 }
 
+/** Programsız (serbest) çalışmada biten seti geçmişe yaz. */
+function flushFreeSet() {
+  if (run || !engine) return;
+  const seconds = def.mode === 'hold' ? Math.floor((engine.hold?.goodMs || 0) / 1000) : null;
+  if (engine.accepted || engine.rejected || seconds) logSet({ exerciseId: def.id, accepted: engine.accepted, rejected: engine.rejected, seconds });
+}
+
 function newSet() {
+  flushFreeSet();
   engine = new FormEngine(def, onEngineEvent, { profile });
   tracker.reset();
   el.ok.textContent = '0'; el.bad.textContent = '0';
@@ -99,6 +110,7 @@ function onEngineEvent(e) {
     // sesli komut yalnızca kırmızı (tekrarı reddeden) hatalar için; uyarılar yalnızca ekranda yazılır
     if (!e.silent && e.level === 'critical') speaker.say(e.cue, 3);
   } else if (e.type === 'rep') {
+    if (run?.phase === 'rest') return; // dinlenmede yapılan hareket sayılmaz
     el.ok.textContent = String(e.accepted);
     el.bad.textContent = String(e.rejected);
     addRep(e.rep);
@@ -110,12 +122,15 @@ function onEngineEvent(e) {
       showCue(`Sayılmadı: ${e.rep.reasons[0]}`, 'critical');
       speaker.say(`Sayılmadı. ${ruleCue(e.rep.reasons[0])}`, 3, 0);
     }
+    if (run) programRep(e.accepted, e.rejected);
   } else if (e.type === 'calibrated') {
     showCue('Kalibrasyon tamam — başlayabilirsin', 'good');
     speaker.say('Hazır, başlayabilirsin', 1, 0);
   } else if (e.type === 'hold') {
+    if (run?.phase === 'rest') return;
     el.ok.textContent = String(e.seconds);
     speaker.say(`${e.seconds} saniye`, 1, 0);
+    if (run) programHold(e.seconds);
   }
 }
 
@@ -232,6 +247,7 @@ function stopStream() {
   stream = null;
 }
 function stop() {
+  flushFreeSet();
   running = false;
   keepScreenOn(false);
   stopStream();
@@ -372,4 +388,187 @@ $('appVersion').textContent = `sürüm ${document.querySelector('meta[name="app-
 applyMirror();
 selectExercise(def.id);
 listCameras();
-window.__formAnaliz = { get pose() { return lastPose; }, get snap() { return lastSnap; }, get engine() { return engine; } };
+window.__formAnaliz = { get pose() { return lastPose; }, get snap() { return lastSnap; }, get engine() { return engine; }, get run() { return run; }, programRep: (a, r) => programRep(a, r), endRest: () => endRest() };
+
+// ================================================================ sekmeler
+function showTab(name) {
+  for (const t of ['train', 'food', 'profile']) $(`tab-${t}`).classList.toggle('hidden', t !== name);
+  $('pickbar').classList.toggle('hidden', name !== 'train');
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === name));
+  if (name === 'profile') refreshProfilePage();
+  localStorage_set('tab', name);
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('#tabs button').forEach((b) => { b.onclick = () => showTab(b.dataset.tab); });
+$('settingsBtn').onclick = () => {
+  const box = $('settingsBox');
+  box.classList.toggle('hidden');
+  $('settingsBtn').setAttribute('aria-expanded', String(!box.classList.contains('hidden')));
+};
+
+// ================================================================ günlük program akışı
+// run: { program, dayIdx, items, i (hareket), set (1..), phase: 'set'|'rest'|'done', restEnd, lastRepT, setStart, results }
+let runTimer = null;
+const targetOf = (it) => (it.reps ? it.reps * (it.perSide ? 2 : 1) : 0);
+const needOf = (it) => Math.floor(targetOf(it) / 2) + 1; // yarısından fazlası yeterli
+
+function startProgramDay(program, dayIdx) {
+  if (run) finishProgram(false);
+  const day = program.days[dayIdx];
+  run = { program, dayIdx, day, items: day.items, i: 0, set: 1, phase: 'set', results: [], setStart: Date.now(), lastRepT: 0, warnedShort: 0 };
+  showTab('train');
+  $('progPanel').classList.remove('hidden');
+  enterExercise(true);
+  clearInterval(runTimer);
+  runTimer = setInterval(programTick, 500);
+  if (!running) el.setupTip.textContent = `${day.name} — ${day.items.length} hareket. Kamerayı başlat; ilk hareket: ${byId(day.items[0].id).tr}.`;
+}
+
+function curItem() { return run.items[run.i]; }
+
+function enterExercise(first = false) {
+  const it = curItem();
+  selectExercise(it.id); // newSet() dahil
+  run.set = 1; run.phase = 'set'; run.setStart = Date.now(); run.lastRepT = 0; run.warnedShort = 0;
+  renderProg();
+  if (!first) speaker.say(`Sıradaki hareket: ${byId(it.id).tr}`, 2, 0);
+}
+
+function renderProg() {
+  if (!run) return;
+  const it = curItem();
+  const d = byId(it.id);
+  $('progDay').textContent = `${run.day.name} · hareket ${run.i + 1}/${run.items.length}`;
+  $('progEx').textContent = d.tr;
+  const sets = it.minutes ? 1 : it.sets;
+  $('progSets').innerHTML = Array.from({ length: sets }, (_, k) => `<span class="${k + 1 < run.set ? 'done' : k + 1 === run.set ? (run.phase === 'set' ? 'cur' : 'done') : ''}"></span>`).join('');
+  let t;
+  if (it.minutes) t = `Süre hedefi: ${it.minutes} dk`;
+  else if (it.hold) t = `Set ${run.set}/${it.sets} · hedef ${it.hold} sn`;
+  else t = `Set ${run.set}/${it.sets} · hedef ${targetOf(it)} tekrar${it.perSide ? ` (her taraf ${it.reps})` : ''} · en az ${needOf(it)} geçerli`;
+  $('progTarget').textContent = t;
+  $('progSetDone').textContent = it.minutes ? 'Bitir' : 'Seti bitir';
+}
+
+function programRep(accepted, rejected) {
+  if (!run || run.phase !== 'set') return;
+  const it = curItem();
+  if (!it.reps) return;
+  run.lastRepT = Date.now();
+  const T = targetOf(it), need = needOf(it);
+  if (accepted >= T || (accepted + rejected >= T && accepted >= need)) { completeSet(); return; }
+  if (accepted + rejected >= T && accepted < need && run.warnedShort !== accepted + rejected) {
+    run.warnedShort = accepted + rejected;
+    showCue(`Seti tamamlamak için ${need - accepted} geçerli tekrar daha`, 'warning');
+  }
+}
+
+function programHold(seconds) {
+  const it = run && curItem();
+  if (!it?.hold || run.phase !== 'set') return;
+  if (seconds >= it.hold) completeSet();
+}
+
+function programTick() {
+  if (!run) return;
+  const it = curItem();
+  const now = Date.now();
+  if (run.phase === 'rest') {
+    const left = Math.max(0, Math.ceil((run.restEnd - now) / 1000));
+    $('restTime').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    if (left === 3 && !run.said3) { run.said3 = true; speaker.say('Hazırlan', 1, 0); }
+    if (left <= 0) endRest();
+    return;
+  }
+  if (run.phase !== 'set') return;
+  if (it.minutes) {
+    const el2 = Math.floor((now - run.setStart) / 1000);
+    $('progTarget').textContent = `Süre: ${Math.floor(el2 / 60)}:${String(el2 % 60).padStart(2, '0')} / ${it.minutes}:00`;
+    if (running && el2 >= it.minutes * 60) completeSet();
+    return;
+  }
+  // yeterli geçerli tekrar yapıldı ve 12 sn yeni tekrar yok → set bitti kabul edilir
+  if (it.reps && engine && engine.accepted >= needOf(it) && run.lastRepT && now - run.lastRepT > 12000) completeSet();
+}
+
+function completeSet(manual = false) {
+  if (!run || run.phase !== 'set') return;
+  const it = curItem();
+  const seconds = it.hold ? Math.floor((engine.hold?.goodMs || 0) / 1000) : it.minutes ? Math.floor((Date.now() - run.setStart) / 1000) : null;
+  const res = { exerciseId: it.id, accepted: engine.accepted, rejected: engine.rejected, target: it.reps ? targetOf(it) : it.hold || it.minutes * 60, seconds, manual };
+  if (res.accepted || res.rejected || seconds) logSet({ ...res, program: { day: run.dayIdx, name: run.day.name } });
+  run.results.push(res);
+  const sets = it.minutes ? 1 : it.sets;
+  if (run.set < sets) {
+    startRest(it.rest || 60, `Sıradaki: ${byId(it.id).tr} — set ${run.set + 1}/${sets}`);
+    speaker.say(`Set tamam. ${it.rest || 60} saniye dinlen`, 2, 0);
+  } else if (run.i + 1 < run.items.length) {
+    const nx = run.items[run.i + 1];
+    startRest(Math.max(it.rest || 60, 60), `Sıradaki hareket: ${byId(nx.id).tr} (${rxText(nx)}). ${byId(nx.id).setup || ''}`, true);
+    speaker.say(`Hareket tamam. Sıradaki: ${byId(nx.id).tr}`, 2, 0);
+  } else {
+    finishProgram(true);
+  }
+}
+
+function startRest(sec, nextText, nextExercise = false) {
+  run.phase = 'rest'; run.restEnd = Date.now() + sec * 1000; run.said3 = false; run.nextExercise = nextExercise;
+  $('restTitle').textContent = nextExercise ? 'Hareket tamamlandı — dinlen' : `Set ${run.set} tamamlandı — dinlen`;
+  $('restNext').textContent = nextText;
+  $('restBox').classList.remove('hidden');
+  hideCue();
+  renderProg();
+  programTick();
+}
+
+function endRest() {
+  if (!run || run.phase !== 'rest') return;
+  $('restBox').classList.add('hidden');
+  if (run.nextExercise) { run.i += 1; enterExercise(); }
+  else {
+    run.set += 1; run.phase = 'set'; run.setStart = Date.now(); run.lastRepT = 0; run.warnedShort = 0;
+    newSet();
+    renderProg();
+    speaker.say(`Set ${run.set}. Başla`, 2, 0);
+  }
+}
+
+function skipExercise() {
+  if (!run) return;
+  if (run.phase === 'set' && engine && (engine.accepted || engine.rejected)) {
+    const it = curItem();
+    logSet({ exerciseId: it.id, accepted: engine.accepted, rejected: engine.rejected, target: targetOf(it) || null, program: { day: run.dayIdx, name: run.day.name } });
+  }
+  $('restBox').classList.add('hidden');
+  if (run.i + 1 < run.items.length) { run.i += 1; enterExercise(); }
+  else finishProgram(true);
+}
+
+function finishProgram(completed) {
+  if (!run) return;
+  clearInterval(runTimer);
+  const r = run;
+  run = null;
+  $('restBox').classList.add('hidden');
+  $('progPanel').classList.add('hidden');
+  if (completed) {
+    markDayDone(r.dayIdx);
+    const ok = r.results.reduce((a, x) => a + (x.accepted || 0), 0);
+    const bad = r.results.reduce((a, x) => a + (x.rejected || 0), 0);
+    const exN = new Set(r.results.map((x) => x.exerciseId)).size;
+    $('doneSum').innerHTML = `${r.day.name}<br>${exN} hareket · ${r.results.length} set<br>${ok} geçerli tekrar${bad ? ` · ${bad} sayılmadı` : ''}`;
+    $('doneBox').classList.remove('hidden');
+    speaker.say('Tebrikler, antrenman tamamlandı', 2, 0);
+  }
+  newSet();
+}
+
+$('progSetDone').onclick = () => completeSet(true);
+$('progSkip').onclick = skipExercise;
+$('progEnd').onclick = () => { if (confirm('Günlük programı bitirmek istiyor musun? Yapılan setler geçmişe kaydedildi.')) finishProgram(false); };
+$('restSkip').onclick = endRest;
+$('doneClose').onclick = () => { $('doneBox').classList.add('hidden'); showTab('profile'); };
+window.addEventListener('pagehide', flushFreeSet);
+
+initProfilePage({ onStartDay: startProgramDay });
+showTab(localStorage_get('tab') === 'profile' ? 'profile' : 'train');

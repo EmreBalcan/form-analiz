@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Form Analiz</title>
-  <meta name="theme-color" content="#0f1512">
+  <meta name="theme-color" content="#ffffff">
   <meta name="app-version" content="dev">
   <meta http-equiv="Cache-Control" content="no-cache">
   <link rel="icon" href="assets/icons/icon-192.png">
@@ -12,22 +12,40 @@
   <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Form Analiz">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="top">
     <div class="brand">Form Analiz <small id="appVersion" class="ver"></small></div>
+    <nav class="tabs" id="tabs">
+      <button type="button" data-tab="train" class="on"><span class="ti">🏋️</span>Antrenman</button>
+      <button type="button" data-tab="food"><span class="ti">🥗</span>Beslenme</button>
+      <button type="button" data-tab="profile"><span class="ti">👤</span>Profil</button>
+    </nav>
+  </header>
+  <div class="pickbar" id="pickbar">
     <button id="pickBtn" class="pick" type="button">
       <img id="pickImg" alt="">
       <span><b id="pickName">Hareket seç</b><small id="pickGroup"></small></span>
       <span class="chev">▾</span>
     </button>
-  </header>
+  </div>
 
-  <main class="layout">
+  <main class="layout" id="tab-train">
     <section class="stage-wrap">
+      <div id="progPanel" class="prog hidden">
+        <div class="prog-head">
+          <div><small id="progDay"></small><b id="progEx"></b></div>
+          <button id="progEnd" type="button" class="ghost">Programı bitir</button>
+        </div>
+        <div class="prog-sets" id="progSets"></div>
+        <div class="prog-line">
+          <span id="progTarget"></span>
+          <span class="prog-btns"><button id="progSetDone" type="button">Seti bitir</button><button id="progSkip" type="button">Hareketi geç ›</button></span>
+        </div>
+      </div>
       <div id="stage" class="stage">
         <video id="video" playsinline muted></video>
         <canvas id="overlay"></canvas>
@@ -42,6 +60,17 @@
         <div id="cue" class="cue hidden"></div>
         <div class="progress"><div id="progressBar"></div><div class="mark target"></div><div class="mark start"></div></div>
         <div id="message" class="message"></div>
+        <div id="restBox" class="rest hidden">
+          <small id="restTitle">Dinlen</small>
+          <div id="restTime" class="rest-time">0:00</div>
+          <p id="restNext"></p>
+          <button id="restSkip" type="button" class="primary">Dinlenmeyi geç</button>
+        </div>
+        <div id="doneBox" class="rest hidden">
+          <small>Antrenman tamamlandı 🎉</small>
+          <div id="doneSum" class="done-sum"></div>
+          <button id="doneClose" type="button" class="primary">Profile dön</button>
+        </div>
         <div id="empty" class="empty">
           <p id="setupTip">Bir hareket seç, kamerayı başlat.</p>
           <button id="startBtn" class="primary" type="button">Kamerayı başlat</button>
@@ -50,15 +79,18 @@
       </div>
       <div class="controls">
         <button id="stopBtn" type="button" disabled>Durdur</button>
-        <button id="resetBtn" type="button">Seti sıfırla</button>
-        <label class="toggle"><input id="soundToggle" type="checkbox" checked> Ses</label>
-        <label class="toggle"><input id="mirrorToggle" type="checkbox" checked> Ayna</label>
-        <select id="cameraSelect" aria-label="Kamera"></select>
-        <select id="modelSelect" aria-label="Model">
-          <option value="full" selected>Model: Standart</option>
-          <option value="heavy">Model: Hassas (yavaş)</option>
-          <option value="lite">Model: Hızlı</option>
-        </select>
+        <button id="resetBtn" type="button">Sıfırla</button>
+        <label class="toggle"><input id="soundToggle" type="checkbox" checked><span>Ses</span></label>
+        <label class="toggle"><input id="mirrorToggle" type="checkbox" checked><span>Ayna</span></label>
+        <button id="settingsBtn" type="button" class="icon" aria-label="Kamera ayarları" aria-expanded="false">⚙</button>
+      </div>
+      <div id="settingsBox" class="settings hidden">
+        <label>Kamera<select id="cameraSelect" aria-label="Kamera"></select></label>
+        <label>Model<select id="modelSelect" aria-label="Model">
+          <option value="full" selected>Standart</option>
+          <option value="heavy">Hassas (yavaş)</option>
+          <option value="lite">Hızlı</option>
+        </select></label>
       </div>
     </section>
 
@@ -97,6 +129,52 @@
         </details>
       </section>
     </aside>
+  </main>
+
+  <main class="page hidden" id="tab-food">
+    <section class="card empty-page">
+      <h2>Beslenme</h2>
+      <p class="muted">Bu bölüm yakında eklenecek.</p>
+    </section>
+  </main>
+
+  <main class="page hidden" id="tab-profile">
+    <section class="card">
+      <h2>Bilgilerim</h2>
+      <form id="userForm" class="uform">
+        <div class="seg" role="radiogroup" aria-label="Cinsiyet">
+          <label><input type="radio" name="sex" value="m" checked><span>Erkek</span></label>
+          <label><input type="radio" name="sex" value="f"><span>Kadın</span></label>
+        </div>
+        <div class="row3">
+          <label>Yaş<input name="age" type="number" inputmode="numeric" min="12" max="90" required placeholder="21"></label>
+          <label>Boy (cm)<input name="height" type="number" inputmode="numeric" min="120" max="230" required placeholder="180"></label>
+          <label>Kilo (kg)<input name="weight" type="number" inputmode="decimal" min="30" max="250" step="0.1" required placeholder="70"></label>
+        </div>
+        <label>Spor geçmişi<select name="experience" id="expSelect"></select></label>
+        <div class="row2">
+          <label>Haftada kaç gün?<select name="days">
+            <option value="">Sistem önersin</option><option value="2">2 gün</option><option value="3">3 gün</option><option value="4">4 gün</option><option value="5">5 gün</option><option value="6">6 gün</option>
+          </select></label>
+          <label>Ekipman<select name="equipment">
+            <option value="gym">Tam donanımlı salon</option><option value="dumbbell">Yalnız dambıl / ev</option>
+          </select></label>
+        </div>
+        <label>Spor yapma amacın<select name="goal" id="goalSelect"></select></label>
+        <button type="submit" class="primary">Kaydet ve programımı oluştur</button>
+        <p id="userSaved" class="muted small"></p>
+      </form>
+    </section>
+
+    <section class="card" id="programCard">
+      <h2>Programım</h2>
+      <div id="programBox"><p class="muted">Bilgilerini girip kaydedince sana uygun program burada oluşur.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Antrenman geçmişim</h2>
+      <div id="historyBox"></div>
+    </section>
   </main>
 
   <dialog id="picker" class="picker">

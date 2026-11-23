@@ -25,6 +25,15 @@ yüklenebilir. Analiz canlı kamerayla aynıdır.
    vücuduna göre kaydedilir; omuz silkme bu referansa göre ölçülür).
 3. Tekrarlara başla. Kritik hata → tekrar sayılmaz, neden listeye yazılır. Küçük hata → uyarı.
 
+## Sekmeler
+
+- **Antrenman:** kamera ile form analizi (hareket seçimi, sayaç, kurallar). Günlük program başlatıldıysa üstte set / hedef tekrar
+  paneli, setler arasında dinlenme sayacı görünür; set yarıdan fazla geçerli tekrarla tamamlanınca sıradaki sete/harekete geçilir.
+- **Beslenme:** şimdilik boş.
+- **Profil:** kişisel bilgiler → kişiye özel program (5 amaç × 6 seviye × kadın/erkek; geçmişe göre ağırlaşır, varyantlar
+  her blokta değişir) ve gün gün antrenman geçmişi. Kurallar ve kaynaklar: `docs/PROGRAMLAR.md`.
+  Veriler yalnızca cihazda (localStorage) tutulur.
+
 ## Mimari
 
 | Dosya | Görev |
@@ -34,7 +43,8 @@ yüklenebilir. Analiz canlı kamerayla aynıdır.
 | `src/core/engine.js` | Kalibrasyon, tekrar durum makinesi, kural değerlendirme, kabul/ret, tempo |
 | `src/exercises/rules.js` | Ortak kural kalıpları (silkme, salınım, dirsek sabitliği, diz içe kaçma…) |
 | `src/exercises/catalog.js` | 72 hareketin tanımı: kamera, ana ölçüm, hedef, kurallar ve eşikler |
-| `src/app.js`, `src/ui/*` | Arayüz, MediaPipe yükleyici, ses, iskelet çizimi |
+| `src/program/*` | Program üretici (amaç/seviye/cinsiyet, seviye atlama, varyant döndürme) ve cihazda saklama |
+| `src/app.js`, `src/ui/*` | Arayüz, sekmeler, günlük program akışı, profil sayfası, MediaPipe yükleyici, ses, vücut çizimi |
 | `docs/KURALLAR.md` | Tüm kuralların okunabilir listesi + kaynaklar (otomatik üretilir) |
 
 ### Ölçümün hatasız olması için alınan önlemler
