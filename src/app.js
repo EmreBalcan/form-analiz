@@ -418,7 +418,7 @@ function startProgramDay(program, dayIdx) {
   run = { program, dayIdx, day, items: day.items, i: 0, set: 1, phase: 'set', results: [], setStart: Date.now(), lastRepT: 0, warnedShort: 0 };
   showTab('train');
   $('progPanel').classList.remove('hidden');
-  enterExercise(true);
+  enterExercise();
   clearInterval(runTimer);
   runTimer = setInterval(programTick, 500);
   if (!running) el.setupTip.textContent = `${day.name} — ${day.items.length} hareket. Kamerayı başlat; ilk hareket: ${byId(day.items[0].id).tr}.`;
@@ -426,12 +426,11 @@ function startProgramDay(program, dayIdx) {
 
 function curItem() { return run.items[run.i]; }
 
-function enterExercise(first = false) {
+function enterExercise() {
   const it = curItem();
   selectExercise(it.id); // newSet() dahil
   run.set = 1; run.phase = 'set'; run.setStart = Date.now(); run.lastRepT = 0; run.warnedShort = 0;
   renderProg();
-  if (!first) speaker.say(`Sıradaki hareket: ${byId(it.id).tr}`, 2, 0);
 }
 
 function renderProg() {
@@ -476,7 +475,6 @@ function programTick() {
   if (run.phase === 'rest') {
     const left = Math.max(0, Math.ceil((run.restEnd - now) / 1000));
     $('restTime').textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
-    if (left === 3 && !run.said3) { run.said3 = true; speaker.say('Hazırlan', 1, 0); }
     if (left <= 0) endRest();
     return;
   }
@@ -501,11 +499,9 @@ function completeSet(manual = false) {
   const sets = it.minutes ? 1 : it.sets;
   if (run.set < sets) {
     startRest(it.rest || 60, `Sıradaki: ${byId(it.id).tr} — set ${run.set + 1}/${sets}`);
-    speaker.say(`Set tamam. ${it.rest || 60} saniye dinlen`, 2, 0);
   } else if (run.i + 1 < run.items.length) {
     const nx = run.items[run.i + 1];
     startRest(Math.max(it.rest || 60, 60), `Sıradaki hareket: ${byId(nx.id).tr} (${rxText(nx)}). ${byId(nx.id).setup || ''}`, true);
-    speaker.say(`Hareket tamam. Sıradaki: ${byId(nx.id).tr}`, 2, 0);
   } else {
     finishProgram(true);
   }
@@ -529,7 +525,6 @@ function endRest() {
     run.set += 1; run.phase = 'set'; run.setStart = Date.now(); run.lastRepT = 0; run.warnedShort = 0;
     newSet();
     renderProg();
-    speaker.say(`Set ${run.set}. Başla`, 2, 0);
   }
 }
 
@@ -558,7 +553,6 @@ function finishProgram(completed) {
     const exN = new Set(r.results.map((x) => x.exerciseId)).size;
     $('doneSum').innerHTML = `${r.day.name}<br>${exN} hareket · ${r.results.length} set<br>${ok} geçerli tekrar${bad ? ` · ${bad} sayılmadı` : ''}`;
     $('doneBox').classList.remove('hidden');
-    speaker.say('Tebrikler, antrenman tamamlandı', 2, 0);
   }
   newSet();
 }
